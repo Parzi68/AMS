@@ -11,7 +11,7 @@ public class Asset {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "serial")
+    @Column(name = "source_id", columnDefinition = "serial")
     private Long source_id;
 
     @Column(name = "source_name")

@@ -11,3 +11,4 @@ public interface UserRepository extends JpaRepository<Asset , Long> {
     @Query("SELECT MAX(t.source_id) FROM Asset t")
     Long findMaxId();
 }
+
