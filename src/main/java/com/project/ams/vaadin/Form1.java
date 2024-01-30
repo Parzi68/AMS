@@ -15,6 +15,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 
@@ -22,6 +23,7 @@ import java.io.ByteArrayInputStream;
 
 
 @Route("")
+@PageTitle("Asset info")
 public class Form1 extends FormLayout {
 
     private final UserRepository userRepository;
@@ -39,6 +41,7 @@ public class Form1 extends FormLayout {
     private final Button qrGen = new Button("Generate QR");
     private final Anchor downloadLink = new Anchor();
 
+    private final Button previewbtn = new Button("Decode QR");
 
 
     public Form1(UserRepository userRepository) {
@@ -101,7 +104,12 @@ public class Form1 extends FormLayout {
         qrGen.setAutofocus(true);
         qrGen.addClickListener(e -> generateQR());
 
-        HorizontalLayout h1 = new HorizontalLayout(saveButton,nextButton,qrGen,downloadLink);
+        previewbtn.setVisible(false);
+        previewbtn.addClickListener(e -> {
+           UI.getCurrent().navigate(Dashboard.class);
+        });
+
+        HorizontalLayout h1 = new HorizontalLayout(saveButton,nextButton,qrGen,downloadLink,previewbtn);
         // Create an Anchor for downloading the QR Code
         downloadLink.getElement().getThemeList().add("button");
         downloadLink.getElement().setAttribute("download", true);
@@ -130,6 +138,7 @@ public class Form1 extends FormLayout {
         userRepository.save(asset);
         // Show the "Generate QR" button after saving
         qrGen.setVisible(true);
+        previewbtn.setVisible(true);
 
         Notification.show("Asset saved successfully");
 
@@ -166,26 +175,19 @@ public class Form1 extends FormLayout {
 
         // Show the anchor for downloading
         downloadLink.setVisible(true);
+        previewbtn.setVisible(true);
 
-        // Clear the form and show a notification
 
-        //Notification.show("QR Code generated. Click the 'Download QR Code' button to download.");
         clearForm();
     }
 
 
     private void clearForm() {
-        source_id.clear();
-        source_name.clear();
-        application_Name.clear();
-        longitude.clear();
-        latitude.clear();
-        location_name.clear();
-        protocol_type.clear();
-        install_date.clear();
-        modified_date.clear();
+        UI.getCurrent().getPage().executeJs("setTimeout(function() { location.reload(); }, 20000);");
+
         // Hide the "Generate QR" button after clearing the form
-        qrGen.setVisible(false);
+//        qrGen.setVisible(false);
+//        previewbtn.setVisible(false);
 
 //        qrGen.getElement().executeJs("location.reload()");
     }

@@ -31,7 +31,7 @@ public class Details {
     @Column(name = "time_format")
     private String time_format;
 
-    @Column(name = "report_interval")
+    @Column(name = "report_interval", columnDefinition = "INTEGER USING report_interval::integer")
     private int report_interval;
 
     @Column(name = "set_time_format")

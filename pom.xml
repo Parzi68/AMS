@@ -28,10 +28,19 @@
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-spring-boot-starter</artifactId>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.fazecast/jSerialComm -->
         <dependency>
-            <groupId>org.springframework.kafka</groupId>
-            <artifactId>spring-kafka</artifactId>
+            <groupId>com.fazecast</groupId>
+            <artifactId>jSerialComm</artifactId>
+            <version>2.10.4</version>
         </dependency>
+
+
+
+
+
+
 
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
@@ -46,13 +55,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.kafka</groupId>
-            <artifactId>spring-kafka-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-
 
 
         <!-- https://mvnrepository.com/artifact/com.vaadin/vaadin-core -->
@@ -99,20 +101,13 @@
             <artifactId>spring-data-jpa</artifactId>
             <version>3.2.2</version>
         </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-text-field-flow</artifactId>
-            <version>24.3.3</version>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.project</groupId>
-            <artifactId>AMS</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+
+
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -143,7 +138,7 @@
                     <plugin>
                         <groupId>com.vaadin</groupId>
                         <artifactId>vaadin-maven-plugin</artifactId>
-
+                        <version>23.3.30</version>
                         <executions>
                             <execution>
                                 <id>frontend</id>

@@ -1,5 +1,6 @@
 package com.project.ams.vaadin;
 
+import com.fazecast.jSerialComm.SerialPort;
 import com.project.ams.spring.Details;
 import com.project.ams.spring.UserRepositoryy;
 import com.vaadin.flow.component.UI;
@@ -57,6 +58,7 @@ public class Form2 extends FormLayout {
 
         parity.setRequiredIndicatorVisible(true);
         parity.setErrorMessage("This field is required.");
+        parity.setHelperText("Enter True(1) or False(0)");
         parity.setWidthFull();
 
         // Setting values for Polling Interval
@@ -87,17 +89,24 @@ public class Form2 extends FormLayout {
         timeFormat2.setRequiredIndicatorVisible(true);
         timeFormat2.setErrorMessage("This field is required.");
 
+        // Automatically scan and set the available COM ports
+        setComPortValue();
+        //com_port.setReadOnly(true);
+
         // Fetch the latest ID from the database and increment it by 1
         Long nextId = userRepositoryy.findMaxId();
 
         // Set the calculated ID as the value of the sourceIdField
-        nextId = (nextId == null) ? 1L : nextId;
+        nextId = (nextId == null) ? 1L : nextId + 1;
         source_id.setValue(String.valueOf(nextId));
         backbtn.addClickListener(e -> {
             UI.getCurrent().navigate(Form1.class);
         });
 
-        savebtn.addClickListener(e -> saveDetails());
+        savebtn.addClickListener(e -> {
+            saveDetails();
+            UI.getCurrent().getPage().reload();
+        });
         savebtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         HorizontalLayout buttonLayout = new HorizontalLayout(backbtn,savebtn);
@@ -112,9 +121,28 @@ public class Form2 extends FormLayout {
         add(v1);
     }
 
+    private void setComPortValue() {
+        // Get the list of available serial ports using jSerialComm
+        SerialPort[] serialPorts = SerialPort.getCommPorts();
+
+        // Check if any serial ports are available
+        if (serialPorts.length > 0) {
+            // Use the first available serial port as the default value
+            String defaultComPort = serialPorts[0].getSystemPortName();
+
+            // Set the default COM port value in the com_port TextField
+            com_port.setValue(defaultComPort);
+        } else {
+            // No serial ports found, you may want to handle this case accordingly
+            Notification.show("No COM ports found.");
+        }
+    }
+
+
+
     private void saveDetails() {
         Details details = new Details();
-        details.setSource_id(Long.valueOf(source_id.getValue()));
+        //details.setSource_id(Long.valueOf(source_id.getValue()));
         details.setCom_port(Integer.parseInt(com_port.getValue()));
         details.setBaud_rate(Integer.parseInt(baud_rate.getValue()));
         details.setData_bits(Integer.parseInt(data_bits.getValue()));
@@ -126,5 +154,20 @@ public class Form2 extends FormLayout {
         details.setSet_time_format(timeFormat2.getValue());
         userRepositoryy.save(details);
         Notification.show("Details Added!");
+
     }
+
+//    private void clearForm() {
+//        source_id.clear();
+//        com_port.clear();
+//        data_bits.clear();
+//        baud_rate.clear();
+//        stop_bits.clear();
+//        parity.clear();
+//        timeFormat.clear();
+//        pollInterval.clear();
+//        repInterval.clear();
+//        timeFormat2.clear();
+//
+//    }
 }
