@@ -10,6 +10,7 @@ import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
@@ -94,9 +95,13 @@ public class Dashboard extends VerticalLayout {
         installDate.setReadOnly(true);
         modifiedDate.setReadOnly(true);
 
-        Image image = new Image("src/main/resources/static/images/mfm.png", "alt text");
+        Image image = new Image("images/mfm.png", "Alt text");
+        image.setHeight("80px");
+        image.setWidth("80px");
+        image.setTitle("MultiFunction Energy Meter (MFM)");
         VerticalLayout v2 = new VerticalLayout();
-        v2.add(image);
+        H3 details = new H3("Asset details:");
+        v2.add(details,image);
         HorizontalLayout h1 = new HorizontalLayout(sourceId,longitude , protocolType);
         h1.setSpacing(true);
         HorizontalLayout h2 = new HorizontalLayout(sourceName, latitude,installDate);
