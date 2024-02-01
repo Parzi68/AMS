@@ -22,11 +22,14 @@ import java.util.stream.IntStream;
 public class Form2 extends FormLayout {
     private final UserRepositoryy userRepositoryy;
     private final TextField source_id = new TextField("Source id");
+    private final TextField slave_id = new TextField("Slave ID");
     private final TextField com_port = new TextField("COM_Port");
-    private final TextField baud_rate = new TextField("BAUD Rate");
-    private final TextField data_bits = new TextField("Data Bits");
-    private final TextField stop_bits = new TextField("Stop Bits");
-    private final TextField parity = new TextField("Parity");
+    private final Select<Integer> baud_rate = new Select<>();
+    private final Select<Integer> data_bits = new Select<>();
+    private final Select<Integer> stop_bits = new Select<>();
+    private final Select<Integer> parity = new Select<>();
+    private final TextField starting_address = new TextField("Starting Field");
+    private final TextField req_quantity = new TextField("Register Quantity");
     private final Button backbtn = new Button("Back");
     private final Button savebtn = new Button("Save");
     private final Select<Integer> pollInterval = new Select<>();
@@ -40,25 +43,38 @@ public class Form2 extends FormLayout {
         source_id.setReadOnly(true);
         source_id.setWidthFull();
 
+        slave_id.setRequiredIndicatorVisible(true);
+        slave_id.setErrorMessage("This field is required");
+        slave_id.setWidthFull();
+
         com_port.setRequiredIndicatorVisible(true);
         com_port.setErrorMessage("This field is required.");
         com_port.setWidthFull();
 
         baud_rate.setRequiredIndicatorVisible(true);
         baud_rate.setErrorMessage("This field is required.");
+        baud_rate.setItems(1200, 2400, 3600, 4800, 9600, 19200, 38400, 57600, 115200);
+        baud_rate.setLabel("Baud Rate");
+        baud_rate.setValue(0);
         baud_rate.setWidthFull();
 
         data_bits.setRequiredIndicatorVisible(true);
         data_bits.setErrorMessage("This field is required.");
+        data_bits.setItems(7,8);
+        data_bits.setLabel("Data Bits");
         data_bits.setWidthFull();
 
         stop_bits.setRequiredIndicatorVisible(true);
         stop_bits.setErrorMessage("This field is required.");
+        stop_bits.setItems(1,2);
+        stop_bits.setLabel("Stop Bits");
         stop_bits.setWidthFull();
 
         parity.setRequiredIndicatorVisible(true);
         parity.setErrorMessage("This field is required.");
-        parity.setHelperText("Enter True(1) or False(0)");
+        parity.setHelperText("0: none  1: Odd  2: Even");
+        parity.setItems(0,1,2);
+        parity.setLabel("Parity");
         parity.setWidthFull();
 
         // Setting values for Polling Interval
@@ -89,6 +105,14 @@ public class Form2 extends FormLayout {
         timeFormat2.setRequiredIndicatorVisible(true);
         timeFormat2.setErrorMessage("This field is required.");
 
+        starting_address.setWidthFull();
+        starting_address.setErrorMessage("Enter valid starting address");
+        starting_address.setPattern("\\b\\d{5}\\b");
+        starting_address.setRequiredIndicatorVisible(true);
+
+        req_quantity.setWidthFull();
+        req_quantity.setErrorMessage("This field is required");
+        req_quantity.setRequiredIndicatorVisible(true);
         // Automatically scan and set the available COM ports
         setComPortValue();
         //com_port.setReadOnly(true);
@@ -115,7 +139,7 @@ public class Form2 extends FormLayout {
         h2.setSpacing(true);
         HorizontalLayout h3 = new HorizontalLayout(repInterval,timeFormat2);
         h3.setSpacing(true);
-        VerticalLayout v1 = new VerticalLayout(source_id,com_port,baud_rate,data_bits,stop_bits,parity,h2,h3,buttonLayout);
+        VerticalLayout v1 = new VerticalLayout(source_id,slave_id,com_port,baud_rate,data_bits,stop_bits,parity,starting_address,req_quantity,h2,h3,buttonLayout);
         v1.setPadding(true);
        // v1.setMargin(true);
         add(v1);
@@ -144,14 +168,16 @@ public class Form2 extends FormLayout {
         Details details = new Details();
         //details.setSource_id(Long.valueOf(source_id.getValue()));
         details.setCom_port(Integer.parseInt(com_port.getValue()));
-        details.setBaud_rate(Integer.parseInt(baud_rate.getValue()));
-        details.setData_bits(Integer.parseInt(data_bits.getValue()));
-        details.setStop_bits(Integer.parseInt(stop_bits.getValue()));
-        details.setParity(Boolean.parseBoolean(parity.getValue()));
+        details.setBaud_rate(baud_rate.getValue());
+        details.setData_bits(data_bits.getValue());
+        details.setStop_bits(stop_bits.getValue());
+        details.setParity(parity.getValue());
         details.setPolling_interval(pollInterval.getValue());
         details.setTime_format(timeFormat.getValue());
         details.setReport_interval(repInterval.getValue());
         details.setSet_time_format(timeFormat2.getValue());
+        details.setStarting_address(Integer.parseInt(starting_address.getValue()));
+        details.setReq_quantity(Integer.parseInt(req_quantity.getValue()));
         userRepositoryy.save(details);
         Notification.show("Details Added!");
 

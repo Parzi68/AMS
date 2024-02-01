@@ -23,7 +23,7 @@ public class Details {
     private int stop_bits;
 
     @Column(name = "parity")
-    private boolean parity;
+    private int parity;
 
     @Column(name = "polling_interval")
     private int polling_interval;
@@ -37,7 +37,24 @@ public class Details {
     @Column(name = "set_time_format")
     private String set_time_format;
 
+    public int getStarting_address() {
+        return starting_address;
+    }
 
+    public void setStarting_address(int starting_address) {
+        this.starting_address = starting_address;
+    }
+
+    public int getReq_quantity() {
+        return req_quantity;
+    }
+
+    public void setReq_quantity(int req_quantity) {
+        this.req_quantity = req_quantity;
+    }
+
+    private int starting_address;
+    private int req_quantity;
 
     public Long getSource_id() {
         return source_id;
@@ -79,11 +96,7 @@ public class Details {
         this.stop_bits = stop_bits;
     }
 
-    public boolean isParity() {
-        return parity;
-    }
-
-    public void setParity(boolean parity) {
+    public void setParity(int parity) {
         this.parity = parity;
     }
 

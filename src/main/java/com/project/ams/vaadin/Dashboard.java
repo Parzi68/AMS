@@ -96,8 +96,8 @@ public class Dashboard extends VerticalLayout {
         modifiedDate.setReadOnly(true);
 
         Image image = new Image("images/mfm.png", "Alt text");
-        image.setHeight("80px");
-        image.setWidth("80px");
+        image.setHeight("100px");
+        image.setWidth("100px");
         image.setTitle("MultiFunction Energy Meter (MFM)");
         VerticalLayout v2 = new VerticalLayout();
         H3 details = new H3("Asset details:");

@@ -27,10 +27,10 @@ public class Asset {
     @Column(name = "protocol_type")
     private String protocol_type;
     @Column(name = "install_date")
-    @JsonFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDate install_date;
     @Column(name = "modified_date")
-    @JsonFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDate modified_date;
 
     public LocalDate getInstall_date() {
@@ -48,8 +48,6 @@ public class Asset {
     public void setModified_date(LocalDate modified_date) {
         this.modified_date = modified_date;
     }
-
-
 
     public String getSource_name() {
         return source_name;
@@ -98,12 +96,6 @@ public class Asset {
     public void setProtocol_type(String protocol_type) {
         this.protocol_type = protocol_type;
     }
-
-
-
-
-
-
 
     public void setSource_id(Long sourceId) {
         this.source_id = sourceId;
