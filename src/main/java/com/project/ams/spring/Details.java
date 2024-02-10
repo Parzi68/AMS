@@ -11,7 +11,7 @@ public class Details {
     private Long source_id;
 
     @Column(name = "com_port")
-    private int com_port;
+    private String com_port;
 
     @Column(name = "baud_rate")
     private int baud_rate;
@@ -23,7 +23,7 @@ public class Details {
     private int stop_bits;
 
     @Column(name = "parity")
-    private int parity;
+    private String parity;
 
     @Column(name = "polling_interval")
     private int polling_interval;
@@ -37,24 +37,26 @@ public class Details {
     @Column(name = "set_time_format")
     private String set_time_format;
 
-    public int getStarting_address() {
-        return starting_address;
-    }
+//    private int starting_address;
+//    private int req_quantity;
 
-    public void setStarting_address(int starting_address) {
-        this.starting_address = starting_address;
-    }
+    
+//    public int getStarting_address() {
+//        return starting_address;
+//    }
+//
+//    public void setStarting_address(int starting_address) {
+//        this.starting_address = starting_address;
+//    }
+//
+//    public int getReq_quantity() {
+//        return req_quantity;
+//    }
+//
+//    public void setReq_quantity(int req_quantity) {
+//        this.req_quantity = req_quantity;
+//    }
 
-    public int getReq_quantity() {
-        return req_quantity;
-    }
-
-    public void setReq_quantity(int req_quantity) {
-        this.req_quantity = req_quantity;
-    }
-
-    private int starting_address;
-    private int req_quantity;
 
     public Long getSource_id() {
         return source_id;
@@ -64,11 +66,11 @@ public class Details {
         this.source_id = source_id;
     }
 
-    public int getCom_port() {
+    public String getCom_port() {
         return com_port;
     }
 
-    public void setCom_port(int com_port) {
+    public void setCom_port(String com_port) {
         this.com_port = com_port;
     }
 
@@ -96,7 +98,7 @@ public class Details {
         this.stop_bits = stop_bits;
     }
 
-    public void setParity(int parity) {
+    public void setParity(String parity) {
         this.parity = parity;
     }
 
