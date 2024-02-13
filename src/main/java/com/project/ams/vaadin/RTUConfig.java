@@ -155,7 +155,7 @@ public class RTUConfig extends VerticalLayout {
 
 		connect.addClickListener(e -> {
 			Connection();
-			UI.getCurrent().navigate(TagMapping.class);
+//			UI.getCurrent().navigate(TagMapping.class);
 		});
 		connect.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
 		connect.setVisible(false);
@@ -185,18 +185,17 @@ public class RTUConfig extends VerticalLayout {
 			  params.setEcho(false);
 			  con = new SerialConnection(params);
 			  
-			  if(!con.isOpen()){
-				   con.open();
-				   Notification.show("Connection Successful");
-			  	}
-//			  else {
-//				  Notification.show("Connection unsuccessful");
-//			  }
-//			  UI.getCurrent().navigate(TagMapping.class);
-		}
-		catch (Exception e) {
-		 System.out.println(e);
-			}
+			  if (!con.isOpen()) {
+		            con.open();
+		            Notification.show("Modbus RTU Device Connected Successfully").setDuration(3000);
+		            UI.getCurrent().navigate(TagMapping.class);
+		        } else {
+		            Notification.show("Failed to connect to Modbus RTU Device").setDuration(3000);
+		        }
+		    } catch (Exception e) {
+		        System.out.println(e);
+		        Notification.show("An error occurred while trying to connect to Modbus RTU Device").setDuration(3000);
+		    }
 	}
 
 	private void setComPortValue() {
@@ -223,7 +222,7 @@ public class RTUConfig extends VerticalLayout {
 		configRepository.save(details);
 //		skip.setVisible(true);
 		connect.setVisible(true);
-		Notification.show("Details Added! You can connect now").setDuration(7);
+		Notification.show("Details Added! You can connect now").setDuration(5000);
 
 		clearForm();
 
