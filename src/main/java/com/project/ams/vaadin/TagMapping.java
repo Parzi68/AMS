@@ -26,8 +26,8 @@ public class TagMapping extends VerticalLayout {
 	private final TextField point_type = new TextField("Modbus Point Type");
 	private final Button backbtn = new Button("Back");
 	private final Button submitbtn = new Button("Submit");
-	
-	private final Grid<MappingData> grid = new Grid<>(MappingData.class);
+	private final Button producebtn = new Button("Kafka Produce");
+//	private final Grid<MappingData> grid = new Grid<>(MappingData.class);
 
 	public TagMapping() {
 		setSizeFull();
@@ -82,7 +82,9 @@ public class TagMapping extends VerticalLayout {
 //			UI.getCurrent().getPage().reload();
 //		});
 
-		HorizontalLayout buttonLayout = new HorizontalLayout(backbtn, submitbtn);
+		producebtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
+
+		HorizontalLayout buttonLayout = new HorizontalLayout(backbtn, submitbtn, producebtn);
 		VerticalLayout v1 = new VerticalLayout(source_id, reg_name, reg_address, reg_length);
 		VerticalLayout v2 = new VerticalLayout(reg_type, multiplier, element_name, point_type);
 		HorizontalLayout form = new HorizontalLayout(v1, v2);
@@ -90,20 +92,20 @@ public class TagMapping extends VerticalLayout {
 		form.setSizeFull();
 		buttonLayout.setSizeFull();
 		add(form, buttonLayout);
-		
-		// Configure the grid
-        grid.setColumns("sourceId", "regName", "regAddress", "regLength", "regType",
-                "multiplier", "elementName", "pointType");
-        // Remove the line related to "savedDate"
-        grid.setItems(getSavedMappings()); // Replace with your data fetching logic
 
-        add(form, buttonLayout);
-        add(new Hr(), grid);
+//		// Configure the grid
+//        grid.setColumns("sourceId", "regName", "regAddress", "regLength", "regType",
+//                "multiplier", "elementName", "pointType");
+//        // Remove the line related to "savedDate"
+//        grid.setItems(getSavedMappings()); // Replace with your data fetching logic
+//
+//        add(form, buttonLayout);
+//        add(new Hr(), grid);
 	}
 
-	private DataProvider<MappingData, Void> getSavedMappings() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	private DataProvider<MappingData, Void> getSavedMappings() {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 }

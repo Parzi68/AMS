@@ -1,9 +1,11 @@
 package com.project.ams.spring;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 @Entity
 public class MappingData {
+	@Id
 	private long id;
 	private String reg_name;
 	private int reg_address;

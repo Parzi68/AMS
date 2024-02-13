@@ -19,6 +19,9 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 
+import net.wimpi.modbus.net.SerialConnection;
+import net.wimpi.modbus.util.SerialParameters;
+
 @Route(value = "/rtuconfig", layout = MainLayout.class)
 public class RTUConfig extends VerticalLayout {
 	private final ConfigRepository configRepository;
@@ -37,8 +40,8 @@ public class RTUConfig extends VerticalLayout {
 	private final Select<Integer> repInterval = new Select<>();
 	private final Select<String> timeFormat = new Select<>();
 	private final Select<String> timeFormat2 = new Select<>();
-	private final Button skip = new Button("Skip");
-	private final Button next = new Button("Next");
+	//private final Button skip = new Button("Skip");
+	private final Button connect = new Button("Connect");
 
 	public RTUConfig(ConfigRepository configRepository) {
 		this.configRepository = configRepository;
@@ -144,19 +147,20 @@ public class RTUConfig extends VerticalLayout {
 		});
 		savebtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-		skip.addClickListener(e -> {
-			UI.getCurrent().navigate(Output.class);
-		});
-		skip.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
-		skip.setVisible(false);
+//		skip.addClickListener(e -> {
+//			UI.getCurrent().navigate(Output.class);
+//		});
+//		skip.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+//		skip.setVisible(false);
 
-		next.addClickListener(e -> {
+		connect.addClickListener(e -> {
+			Connection();
 			UI.getCurrent().navigate(TagMapping.class);
 		});
-		next.addThemeVariants(ButtonVariant.LUMO_ERROR);
-		next.setVisible(false);
+		connect.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
+		connect.setVisible(false);
 
-		HorizontalLayout buttonLayout = new HorizontalLayout(backbtn, savebtn, skip, next);
+		HorizontalLayout buttonLayout = new HorizontalLayout(backbtn, savebtn,connect);
 		buttonLayout.setSpacing(true);
 		HorizontalLayout h2 = new HorizontalLayout(pollInterval, timeFormat);
 		h2.setSpacing(true);
@@ -166,6 +170,33 @@ public class RTUConfig extends VerticalLayout {
 		v1.setPadding(true);
 		// v1.setMargin(true);
 		add(v1);
+	}
+
+	private void Connection() {
+		SerialConnection con = null;
+		try{
+              SerialParameters params = new SerialParameters();
+			  params.setPortName(com_port.getValue());
+			  params.setBaudRate(baud_rate.getValue());
+			  params.setDatabits(data_bits.getValue());
+			  params.setParity(parity.getValue());
+			  params.setStopbits(stop_bits.getValue()); // only for hubli
+			  params.setEncoding("RTU");
+			  params.setEcho(false);
+			  con = new SerialConnection(params);
+			  
+			  if(!con.isOpen()){
+				   con.open();
+				   Notification.show("Connection Successful");
+			  	}
+//			  else {
+//				  Notification.show("Connection unsuccessful");
+//			  }
+//			  UI.getCurrent().navigate(TagMapping.class);
+		}
+		catch (Exception e) {
+		 System.out.println(e);
+			}
 	}
 
 	private void setComPortValue() {
@@ -190,9 +221,9 @@ public class RTUConfig extends VerticalLayout {
 //		details.setStarting_address(Integer.parseInt(starting_address.getValue()));
 //		details.setReq_quantity(Integer.parseInt(req_quantity.getValue()));
 		configRepository.save(details);
-		skip.setVisible(true);
-		next.setVisible(true);
-		Notification.show("Details Added! You can see the output now");
+//		skip.setVisible(true);
+		connect.setVisible(true);
+		Notification.show("Details Added! You can connect now").setDuration(7);
 
 		clearForm();
 
