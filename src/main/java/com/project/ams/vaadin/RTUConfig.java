@@ -43,6 +43,7 @@ public class RTUConfig extends VerticalLayout {
 	//private final Button skip = new Button("Skip");
 	private final Button connect = new Button("Connect");
 
+	
 	public RTUConfig(ConfigRepository configRepository) {
 		this.configRepository = configRepository;
 
