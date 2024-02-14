@@ -26,9 +26,9 @@ public class ModbusRTUExample{
 					   con.open();
 			    }
 				  
-				  String getRes=getDataLNT(4,99,2,"",con);
+				  String getRes=getDataLNT(4,107,2,"",con);
 				  
-				  System.out.println("Reading............");
+				  
 			}
 			catch (Exception e) {
 				// 	
@@ -57,6 +57,7 @@ public class ModbusRTUExample{
 			  req.setUnitID(slaveID);
 			  req.setHeadless();
 			  trans = new ModbusSerialTransaction(con);
+			  System.out.println("Reading............");
 			 
 			   System.out.println("Sending request  -----slaveid--"+slaveID+"--Reference--"+ref+"--"+registers+"-----Value--"+req.getHexMessage());
 			 
