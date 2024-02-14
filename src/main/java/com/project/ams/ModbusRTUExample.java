@@ -1,5 +1,5 @@
 package com.project.ams;
-import net.wimpi.modbus.ModbusCoupler;
+import net.wimpi.modbus.ModbusCoupler; 
 import net.wimpi.modbus.io.ModbusSerialTransaction;
 import net.wimpi.modbus.msg.ReadMultipleRegistersRequest;
 import net.wimpi.modbus.msg.ReadMultipleRegistersResponse;
@@ -26,15 +26,15 @@ public class ModbusRTUExample{
 					   con.open();
 			    }
 				  
-				  String getRes=	getDataLNT(4,99,2,"",con);
+				  String getRes=getDataLNT(4,99,2,"",con);
 				  
-				  System.out.println("Reading............"+getRes);
+				  System.out.println("Reading............");
 			}
 			catch (Exception e) {
-				// TODO: handle exception
+				// 	
 			}
 		}
-		
+										//	Slave ID   RegisterAddress RegisterLength					
 		 public static String getDataLNT(int SlaveId,int reference,int register,String headVal,SerialConnection con){
 
 			 	ModbusSerialTransaction trans 		= null;
@@ -98,14 +98,21 @@ public class ModbusRTUExample{
 			   //if( !peUtil.isNullString(headVal))	{
 					getResponse	=	getResponse.substring(6,getResponse.length());
 			   //}
-
+					
+					con.close();
 			   }
+			 
+		            
+		            // Perform hex to float conversion
+		            float floatValue = hexToFloat(getResponse);
+		            //System.out.println("Hex Value: " + getResponse);
+		            System.out.println("Float Value: " + floatValue);
 			
-			  con.close();
-			   
-			                                    
 			  
-			  } catch (Exception ex) {
+			   
+			 }	                                    
+			  
+			  		catch (Exception ex) {
 				  System.out.println("Reading Error - "+ex);
 			 
 				
@@ -115,5 +122,12 @@ public class ModbusRTUExample{
 			return getResponse;
 				
 			}
+			 public static float hexToFloat(String hex) {
+				    if (hex.length() == 8) {
+				        hex = hex.substring(4) + hex.substring(0, 4);
+				    }
+				    long longBits = Long.parseLong(hex, 16);
+				    return Float.intBitsToFloat((int) longBits);
+				}
 
 }
