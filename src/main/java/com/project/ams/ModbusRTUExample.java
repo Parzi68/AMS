@@ -42,6 +42,7 @@ public class ModbusRTUExample{
 				ReadMultipleRegistersResponse res 	= null;
 
 			String getResponse	=	"";
+			String response = "";
 
 			int			slaveID		=	SlaveId,
 						ref			=	reference,
@@ -92,6 +93,7 @@ public class ModbusRTUExample{
 				   
 			   }
 			   if(res!=null){
+			   response = res.getHexMessage();
 			   getResponse = res.getHexMessage();
 			   getResponse=getResponse.replaceAll(" ","");
 			   
@@ -106,7 +108,8 @@ public class ModbusRTUExample{
 		            // Perform hex to float conversion
 		            float floatValue = hexToFloat(getResponse);
 		            //System.out.println("Hex Value: " + getResponse);
-		            System.out.println("Float Value: " + floatValue);
+		            System.out.println("Response from meter: " + response);
+		            System.out.println("Response in Float - "+floatValue);
 			
 			  
 			   
@@ -118,7 +121,8 @@ public class ModbusRTUExample{
 				
 			}
 			
-			 System.out.println("Response From Meter - "+getResponse);
+			 System.out.println("Response in hexadecimal - "+getResponse);
+			 
 			return getResponse;
 				
 			}
