@@ -9,6 +9,8 @@ public class Details {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "source_id",columnDefinition = "serial")
     private Long source_id;
+    
+    private int slave_id;
 
     @Column(name = "com_port")
     private String com_port;
@@ -37,32 +39,20 @@ public class Details {
     @Column(name = "set_time_format")
     private String set_time_format;
 
-//    private int starting_address;
-//    private int req_quantity;
-
-    
-//    public int getStarting_address() {
-//        return starting_address;
-//    }
-//
-//    public void setStarting_address(int starting_address) {
-//        this.starting_address = starting_address;
-//    }
-//
-//    public int getReq_quantity() {
-//        return req_quantity;
-//    }
-//
-//    public void setReq_quantity(int req_quantity) {
-//        this.req_quantity = req_quantity;
-//    }
-
 
     public Long getSource_id() {
         return source_id;
     }
 
-    public void setSource_id(Long source_id) {
+    public int getSlave_id() {
+		return slave_id;
+	}
+
+	public void setSlave_id(int slave_id) {
+		this.slave_id = slave_id;
+	}
+
+	public void setSource_id(Long source_id) {
         this.source_id = source_id;
     }
 
@@ -106,7 +96,11 @@ public class Details {
         return polling_interval;
     }
 
-    public void setPolling_interval(int polling_interval) {
+    public String getParity() {
+		return parity;
+	}
+
+	public void setPolling_interval(int polling_interval) {
         this.polling_interval = polling_interval;
     }
 
@@ -133,4 +127,23 @@ public class Details {
     public void setSet_time_format(String set_time_format) {
         this.set_time_format = set_time_format;
     }
+//  private int starting_address;
+//  private int req_quantity;
+
+  
+//  public int getStarting_address() {
+//      return starting_address;
+//  }
+//
+//  public void setStarting_address(int starting_address) {
+//      this.starting_address = starting_address;
+//  }
+//
+//  public int getReq_quantity() {
+//      return req_quantity;
+//  }
+//
+//  public void setReq_quantity(int req_quantity) {
+//      this.req_quantity = req_quantity;
+//  }
 }

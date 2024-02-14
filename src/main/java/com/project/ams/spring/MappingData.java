@@ -1,27 +1,42 @@
 package com.project.ams.spring;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "testing3")
 public class MappingData {
 	@Id
-	private long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+   // @Column(name = "source_id",columnDefinition = "serial")
+	private long source_id;
+	
+	@Column(name = "reg_name")
 	private String reg_name;
+	@Column(name = "reg_address")
 	private int reg_address;
+	@Column(name = "reg_length")
 	private int reg_length;
+	@Column(name = "reg_type")
 	private String reg_type;
-	private String multiplier;
+	@Column(name = "multiplier")
+	private int multiplier;
+	@Column(name = "element_name")
 	private String element_name;
-	private int point_type;
+	@Column(name = "point_type")
+	private String point_type;
 	
 	
 	
-	public long getId() {
-		return id;
+	public long getSource_id() {
+		return source_id;
 	}
-	public void setId(long id) {
-		this.id = id;
+	public void setSource_id(long source_id) {
+		this.source_id = source_id;
 	}
 	public String getReg_name() {
 		return reg_name;
@@ -47,10 +62,10 @@ public class MappingData {
 	public void setReg_type(String reg_type) {
 		this.reg_type = reg_type;
 	}
-	public String getMultiplier() {
+	public int getMultiplier() {
 		return multiplier;
 	}
-	public void setMultiplier(String multiplier) {
+	public void setMultiplier(int multiplier) {
 		this.multiplier = multiplier;
 	}
 	public String getElement_name() {
@@ -59,10 +74,10 @@ public class MappingData {
 	public void setElement_name(String element_name) {
 		this.element_name = element_name;
 	}
-	public int getPoint_type() {
+	public String getPoint_type() {
 		return point_type;
 	}
-	public void setPoint_type(int point_type) {
+	public void setPoint_type(String point_type) {
 		this.point_type = point_type;
 	}
 	

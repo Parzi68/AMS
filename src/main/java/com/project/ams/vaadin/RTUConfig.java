@@ -1,8 +1,7 @@
 package com.project.ams.vaadin;
 
-import java.util.stream.Collectors;
+import java.util.stream.Collectors; 
 import java.util.stream.IntStream;
-
 import com.fazecast.jSerialComm.SerialPort;
 import com.project.ams.spring.ConfigRepository;
 import com.project.ams.spring.Details;
@@ -18,9 +17,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
-
-import net.wimpi.modbus.net.SerialConnection;
-import net.wimpi.modbus.util.SerialParameters;
 
 @Route(value = "/rtuconfig", layout = MainLayout.class)
 public class RTUConfig extends VerticalLayout {
@@ -40,8 +36,8 @@ public class RTUConfig extends VerticalLayout {
 	private final Select<Integer> repInterval = new Select<>();
 	private final Select<String> timeFormat = new Select<>();
 	private final Select<String> timeFormat2 = new Select<>();
-	//private final Button skip = new Button("Skip");
-	private final Button connect = new Button("Connect");
+//	private final Button skip = new Button("Skip");
+	private final Button connect = new Button("Next");
 
 	
 	public RTUConfig(ConfigRepository configRepository) {
@@ -155,8 +151,8 @@ public class RTUConfig extends VerticalLayout {
 //		skip.setVisible(false);
 
 		connect.addClickListener(e -> {
-			Connection();
-//			UI.getCurrent().navigate(TagMapping.class);
+		//	Connection();
+		UI.getCurrent().navigate(TagMapping.class);
 		});
 		connect.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
 		connect.setVisible(false);
@@ -173,31 +169,31 @@ public class RTUConfig extends VerticalLayout {
 		add(v1);
 	}
 
-	private void Connection() {
-		SerialConnection con = null;
-		try{
-              SerialParameters params = new SerialParameters();
-			  params.setPortName(com_port.getValue());
-			  params.setBaudRate(baud_rate.getValue());
-			  params.setDatabits(data_bits.getValue());
-			  params.setParity(parity.getValue());
-			  params.setStopbits(stop_bits.getValue()); // only for hubli
-			  params.setEncoding("RTU");
-			  params.setEcho(false);
-			  con = new SerialConnection(params);
-			  
-			  if (!con.isOpen()) {
-		            con.open();
-		            Notification.show("Modbus RTU Device Connected Successfully").setDuration(3000);
-		            UI.getCurrent().navigate(TagMapping.class);
-		        } else {
-		            Notification.show("Failed to connect to Modbus RTU Device").setDuration(3000);
-		        }
-		    } catch (Exception e) {
-		        System.out.println(e);
-		        Notification.show("An error occurred while trying to connect to Modbus RTU Device").setDuration(3000);
-		    }
-	}
+//	private void Connection() {
+//		SerialConnection con = null;
+//		try{
+//              SerialParameters params = new SerialParameters();
+//			  params.setPortName(com_port.getValue());
+//			  params.setBaudRate(baud_rate.getValue());
+//			  params.setDatabits(data_bits.getValue());
+//			  params.setParity(parity.getValue());
+//			  params.setStopbits(stop_bits.getValue()); // only for hubli
+//			  params.setEncoding("RTU");
+//			  params.setEcho(false);
+//			  con = new SerialConnection(params);
+//			  
+//			  if (!con.isOpen()) {
+//		            con.open();
+//		            Notification.show("Modbus RTU Device Connected Successfully").setDuration(3000);
+//		            UI.getCurrent().navigate(TagMapping.class);
+//		        } else {
+//		            Notification.show("Failed to connect to Modbus RTU Device").setDuration(3000);
+//		        }
+//		    } catch (Exception e) {
+//		        System.out.println(e);
+//		        Notification.show("An error occurred while trying to connect to Modbus RTU Device").setDuration(3000);
+//		    }
+//	}
 
 	private void setComPortValue() {
 		SerialPort[] ports = SerialPort.getCommPorts();
@@ -218,6 +214,7 @@ public class RTUConfig extends VerticalLayout {
 		details.setTime_format(timeFormat.getValue());
 		details.setReport_interval(repInterval.getValue());
 		details.setSet_time_format(timeFormat2.getValue());
+		details.setSlave_id(Integer.parseInt(slave_id.getValue()));
 //		details.setStarting_address(Integer.parseInt(starting_address.getValue()));
 //		details.setReq_quantity(Integer.parseInt(req_quantity.getValue()));
 		configRepository.save(details);
