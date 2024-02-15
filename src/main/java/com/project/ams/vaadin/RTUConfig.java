@@ -17,10 +17,9 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.Route;
-
-import net.wimpi.modbus.net.SerialConnection;
-import net.wimpi.modbus.util.SerialParameters;
 
 @Route(value = "/rtuconfig", layout = MainLayout.class)
 public class RTUConfig extends VerticalLayout {
@@ -38,8 +37,8 @@ public class RTUConfig extends VerticalLayout {
 	private final Select<Integer> repInterval = new Select<>();
 	private final Select<String> timeFormat = new Select<>();
 	private final Select<String> timeFormat2 = new Select<>();
-	private final Button connect = new Button("Next");
-
+//	private final Button connect = new Button("Next");
+	Binder<Details> binder = new BeanValidationBinder<>(Details.class);
 	
 	public RTUConfig(ConfigRepository configRepository) {
 		this.configRepository = configRepository;
@@ -117,17 +116,8 @@ public class RTUConfig extends VerticalLayout {
 		timeFormat2.setRequiredIndicatorVisible(true);
 		timeFormat2.setErrorMessage("This field is required.");
 
-//		starting_address.setWidthFull();
-//		starting_address.setErrorMessage("Enter valid starting address");
-//		starting_address.setPattern("\\b\\d{5}\\b");
-//		starting_address.setRequiredIndicatorVisible(true);
-//
-//		req_quantity.setWidthFull();
-//		req_quantity.setErrorMessage("This field is required");
-//		req_quantity.setRequiredIndicatorVisible(true);
 		// Automatically scan and set the available COM ports
 		setComPortValue();
-		// com_port.setReadOnly(true);
 
 		// Fetch the latest ID from the database and increment it by 1
 		Long nextId = configRepository.findMaxId();
@@ -145,20 +135,14 @@ public class RTUConfig extends VerticalLayout {
 		});
 		savebtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-//		skip.addClickListener(e -> {
-//			UI.getCurrent().navigate(Output.class);
+//		connect.addClickListener(e -> {
+//			Connection();
+//		UI.getCurrent().navigate(TagMapping.class);
 //		});
-//		skip.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
-//		skip.setVisible(false);
+//		connect.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
+//		connect.setVisible(false);
 
-		connect.addClickListener(e -> {
-			Connection();
-		UI.getCurrent().navigate(TagMapping.class);
-		});
-		connect.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
-		connect.setVisible(false);
-
-		HorizontalLayout buttonLayout = new HorizontalLayout(backbtn, savebtn,connect);
+		HorizontalLayout buttonLayout = new HorizontalLayout(backbtn, savebtn);
 		buttonLayout.setSpacing(true);
 		HorizontalLayout h2 = new HorizontalLayout(pollInterval, timeFormat);
 		h2.setSpacing(true);
@@ -170,37 +154,34 @@ public class RTUConfig extends VerticalLayout {
 		add(v1);
 	}
 
-	private void Connection() {
-		SerialConnection con = null;
-		try{
-              SerialParameters params = new SerialParameters();
-			  params.setPortName(com_port.getValue());
-			  params.setBaudRate(baud_rate.getValue());
-			  params.setDatabits(data_bits.getValue());
-			  params.setParity(parity.getValue());
-			  params.setStopbits(stop_bits.getValue()); // only for hubli
-			  params.setEncoding("RTU");
-			  params.setEcho(false);
-			  con = new SerialConnection(params);
-			  
-			  if (!con.isOpen()) {
-		            con.open();
-		            Notification.show("Modbus RTU Device Connected Successfully").setDuration(3000);
-		            Notification.show("Reading.........").setDuration(3000);
-		            UI.getCurrent().navigate(TagMapping.class);
-		            TagMapping tagMapping = new TagMapping(null);
-		            tagMapping.Communication();
-		            con.close();
-		        } else {
-		            Notification.show("Failed to connect to Modbus RTU Device").setDuration(3000);
-		            con.close();
-		        }
-		    } catch (Exception e) {
-		        System.out.println(e);
-		        Notification.show("An error occurred while trying to connect to Modbus RTU Device").setDuration(3000);
-		        con.close();
-		    }
-	}
+//	private void Connection() {
+//		SerialConnection con = null;
+//		try{
+//              SerialParameters params = new SerialParameters();
+//			  params.setPortName(com_port.getValue());
+//			  params.setBaudRate(baud_rate.getValue());
+//			  params.setDatabits(data_bits.getValue());
+//			  params.setParity(parity.getValue());
+//			  params.setStopbits(stop_bits.getValue()); // only for hubli
+//			  params.setEncoding("RTU");
+//			  params.setEcho(false);
+//			  con = new SerialConnection(params);
+//			  
+//			  if (!con.isOpen()) {
+//		            con.open();
+//		            Notification.show("Modbus RTU Device Connected Successfully").setDuration(3000);
+//		            Notification.show("Reading.........").setDuration(3000);
+//		            UI.getCurrent().navigate(TagMapping.class);
+//		        } else {
+//		            Notification.show("Failed to connect to Modbus RTU Device").setDuration(3000);
+//		            con.close();
+//		        }
+//		    } catch (Exception e) {
+//		        System.out.println(e);
+//		        Notification.show("An error occurred while trying to connect to Modbus RTU Device").setDuration(3000);
+//		        con.close();
+//		    }
+//	}
 
 	private void setComPortValue() {
 		SerialPort[] ports = SerialPort.getCommPorts();
@@ -222,18 +203,16 @@ public class RTUConfig extends VerticalLayout {
 		details.setReport_interval(repInterval.getValue());
 		details.setSet_time_format(timeFormat2.getValue());
 		details.setSlave_id(Integer.parseInt(slave_id.getValue()));
-//		details.setStarting_address(Integer.parseInt(starting_address.getValue()));
-//		details.setReq_quantity(Integer.parseInt(req_quantity.getValue()));
+		// Set the Details object as a session attribute
+	    binder.bindInstanceFields(this);
+	    System.out.println(details);
 		configRepository.save(details);
-//		skip.setVisible(true);
-		connect.setVisible(true);
-		Notification.show("Details Added! You can connect now").setDuration(5000);
+//		connect.setVisible(true);
 		
-		clearForm();
-
+		
+	    
+		Notification.show("Details Added! Configure the communication parameters").setDuration(5000);
+		UI.getCurrent().navigate(TagMapping.class);
 	}
 
-	private void clearForm() {
-		UI.getCurrent().getPage().executeJs("setTimeout(function() { location.reload(); }, 20000);");
-	}
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.project.ams.spring.Details;
 import com.project.ams.spring.MapRepository;
 import com.project.ams.spring.MappingData;
 import com.project.ams.views.MainLayout;
@@ -20,6 +21,9 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.Route;
+
+import net.wimpi.modbus.net.SerialConnection;
+import net.wimpi.modbus.util.SerialParameters;
 
 @Route(value = "/tagMapping", layout = MainLayout.class)
 public class TagMapping extends VerticalLayout {
@@ -110,13 +114,13 @@ public class TagMapping extends VerticalLayout {
 		submitbtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		submitbtn.addClickListener(e -> {
 			SaveTags();
-			Communication();
+			// Communication(0, null);
 		});
 
-//		connbtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
-//		connbtn.addClickListener(e -> {
-//			Comm();
-//		});
+		connbtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
+		connbtn.addClickListener(e -> {
+			Comm();
+		});
 
 		producebtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
 
@@ -124,7 +128,7 @@ public class TagMapping extends VerticalLayout {
 
 		stopbtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE, ButtonVariant.LUMO_ERROR);
 
-		HorizontalLayout buttonLayout = new HorizontalLayout(backbtn, submitbtn, producebtn, dashboard,
+		HorizontalLayout buttonLayout = new HorizontalLayout(backbtn, submitbtn, connbtn, producebtn, dashboard,
 				stopbtn);
 		VerticalLayout v1 = new VerticalLayout(source_id, reg_name, reg_address, reg_length);
 		VerticalLayout v2 = new VerticalLayout(reg_type, multiplier, element_name, point_type);
@@ -157,8 +161,8 @@ public class TagMapping extends VerticalLayout {
 //		    grid.setItems(mapRepository.findAll());
 
 		add(new Hr(), grid);
+		UI.getCurrent().getSession().getAttribute("details");
 	}
-
 
 	private void SaveTags() {
 		MappingData mappingData = new MappingData();
@@ -187,53 +191,53 @@ public class TagMapping extends VerticalLayout {
 	 * add the grid when the data is saved0
 	 */
 
-//	private void Comm() {
-//	    // Create an instance of Details and initialize it
-//	    Details details = new Details();
-//	    
-//	    // Use getter methods from Details to access the required data
-//	    String comPort = details.getCom_port();
-//	    int baudRate = details.getBaud_rate();
-//	    int dataBits = details.getData_bits();
-//	    String parity = details.getParity();
-//	    int stopBits = details.getStop_bits();
-//	    
-//	    SerialConnection con = null;
-//	    try {
-//	        SerialParameters params = new SerialParameters();
-//	        params.setPortName(comPort);
-//	        params.setBaudRate(baudRate);
-//	        params.setDatabits(dataBits);
-//	        
-//	        // Check if parity is null, and set it to a default value if necessary
-//	        if (parity != null) {
-//	            params.setParity(parity.toLowerCase()); // Convert to lowercase if not null
-//	        } else {
-//	            // Set default parity value here if necessary
-//	            params.setParity("none"); // For example, setting it to "none"
-//	        }
-//	        
-//	        params.setStopbits(stopBits);
-//	        params.setEncoding("RTU");
-//	        params.setEcho(false);
-//	        con = new SerialConnection(params);
-//
-//	        if (!con.isOpen()) {
-//	            con.open();
-//	            Notification.show("Modbus RTU Device Connected Successfully").setDuration(3000);
-//	            //UI.getCurrent().navigate(TagMapping.class);
-//	            Notification.show("Reading....").setDuration(3000);
-//	        } else {
-//	            Notification.show("Failed to connect to Modbus RTU Device").setDuration(3000);
-//	        }
-//	    } catch (Exception e) {
-//	        System.out.println(e);
-//	        Notification.show("An error occurred while trying to connect to Modbus RTU Device").setDuration(3000);
-//	    }
-//	}
-
-	public void Communication() {
+	private void Comm() {
 		
+		// Create an instance of Details and initialize it
+		Details details = new Details();
+		
+		// Use getter methods from Details to access the required data
+		String comPort = details.getCom_port();
+		int baudRate = details.getBaud_rate();
+		int dataBits = details.getData_bits();
+		String parity = details.getParity();
+		int stopBits = details.getStop_bits();
+		
+
+		SerialConnection con = null;
+		try {
+			SerialParameters params = new SerialParameters();
+			params.setPortName(comPort);
+			params.setBaudRate(baudRate);
+			params.setDatabits(dataBits);
+			params.setParity("none"); 
+			params.setStopbits(stopBits);
+			params.setEncoding("RTU");
+			params.setEcho(false);
+			con = new SerialConnection(params);
+
+			if (!con.isOpen()) {
+				con.open();
+				Notification.show("Modbus RTU Device Connected Successfully").setDuration(3000);
+				// UI.getCurrent().navigate(TagMapping.class);
+				Notification.show("Reading....").setDuration(3000);
+			} else {
+				Notification.show("Failed to connect to Modbus RTU Device").setDuration(3000);
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+			Notification.show("An error occurred while trying to connect to Modbus RTU Device").setDuration(3000);
+		}
 	}
+
+//	public void Communication(int slave_id, SerialConnection con) {
+//	
+//		int regAddress = Integer.parseInt(reg_address.getValue());
+//		int regLength = Integer.parseInt(reg_length.getValue());
+//		
+//		new ModbusRTUExample();
+//		ModbusRTUExample.getDataLNT(slave_id, regAddress, regLength, " ", con);
+//	
+//	}
 
 }

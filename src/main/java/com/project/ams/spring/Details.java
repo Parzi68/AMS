@@ -13,13 +13,13 @@ public class Details {
     private int slave_id;
 
     @Column(name = "com_port")
-    private String com_port;
+	public String com_port;
 
     @Column(name = "baud_rate")
-    private int baud_rate;
+    public int baud_rate;
 
     @Column(name = "data_bits")
-    private int data_bits;
+    public int data_bits;
 
     @Column(name = "stop_bits")
     private int stop_bits;
