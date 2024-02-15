@@ -25,7 +25,7 @@ public class Details {
     private int stop_bits;
 
     @Column(name = "parity")
-    private String parity;
+    String parity;
 
     @Column(name = "polling_interval")
     private int polling_interval;

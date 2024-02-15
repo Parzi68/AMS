@@ -1,7 +1,8 @@
 package com.project.ams.vaadin;
 
-import java.util.stream.Collectors; 
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
 import com.fazecast.jSerialComm.SerialPort;
 import com.project.ams.spring.ConfigRepository;
 import com.project.ams.spring.Details;
@@ -18,6 +19,9 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 
+import net.wimpi.modbus.net.SerialConnection;
+import net.wimpi.modbus.util.SerialParameters;
+
 @Route(value = "/rtuconfig", layout = MainLayout.class)
 public class RTUConfig extends VerticalLayout {
 	private final ConfigRepository configRepository;
@@ -27,16 +31,13 @@ public class RTUConfig extends VerticalLayout {
 	private final Select<Integer> baud_rate = new Select<>();
 	private final Select<Integer> data_bits = new Select<>();
 	private final Select<Integer> stop_bits = new Select<>();
-	private final Select<String> parity = new Select<>();
-//	private final TextField starting_address = new TextField("Starting Field");
-//	private final TextField req_quantity = new TextField("Register Quantity");
+	Select<String> parity = new Select<>();
 	private final Button backbtn = new Button("Back");
 	private final Button savebtn = new Button("Save");
 	private final Select<Integer> pollInterval = new Select<>();
 	private final Select<Integer> repInterval = new Select<>();
 	private final Select<String> timeFormat = new Select<>();
 	private final Select<String> timeFormat2 = new Select<>();
-//	private final Button skip = new Button("Skip");
 	private final Button connect = new Button("Next");
 
 	
@@ -151,7 +152,7 @@ public class RTUConfig extends VerticalLayout {
 //		skip.setVisible(false);
 
 		connect.addClickListener(e -> {
-		//	Connection();
+			Connection();
 		UI.getCurrent().navigate(TagMapping.class);
 		});
 		connect.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
@@ -169,31 +170,37 @@ public class RTUConfig extends VerticalLayout {
 		add(v1);
 	}
 
-//	private void Connection() {
-//		SerialConnection con = null;
-//		try{
-//              SerialParameters params = new SerialParameters();
-//			  params.setPortName(com_port.getValue());
-//			  params.setBaudRate(baud_rate.getValue());
-//			  params.setDatabits(data_bits.getValue());
-//			  params.setParity(parity.getValue());
-//			  params.setStopbits(stop_bits.getValue()); // only for hubli
-//			  params.setEncoding("RTU");
-//			  params.setEcho(false);
-//			  con = new SerialConnection(params);
-//			  
-//			  if (!con.isOpen()) {
-//		            con.open();
-//		            Notification.show("Modbus RTU Device Connected Successfully").setDuration(3000);
-//		            UI.getCurrent().navigate(TagMapping.class);
-//		        } else {
-//		            Notification.show("Failed to connect to Modbus RTU Device").setDuration(3000);
-//		        }
-//		    } catch (Exception e) {
-//		        System.out.println(e);
-//		        Notification.show("An error occurred while trying to connect to Modbus RTU Device").setDuration(3000);
-//		    }
-//	}
+	private void Connection() {
+		SerialConnection con = null;
+		try{
+              SerialParameters params = new SerialParameters();
+			  params.setPortName(com_port.getValue());
+			  params.setBaudRate(baud_rate.getValue());
+			  params.setDatabits(data_bits.getValue());
+			  params.setParity(parity.getValue());
+			  params.setStopbits(stop_bits.getValue()); // only for hubli
+			  params.setEncoding("RTU");
+			  params.setEcho(false);
+			  con = new SerialConnection(params);
+			  
+			  if (!con.isOpen()) {
+		            con.open();
+		            Notification.show("Modbus RTU Device Connected Successfully").setDuration(3000);
+		            Notification.show("Reading.........").setDuration(3000);
+		            UI.getCurrent().navigate(TagMapping.class);
+		            TagMapping tagMapping = new TagMapping(null);
+		            tagMapping.Communication();
+		            con.close();
+		        } else {
+		            Notification.show("Failed to connect to Modbus RTU Device").setDuration(3000);
+		            con.close();
+		        }
+		    } catch (Exception e) {
+		        System.out.println(e);
+		        Notification.show("An error occurred while trying to connect to Modbus RTU Device").setDuration(3000);
+		        con.close();
+		    }
+	}
 
 	private void setComPortValue() {
 		SerialPort[] ports = SerialPort.getCommPorts();
@@ -221,7 +228,7 @@ public class RTUConfig extends VerticalLayout {
 //		skip.setVisible(true);
 		connect.setVisible(true);
 		Notification.show("Details Added! You can connect now").setDuration(5000);
-
+		
 		clearForm();
 
 	}
