@@ -1,2 +1,19 @@
-package com.project.ams.kafka.service;public class KafkaService {
+package com.project.ams.kafka.producer.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+
+import com.project.ams.kafka.topic.config.KafkaTopicConstant;
+
+@Service
+public class KafkaProducerService {
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
+
+    public boolean updateData(String data) {
+        kafkaTemplate.send(KafkaTopicConstant.DATA2, data);
+        return true;
+    }
+
 }
