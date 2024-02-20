@@ -1,9 +1,12 @@
 package com.project.ams.vaadin;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.project.ams.kafka.producer.service.KafkaProducerService;
 import com.project.ams.spring.Details;
 import com.project.ams.spring.MapRepository;
 import com.project.ams.spring.MappingData;
@@ -35,6 +38,9 @@ public class TagMapping extends VerticalLayout {
 	@Autowired
 	private final MapRepository mapRepository;
 
+	@Autowired
+	private KafkaProducerService kafkaProducerService;
+
 	private final TextField source_id = new TextField("Source Id");
 	private final TextField reg_name = new TextField("Register Name");
 	private final TextField reg_address = new TextField("Register Address");
@@ -46,9 +52,11 @@ public class TagMapping extends VerticalLayout {
 	private final Button backbtn = new Button("Back");
 	private final Button submitbtn = new Button("Submit");
 	private final Button connbtn = new Button("Connect");
-	private final Button producebtn = new Button("Kafka Produce");
+	private final Button producebtn = new Button("Read Data");
 	private final Button dashboard = new Button("View Dashboard");
 	private final Button stopbtn = new Button("Stop Producing");
+	private volatile boolean stopRequested = false;
+	private final Button resetProd = new Button("Reset production");
 
 	private Grid<MappingData> grid = new Grid<>(MappingData.class);
 	private ListDataProvider<MappingData> dataProvider;
@@ -127,13 +135,38 @@ public class TagMapping extends VerticalLayout {
 		});
 
 		producebtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
+		producebtn.addClickListener(e -> {
+			Notification.show("Kafka Production started!!");
+			Notification.show("You can see the output in the dashboard");
+			producebtn.setEnabled(false);
+			dashboard.focus();
+			try {
+				kafkaProduce();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
 
 		dashboard.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
+		dashboard.addClickListener(e -> {
+			UI.getCurrent().getPage().open("http://localhost:3000/goto/Bf_1I7TSR?orgId=1", "Grafana Dashboard");
+		});
 
 		stopbtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE, ButtonVariant.LUMO_ERROR);
+		stopbtn.addClickListener(e -> {
+			stopProduction();
+		});
+
+		resetProd.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SUCCESS);
+		resetProd.setVisible(false);
+		resetProd.addClickListener(e -> {
+			resetProduction();
+		});
+		
 
 		HorizontalLayout buttonLayout = new HorizontalLayout(backbtn, submitbtn, connbtn, producebtn, dashboard,
-				stopbtn);
+				stopbtn, resetProd);
 		VerticalLayout v1 = new VerticalLayout(source_id, reg_name, reg_address, reg_length);
 		VerticalLayout v2 = new VerticalLayout(reg_type, multiplier, element_name, point_type);
 		HorizontalLayout form = new HorizontalLayout(v1, v2);
@@ -166,6 +199,53 @@ public class TagMapping extends VerticalLayout {
 
 		add(new Hr(), grid);
 		UI.getCurrent().getSession().getAttribute("details");
+	}
+
+	private void resetProduction() {
+		stopRequested = false;
+		producebtn.setEnabled(true);
+		stopbtn.setVisible(true);
+		resetProd.setVisible(false);
+		Notification.show("You can now restart the production");
+	}
+
+	private void kafkaProduce() throws Exception {
+
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		executor.execute(() -> {
+	    	int range = 50;
+	        while (range > 0 && !stopRequested) {
+	            try {
+	                Thread.sleep(1000);
+	                kafkaProducerService.updateData(Math.random() + "," + Math.random() + " range: " + range);
+	                range--;
+	                
+	            }
+	            
+//			while (!stopRequested) {
+//				try {
+//					Comm();
+//				}
+
+				catch (Exception e) {
+					// Handle exceptions
+				}
+			}
+			executor.shutdown();
+			producebtn.setEnabled(true);
+			Notification.show("Production Complete!!");
+		});
+	}
+
+	public synchronized void stopProduction() {
+		stopRequested = true;
+		producebtn.setEnabled(stopRequested);
+		Notification.show("Production Stopped!!").setDuration(2000);
+		// UI.getCurrent().getPage().executeJs("setTimeout(function() {
+		// location.reload(); }, 2000);");
+		producebtn.setEnabled(false);
+		resetProd.setVisible(true);
+		stopbtn.setVisible(false);
 	}
 
 	private void SaveTags() {
