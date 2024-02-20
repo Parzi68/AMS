@@ -16,13 +16,13 @@ public class Details {
 	public String com_port;
 
     @Column(name = "baud_rate")
-    public int baud_rate;
+    public String baud_rate;
 
     @Column(name = "data_bits")
-    public int data_bits;
+    public String data_bits;
 
     @Column(name = "stop_bits")
-    private int stop_bits;
+    private String stop_bits;
 
     @Column(name = "parity")
     String parity;
@@ -64,27 +64,27 @@ public class Details {
         this.com_port = com_port;
     }
 
-    public int getBaud_rate() {
+    public String getBaud_rate() {
         return baud_rate;
     }
 
-    public void setBaud_rate(int baud_rate) {
+    public void setBaud_rate(String baud_rate) {
         this.baud_rate = baud_rate;
     }
 
-    public int getData_bits() {
+    public String getData_bits() {
         return data_bits;
     }
 
-    public void setData_bits(int data_bits) {
+    public void setData_bits(String data_bits) {
         this.data_bits = data_bits;
     }
 
-    public int getStop_bits() {
+    public String getStop_bits() {
         return stop_bits;
     }
 
-    public void setStop_bits(int stop_bits) {
+    public void setStop_bits(String stop_bits) {
         this.stop_bits = stop_bits;
     }
 
@@ -127,23 +127,4 @@ public class Details {
     public void setSet_time_format(String set_time_format) {
         this.set_time_format = set_time_format;
     }
-//  private int starting_address;
-//  private int req_quantity;
-
-  
-//  public int getStarting_address() {
-//      return starting_address;
-//  }
-//
-//  public void setStarting_address(int starting_address) {
-//      this.starting_address = starting_address;
-//  }
-//
-//  public int getReq_quantity() {
-//      return req_quantity;
-//  }
-//
-//  public void setReq_quantity(int req_quantity) {
-//      this.req_quantity = req_quantity;
-//  }
 }

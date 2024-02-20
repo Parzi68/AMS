@@ -12,7 +12,7 @@ public class KafkaTopicConfig {
         return TopicBuilder
                 .name(KafkaTopicConstant.DATA2)
                 .partitions(1)
-//                .replicas(2)
+                .replicas(2)
                 .config("min.insync.replicas", "1")
                 .build();
     }

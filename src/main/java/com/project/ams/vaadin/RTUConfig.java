@@ -23,13 +23,13 @@ import com.vaadin.flow.router.Route;
 
 @Route(value = "/rtuconfig", layout = MainLayout.class)
 public class RTUConfig extends VerticalLayout {
-	private final ConfigRepository configRepository;
+	private ConfigRepository configRepository;
 	private final TextField source_id = new TextField("Source id");
 	private final TextField slave_id = new TextField("Slave ID");
 	private final Select<String> com_port = new Select<>();
-	private final Select<Integer> baud_rate = new Select<>();
-	private final Select<Integer> data_bits = new Select<>();
-	private final Select<Integer> stop_bits = new Select<>();
+	private final Select<String> baud_rate = new Select<>();
+	private final Select<String> data_bits = new Select<>();
+	private final Select<String> stop_bits = new Select<>();
 	Select<String> parity = new Select<>();
 	private final Button backbtn = new Button("Back");
 	private final Button savebtn = new Button("Save");
@@ -38,7 +38,6 @@ public class RTUConfig extends VerticalLayout {
 	private final Select<String> timeFormat = new Select<>();
 	private final Select<String> timeFormat2 = new Select<>();
 //	private final Button connect = new Button("Next");
-	Binder<Details> binder = new BeanValidationBinder<>(Details.class);
 	
 	public RTUConfig(ConfigRepository configRepository) {
 		this.configRepository = configRepository;
@@ -55,6 +54,7 @@ public class RTUConfig extends VerticalLayout {
 		source_id.setWidthFull();
 
 		slave_id.setRequiredIndicatorVisible(true);
+		slave_id.setRequired(true);
 		slave_id.setErrorMessage("This field is required");
 		slave_id.setWidthFull();
 
@@ -65,20 +65,19 @@ public class RTUConfig extends VerticalLayout {
 
 		baud_rate.setRequiredIndicatorVisible(true);
 		baud_rate.setErrorMessage("This field is required.");
-		baud_rate.setItems(1200, 2400, 3600, 4800, 9600, 19200, 38400, 57600, 115200);
+		baud_rate.setItems("1200", "2400", "3600", "4800", "9600", "19200", "38400", "57600", "115200");
 		baud_rate.setLabel("Baud Rate");
-		baud_rate.setValue(0);
 		baud_rate.setWidthFull();
 
 		data_bits.setRequiredIndicatorVisible(true);
 		data_bits.setErrorMessage("This field is required.");
-		data_bits.setItems(7, 8);
+		data_bits.setItems("7", "8");
 		data_bits.setLabel("Data Bits");
 		data_bits.setWidthFull();
 
 		stop_bits.setRequiredIndicatorVisible(true);
 		stop_bits.setErrorMessage("This field is required.");
-		stop_bits.setItems(1, 2);
+		stop_bits.setItems("1", "2");
 		stop_bits.setLabel("Stop Bits");
 		stop_bits.setWidthFull();
 
@@ -203,9 +202,6 @@ public class RTUConfig extends VerticalLayout {
 		details.setReport_interval(repInterval.getValue());
 		details.setSet_time_format(timeFormat2.getValue());
 		details.setSlave_id(Integer.parseInt(slave_id.getValue()));
-		// Set the Details object as a session attribute
-	    binder.bindInstanceFields(this);
-	    System.out.println(details);
 		configRepository.save(details);
 //		connect.setVisible(true);
 		

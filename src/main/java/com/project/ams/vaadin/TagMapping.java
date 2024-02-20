@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.project.ams.kafka.producer.service.KafkaProducerService;
+import com.project.ams.spring.ConfigRepository;
 import com.project.ams.spring.Details;
 import com.project.ams.spring.MapRepository;
 import com.project.ams.spring.MappingData;
@@ -36,11 +37,9 @@ import net.wimpi.modbus.util.SerialParameters;
 public class TagMapping extends VerticalLayout {
 
 	@Autowired
-	private final MapRepository mapRepository;
-
-	@Autowired
 	private KafkaProducerService kafkaProducerService;
 
+	private MapRepository mapRepository;
 	private final TextField source_id = new TextField("Source Id");
 	private final TextField reg_name = new TextField("Register Name");
 	private final TextField reg_address = new TextField("Register Address");
@@ -57,12 +56,14 @@ public class TagMapping extends VerticalLayout {
 	private final Button stopbtn = new Button("Stop Producing");
 	private volatile boolean stopRequested = false;
 	private final Button resetProd = new Button("Reset production");
+	private ConfigRepository configRepository;
 
 	private Grid<MappingData> grid = new Grid<>(MappingData.class);
 	private ListDataProvider<MappingData> dataProvider;
 
-	public TagMapping(MapRepository mapRepository) {
+	public TagMapping(MapRepository mapRepository, ConfigRepository configRepository) {
 		this.mapRepository = mapRepository;
+		this.configRepository = configRepository;
 		setSizeFull();
 
 		HorizontalLayout navbar = new HorizontalLayout();
@@ -163,7 +164,6 @@ public class TagMapping extends VerticalLayout {
 		resetProd.addClickListener(e -> {
 			resetProduction();
 		});
-		
 
 		HorizontalLayout buttonLayout = new HorizontalLayout(backbtn, submitbtn, connbtn, producebtn, dashboard,
 				stopbtn, resetProd);
@@ -189,16 +189,8 @@ public class TagMapping extends VerticalLayout {
 		dataProvider = new ListDataProvider<>(list);
 		grid.setDataProvider(dataProvider);
 		grid.setAllRowsVisible(true);
-
-//		    List<MappingData> list = mapRepository.findAll();
-//			dataProvider = new ListDataProvider<>(list);
-//			grid.setItems(list);
-//			grid.setDataProvider(dataProvider);
-//		    List<MappingData> mappingData = mapRepository.findAll();
-//		    grid.setItems(mapRepository.findAll());
-
 		add(new Hr(), grid);
-		UI.getCurrent().getSession().getAttribute("details");
+
 	}
 
 	private void resetProduction() {
@@ -213,28 +205,31 @@ public class TagMapping extends VerticalLayout {
 
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		executor.execute(() -> {
-	    	int range = 50;
-	        while (range > 0 && !stopRequested) {
-	            try {
-	                Thread.sleep(1000);
-	                kafkaProducerService.updateData(Math.random() + "," + Math.random() + " range: " + range);
-	                range--;
-	                
-	            }
-	            
-//			while (!stopRequested) {
-//				try {
-//					Comm();
-//				}
+			int range = 50;
+//	        while (range > 0 && !stopRequested) {
+//	            try {
+//	                Thread.sleep(1000);
+//	                kafkaProducerService.updateData(Math.random() + "," + Math.random() + " range: " + range);
+//	                range--;
+//	                
+//	            }
+
+			while (!stopRequested) {
+				try {
+					Comm();
+				}
 
 				catch (Exception e) {
 					// Handle exceptions
 				}
 			}
 			executor.shutdown();
-			producebtn.setEnabled(true);
-			Notification.show("Production Complete!!");
+			if (range == 1) {
+				producebtn.setEnabled(true);
+				Notification.show("Production Completed!!");
+			}
 		});
+
 	}
 
 	public synchronized void stopProduction() {
@@ -275,28 +270,26 @@ public class TagMapping extends VerticalLayout {
 	 * add the grid when the data is saved0
 	 */
 
-	private void Comm() {
-
-		// Create an instance of Details and initialize it
-		Details details = new Details();
-
+	public void Comm() {
 		// Use getter methods from Details to access the required data
-		String comPort = details.getCom_port();
-		int baudRate = details.getBaud_rate();
-		int dataBits = details.getData_bits();
-		String parity = details.getParity();
-		int stopBits = details.getStop_bits();
-		int regAddress = Integer.parseInt(reg_address.getValue());
-		int regLength = Integer.parseInt(reg_length.getValue());
+		String comPort = configRepository.comPort();
+		String baudRate = configRepository.baudRate();
+		String dataBits = configRepository.dataBits();
+		String parity = configRepository.parity();
+		String stopBits = configRepository.stopBits();
+		int regAddress = mapRepository.RegAddress();
+		int regLength = mapRepository.RegLength();
 
+		System.out.println(comPort + baudRate + dataBits + parity + stopBits + regAddress + regLength); // Debugging
+																										// line....
 		SerialConnection con = null;
 		try {
 			SerialParameters params = new SerialParameters();
-			params.setPortName("COM3");
-			params.setBaudRate("9600");
-			params.setDatabits("8");
-			params.setParity("none");
-			params.setStopbits("1");
+			params.setPortName(comPort);
+			params.setBaudRate(baudRate);
+			params.setDatabits(dataBits);
+			params.setParity(parity);
+			params.setStopbits(stopBits);
 			params.setEncoding("RTU");
 			params.setEcho(false);
 			con = new SerialConnection(params);
@@ -306,9 +299,13 @@ public class TagMapping extends VerticalLayout {
 				Notification.show("Modbus RTU Device Connected Successfully").setDuration(3000);
 				// UI.getCurrent().navigate(TagMapping.class);
 				Notification.show("Reading....").setDuration(3000);
+				
 			}
 
 			String getRes = getDataLNT(4, regAddress, regLength, "", con);
+			System.out.println(getRes);
+			
+			kafkaProducerService.updateData(getRes);
 
 		} catch (Exception e) {
 			System.out.println(e);
@@ -411,7 +408,6 @@ public class TagMapping extends VerticalLayout {
 		long longBits = Long.parseLong(hex, 16);
 		return Float.intBitsToFloat((int) longBits);
 	}
-
 //	public void Communication(int slave_id, SerialConnection con) {
 //	
 //		int regAddress = Integer.parseInt(reg_address.getValue());

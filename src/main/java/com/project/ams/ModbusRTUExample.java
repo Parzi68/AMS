@@ -26,7 +26,7 @@ public class ModbusRTUExample{
 					   con.open();
 			    }
 				  
-				  String getRes=getDataLNT(4,107,2,"",con);
+				  String getRes=getDataLNT(4,99,2,"",con);
 				  
 				  
 			}
@@ -34,6 +34,7 @@ public class ModbusRTUExample{
 				// 	
 			}
 		}
+		
 										//	Slave ID   RegisterAddress RegisterLength					
 		 public static String getDataLNT(int SlaveId,int reference,int register,String headVal,SerialConnection con){
 

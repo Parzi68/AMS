@@ -14,6 +14,10 @@ public class KafkaProducerService {
 
     public boolean updateData(String data) {
         kafkaTemplate.send(KafkaTopicConstant.DATA2, data);
+        kafkaTemplate.send("tag1",data);
+        kafkaTemplate.send("tag2",data);
+        kafkaTemplate.send("tag3", data);
+        kafkaTemplate.send("tag4",data);
         return true;
     }
 
