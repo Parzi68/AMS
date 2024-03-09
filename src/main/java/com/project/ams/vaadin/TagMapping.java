@@ -26,6 +26,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.Route;
 
+import jakarta.annotation.PostConstruct;
 import net.wimpi.modbus.ModbusCoupler;
 import net.wimpi.modbus.io.ModbusSerialTransaction;
 import net.wimpi.modbus.msg.ReadMultipleRegistersRequest;
@@ -39,31 +40,33 @@ public class TagMapping extends VerticalLayout {
 	@Autowired
 	private KafkaProducerService kafkaProducerService;
 
+	@Autowired
 	private MapRepository mapRepository;
-	private final TextField source_id = new TextField("Source Id");
-	private final TextField reg_name = new TextField("Register Name");
-	private final TextField reg_address = new TextField("Register Address");
-	private final TextField reg_length = new TextField("Register Length");
-	private final Select<String> reg_type = new Select<>();
-	private final Select<Integer> multiplier = new Select<>();
-	private final TextField element_name = new TextField("Element Name");
-	private final Select<String> point_type = new Select<>();
-	private final Button backbtn = new Button("Back");
-	private final Button submitbtn = new Button("Submit");
-	private final Button connbtn = new Button("Connect");
-	private final Button producebtn = new Button("Read Data");
-	private final Button dashboard = new Button("View Dashboard");
-	private final Button stopbtn = new Button("Stop Producing");
-	private volatile boolean stopRequested = false;
-	private final Button resetProd = new Button("Reset production");
+	@Autowired
 	private ConfigRepository configRepository;
+	TextField source_id = new TextField("Source Id");
+	TextField reg_name = new TextField("Register Name");
+	TextField reg_address = new TextField("Register Address");
+	TextField reg_length = new TextField("Register Length");
+	Select<String> reg_type = new Select<>();
+	Select<Integer> multiplier = new Select<>();
+	TextField element_name = new TextField("Element Name");
+	Select<String> point_type = new Select<>();
+	Button backbtn = new Button("Back");
+	Button submitbtn = new Button("Submit");
+	Button connbtn = new Button("Connect");
+	Button producebtn = new Button("Read Data");
+	Button dashboard = new Button("View Dashboard");
+	Button stopbtn = new Button("Stop Producing");
+	volatile boolean stopRequested = false;
+	Button resetProd = new Button("Reset production");
 
-	private Grid<MappingData> grid = new Grid<>(MappingData.class);
-	private ListDataProvider<MappingData> dataProvider;
+	Grid<MappingData> grid = new Grid<>(MappingData.class);
+	ListDataProvider<MappingData> dataProvider;
 
-	public TagMapping(MapRepository mapRepository, ConfigRepository configRepository) {
-		this.mapRepository = mapRepository;
-		this.configRepository = configRepository;
+	@PostConstruct
+	public void init() {
+
 		setSizeFull();
 
 		HorizontalLayout navbar = new HorizontalLayout();
@@ -209,14 +212,14 @@ public class TagMapping extends VerticalLayout {
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		executor.execute(() -> {
 			int range = 50;
-	        while (range > 0 && !stopRequested) {
-	            try {
-	                Thread.sleep(1000);
-	                kafkaProducerService.updateData(Math.random() + "," + Math.random() + " range: " + range);
-	                range--;
-	                
-	            }
-			
+			while (range > 0 && !stopRequested) {
+				try {
+					Thread.sleep(1000);
+					kafkaProducerService.updateData(Math.random() + "," + Math.random() + " range: " + range);
+					range--;
+
+				}
+
 //			String getRes = getDataLNT(4, regAddress, regLength, "", con);
 //			while (!stopRequested) {
 //				try {

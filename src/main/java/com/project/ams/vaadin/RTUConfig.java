@@ -1,8 +1,10 @@
 package com.project.ams.vaadin;
 
-import java.util.List; 
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fazecast.jSerialComm.SerialPort;
 import com.project.ams.spring.ConfigRepository;
@@ -22,29 +24,31 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.Route;
 
+import jakarta.annotation.PostConstruct;
+
 @Route(value = "/rtuconfig", layout = MainLayout.class)
 public class RTUConfig extends VerticalLayout {
+	@Autowired
 	private ConfigRepository configRepository;
-	private final TextField source_id = new TextField("Source id");
-	private final TextField slave_id = new TextField("Slave ID");
-	private final Select<String> com_port = new Select<>();
-	private final Select<String> baud_rate = new Select<>();
-	private final Select<String> data_bits = new Select<>();
-	private final Select<String> stop_bits = new Select<>();
+	TextField source_id = new TextField("Source id");
+	TextField slave_id = new TextField("Slave ID");
+	Select<String> com_port = new Select<>();
+	Select<String> baud_rate = new Select<>();
+	Select<String> data_bits = new Select<>();
+	Select<String> stop_bits = new Select<>();
 	Select<String> parity = new Select<>();
-	private final Button backbtn = new Button("Back");
-	private final Button savebtn = new Button("Save");
-	private final Select<Integer> pollInterval = new Select<>();
-	private final Select<Integer> repInterval = new Select<>();
-	private final Select<String> timeFormat = new Select<>();
-	private final Select<String> timeFormat2 = new Select<>();
+	Button backbtn = new Button("Back");
+	Button savebtn = new Button("Save");
+	Select<Integer> pollInterval = new Select<>();
+	Select<Integer> repInterval = new Select<>();
+	Select<String> timeFormat = new Select<>();
+	Select<String> timeFormat2 = new Select<>();
 //	private final Button connect = new Button("Next");
-	private Grid<Details> grid = new Grid<>(Details.class);
-	private ListDataProvider<Details> dataProvider;
-	
-	public RTUConfig(ConfigRepository configRepository) {
-		this.configRepository = configRepository;
+	Grid<Details> grid = new Grid<>(Details.class);
+	ListDataProvider<Details> dataProvider;
 
+	@PostConstruct
+	public void init() {
 		HorizontalLayout navbar = new HorizontalLayout();
 		navbar.setWidthFull();
 		H3 heading = new H3("  Modbus RTU Configuration  ");
@@ -151,11 +155,12 @@ public class RTUConfig extends VerticalLayout {
 		h2.setSpacing(true);
 		HorizontalLayout h3 = new HorizontalLayout(repInterval, timeFormat2);
 		h3.setSpacing(true);
-		VerticalLayout v1 = new VerticalLayout(source_id, slave_id, com_port, baud_rate, data_bits, stop_bits, parity, h2, h3, buttonLayout);
+		VerticalLayout v1 = new VerticalLayout(source_id, slave_id, com_port, baud_rate, data_bits, stop_bits, parity,
+				h2, h3, buttonLayout);
 		v1.setPadding(true);
 		// v1.setMargin(true);
 		add(v1);
-		
+
 		grid.removeAllColumns();
 		grid.addColumn(Details::getId).setHeader("ID").setFrozen(true).setAutoWidth(true).setFlexGrow(0);
 		grid.addColumn(Details::getSource_id).setHeader("Source Id").setAutoWidth(true);
@@ -229,9 +234,7 @@ public class RTUConfig extends VerticalLayout {
 		details.setSlave_id(Integer.parseInt(slave_id.getValue()));
 		configRepository.save(details);
 //		connect.setVisible(true);
-		
-		
-	    
+
 		Notification.show("Details Added! Configure the communication parameters").setDuration(5000);
 		UI.getCurrent().navigate(TagMapping.class);
 	}
