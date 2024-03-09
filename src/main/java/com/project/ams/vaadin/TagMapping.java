@@ -75,20 +75,21 @@ public class TagMapping extends VerticalLayout {
 		add(navbar, hr);
 
 		source_id.setReadOnly(true);
-		source_id.setRequiredIndicatorVisible(true);
-		source_id.setErrorMessage("This field is required");
 		source_id.setWidthFull();
 
 		reg_name.setRequiredIndicatorVisible(true);
 		reg_name.setErrorMessage("This field is required");
+		reg_name.setRequired(true);
 		reg_name.setWidthFull();
 
 		reg_address.setRequiredIndicatorVisible(true);
 		reg_address.setErrorMessage("This field is required");
+		reg_address.setRequired(true);
 		reg_address.setWidthFull();
 
 		reg_length.setRequiredIndicatorVisible(true);
 		reg_length.setErrorMessage("This field is required");
+		reg_length.setRequired(true);
 		reg_length.setWidthFull();
 
 		reg_type.setRequiredIndicatorVisible(true);
@@ -105,6 +106,7 @@ public class TagMapping extends VerticalLayout {
 
 		element_name.setRequiredIndicatorVisible(true);
 		element_name.setErrorMessage("This field is required");
+		element_name.setRequired(true);
 		element_name.setWidthFull();
 
 		point_type.setRequiredIndicatorVisible(true);
@@ -132,7 +134,7 @@ public class TagMapping extends VerticalLayout {
 
 		connbtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
 		connbtn.addClickListener(e -> {
-			Comm();
+//			Comm();
 		});
 
 		producebtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
@@ -175,14 +177,15 @@ public class TagMapping extends VerticalLayout {
 		// buttonLayout.setSizeFull();
 		add(form, buttonLayout);
 		grid.removeAllColumns();
-		grid.addColumn(MappingData::getSource_id).setHeader("Source Id");
-		grid.addColumn(MappingData::getReg_name).setHeader("Register Name");
-		grid.addColumn(MappingData::getReg_address).setHeader("Register Address");
-		grid.addColumn(MappingData::getReg_length).setHeader("Register Length");
-		grid.addColumn(MappingData::getReg_type).setHeader("Register Data Type");
-		grid.addColumn(MappingData::getMultiplier).setHeader("Multiplier");
-		grid.addColumn(MappingData::getElement_name).setHeader("Element");
-		grid.addColumn(MappingData::getPoint_type).setHeader("Modbus Point Type");
+		grid.addColumn(MappingData::getId).setHeader("ID").setAutoWidth(true).setFrozen(true).setFlexGrow(0);
+		grid.addColumn(MappingData::getSource_id).setHeader("Source Id").setAutoWidth(true);
+		grid.addColumn(MappingData::getReg_name).setHeader("Register Name").setAutoWidth(true);
+		grid.addColumn(MappingData::getReg_address).setHeader("Register Address").setAutoWidth(true);
+		grid.addColumn(MappingData::getReg_length).setHeader("Register Length").setAutoWidth(true);
+		grid.addColumn(MappingData::getReg_type).setHeader("Register Data Type").setAutoWidth(true);
+		grid.addColumn(MappingData::getMultiplier).setHeader("Multiplier").setAutoWidth(true);
+		grid.addColumn(MappingData::getElement_name).setHeader("Element").setAutoWidth(true);
+		grid.addColumn(MappingData::getPoint_type).setHeader("Modbus Point Type").setAutoWidth(true);
 
 		List<MappingData> list = mapRepository.findAll();
 //        System.out.println("Retrieved data from repository: " + list); // Debugging line
@@ -206,18 +209,19 @@ public class TagMapping extends VerticalLayout {
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		executor.execute(() -> {
 			int range = 50;
-//	        while (range > 0 && !stopRequested) {
-//	            try {
-//	                Thread.sleep(1000);
-//	                kafkaProducerService.updateData(Math.random() + "," + Math.random() + " range: " + range);
-//	                range--;
-//	                
-//	            }
-
-			while (!stopRequested) {
-				try {
-					Comm();
-				}
+	        while (range > 0 && !stopRequested) {
+	            try {
+	                Thread.sleep(1000);
+	                kafkaProducerService.updateData(Math.random() + "," + Math.random() + " range: " + range);
+	                range--;
+	                
+	            }
+			
+//			String getRes = getDataLNT(4, regAddress, regLength, "", con);
+//			while (!stopRequested) {
+//				try {
+//					Comm();
+//				}
 
 				catch (Exception e) {
 					// Handle exceptions
@@ -270,144 +274,143 @@ public class TagMapping extends VerticalLayout {
 	 * add the grid when the data is saved0
 	 */
 
-	public void Comm() {
-		// Use getter methods from Details to access the required data
-		String comPort = configRepository.comPort();
-		String baudRate = configRepository.baudRate();
-		String dataBits = configRepository.dataBits();
-		String parity = configRepository.parity();
-		String stopBits = configRepository.stopBits();
-		int regAddress = mapRepository.RegAddress();
-		int regLength = mapRepository.RegLength();
-
-		System.out.println(comPort + baudRate + dataBits + parity + stopBits + regAddress + regLength); // Debugging
-																										// line....
-		SerialConnection con = null;
-		try {
-			SerialParameters params = new SerialParameters();
-			params.setPortName(comPort);
-			params.setBaudRate(baudRate);
-			params.setDatabits(dataBits);
-			params.setParity(parity);
-			params.setStopbits(stopBits);
-			params.setEncoding("RTU");
-			params.setEcho(false);
-			con = new SerialConnection(params);
-
-			if (!con.isOpen()) {
-				con.open();
-				Notification.show("Modbus RTU Device Connected Successfully").setDuration(3000);
-				// UI.getCurrent().navigate(TagMapping.class);
-				Notification.show("Reading....").setDuration(3000);
-				
-			}
-
-			String getRes = getDataLNT(4, regAddress, regLength, "", con);
-			System.out.println(getRes);
-			
-			kafkaProducerService.updateData(getRes);
-
-		} catch (Exception e) {
-			System.out.println(e);
-			Notification.show("An error occurred while trying to connect to Modbus RTU Device").setDuration(3000);
-		}
-	}
-
-	public static String getDataLNT(int SlaveId, int reference, int register, String headVal, SerialConnection con) {
-
-		ModbusSerialTransaction trans = null;
-		ReadMultipleRegistersRequest req = null;
-		ReadMultipleRegistersResponse res = null;
-
-		String getResponse = "";
-		String response = "";
-
-		int slaveID = SlaveId, ref = reference, registers = register;
-
-		try {
-
-			ModbusCoupler.getReference().setUnitID(slaveID);
-			// ModbusCoupler.getReference().setMaster(false);
-
-			req = new ReadMultipleRegistersRequest(ref, registers);
-			req.setUnitID(slaveID);
-			req.setHeadless();
-			trans = new ModbusSerialTransaction(con);
-			System.out.println("Reading............");
-
-			System.out.println("Sending request  -----slaveid--" + slaveID + "--Reference--" + ref + "--" + registers
-					+ "-----Value--" + req.getHexMessage());
-
-			trans.setRequest(req);
-			trans.execute();
-			res = (ReadMultipleRegistersResponse) trans.getResponse();
-			if (res == null) {
-
-				boolean anyLeft = true;
-				int k = 0;
-				while (anyLeft == true) {
-
-					trans.setRequest(req);
-					trans.execute();
-					res = (ReadMultipleRegistersResponse) trans.getResponse();
-					if (res != null) {
-						anyLeft = false;
-					}
-					k++;
-
-					if (slaveID == 1) {
-						if (k == 60) {
-							anyLeft = false;
-
-						}
-					} else {
-						if (k == 30) {
-							anyLeft = false;
-
-						}
-
-					}
-				}
-
-			}
-			if (res != null) {
-				response = res.getHexMessage();
-				getResponse = res.getHexMessage();
-				getResponse = getResponse.replaceAll(" ", "");
-
-				// if( !peUtil.isNullString(headVal)) {
-				getResponse = getResponse.substring(6, getResponse.length());
-				// }
-
-				con.close();
-			}
-
-			// Perform hex to float conversion
-			float floatValue = hexToFloat(getResponse);
-			// System.out.println("Hex Value: " + getResponse);
-			System.out.println("Response from meter: " + response);
-			System.out.println("Response in Float - " + floatValue);
-
-		}
-
-		catch (Exception ex) {
-			System.out.println("Reading Error - " + ex);
-
-		}
-
-		System.out.println("Response in hexadecimal - " + getResponse);
-
-		return getResponse;
-
-	}
-
-	public static float hexToFloat(String hex) {
-		if (hex.length() == 8) {
-			hex = hex.substring(4) + hex.substring(0, 4);
-		}
-		long longBits = Long.parseLong(hex, 16);
-		return Float.intBitsToFloat((int) longBits);
-	}
+//	public void Comm() {
+//		// Use getter methods from Details to access the required data
+//		String comPort = configRepository.comPort();
+//		String baudRate = configRepository.baudRate();
+//		String dataBits = configRepository.dataBits();
+//		String parity = configRepository.parity();
+//		String stopBits = configRepository.stopBits();
+//		int regAddress = mapRepository.RegAddress();
+//		int regLength = mapRepository.RegLength();
+//
+//		System.out.println(comPort + baudRate + dataBits + parity + stopBits + regAddress + regLength); // Debugging
+//																										// line....
+//		SerialConnection con = null;
+//		try {
+//			SerialParameters params = new SerialParameters();
+//			params.setPortName(comPort);
+//			params.setBaudRate(baudRate);
+//			params.setDatabits(dataBits);
+//			params.setParity(parity);
+//			params.setStopbits(stopBits);
+//			params.setEncoding("RTU");
+//			params.setEcho(false);
+//			con = new SerialConnection(params);
+//
+//			if (!con.isOpen()) {
+//				con.open();
+//				Notification.show("Modbus RTU Device Connected Successfully").setDuration(3000);
+//				// UI.getCurrent().navigate(TagMapping.class);
+//				Notification.show("Reading....").setDuration(3000);				
+//			}
+//
+////			String getRes = getDataLNT(4, regAddress, regLength, "", con);
+////			System.out.println(getRes);
+////			
+////			kafkaProducerService.updateData(getRes);
+//
+//		} catch (Exception e) {
+//			System.out.println(e);
+//			Notification.show("An error occurred while trying to connect to Modbus RTU Device").setDuration(3000);
+//		}
+//}
+//
+//	public static String getDataLNT(int SlaveId, int reference, int register, String headVal, SerialConnection con) {
+//
+//		ModbusSerialTransaction trans = null;
+//		ReadMultipleRegistersRequest req = null;
+//		ReadMultipleRegistersResponse res = null;
+//
+//		String getResponse = "";
+//		String response = "";
+//
+//		int slaveID = SlaveId, ref = reference, registers = register;
+//
+//		try {
+//
+//			ModbusCoupler.getReference().setUnitID(slaveID);
+//			// ModbusCoupler.getReference().setMaster(false);
+//
+//			req = new ReadMultipleRegistersRequest(ref, registers);
+//			req.setUnitID(slaveID);
+//			req.setHeadless();
+//			trans = new ModbusSerialTransaction(con);
+//			System.out.println("Reading............");
+//
+//			System.out.println("Sending request  -----slaveid--" + slaveID + "--Reference--" + ref + "--" + registers
+//					+ "-----Value--" + req.getHexMessage());
+//
+//			trans.setRequest(req);
+//			trans.execute();
+//			res = (ReadMultipleRegistersResponse) trans.getResponse();
+//			if (res == null) {
+//
+//				boolean anyLeft = true;
+//				int k = 0;
+//				while (anyLeft == true) {
+//
+//					trans.setRequest(req);
+//					trans.execute();
+//					res = (ReadMultipleRegistersResponse) trans.getResponse();
+//					if (res != null) {
+//						anyLeft = false;
+//					}
+//					k++;
+//
+//					if (slaveID == 1) {
+//						if (k == 60) {
+//							anyLeft = false;
+//
+//						}
+//					} else {
+//						if (k == 30) {
+//							anyLeft = false;
+//
+//						}
+//
+//					}
+//				}
+//
+//			}
+//			if (res != null) {
+//				response = res.getHexMessage();
+//				getResponse = res.getHexMessage();
+//				getResponse = getResponse.replaceAll(" ", "");
+//
+//				// if( !peUtil.isNullString(headVal)) {
+//				getResponse = getResponse.substring(6, getResponse.length());
+//				// }
+//
+//				con.close();
+//			}
+//
+//			// Perform hex to float conversion
+//			float floatValue = hexToFloat(getResponse);
+//			// System.out.println("Hex Value: " + getResponse);
+//			System.out.println("Response from meter: " + response);
+//			System.out.println("Response in Float - " + floatValue);
+//
+//		}
+//
+//		catch (Exception ex) {
+//			System.out.println("Reading Error - " + ex);
+//
+//		}
+//
+//		System.out.println("Response in hexadecimal - " + getResponse);
+//
+//		return getResponse;
+//
+//	}
+//
+//	public static float hexToFloat(String hex) {
+//		if (hex.length() == 8) {
+//			hex = hex.substring(4) + hex.substring(0, 4);
+//		}
+//		long longBits = Long.parseLong(hex, 16);
+//		return Float.intBitsToFloat((int) longBits);
+//	}
 //	public void Communication(int slave_id, SerialConnection con) {
 //	
 //		int regAddress = Integer.parseInt(reg_address.getValue());

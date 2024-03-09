@@ -38,12 +38,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
-              },
-              {
                 "color": "red",
-                "value": 80
+                "value": null
               }
             ]
           },
@@ -61,7 +57,7 @@
       "links": [
         {
           "title": "Kafka",
-          "url": "http://localhost:3000/goto/YYJbN7oIg?orgId=1"
+          "url": "http://localhost:3000/d/ca185735-f7d4-443c-8887-35e9db43a471/my-kafka-dashboard?orgId=1&from=1708410851621&to=1708432451621"
         }
       ],
       "options": {
@@ -137,7 +133,7 @@
       "type": "stat"
     }
   ],
-  "refresh": "",
+  "refresh": false,
   "schemaVersion": 39,
   "tags": [
     "AMS"
@@ -146,13 +142,13 @@
     "list": []
   },
   "time": {
-    "from": "now-6h",
-    "to": "now"
+    "from": "2024-02-20T06:37:30.427Z",
+    "to": "2024-02-20T12:37:30.427Z"
   },
   "timepicker": {},
   "timezone": "",
   "title": "AMS Dashboard",
   "uid": "c1201379-b413-4604-af67-1df88869a2e0",
-  "version": 5,
+  "version": 10,
   "weekStart": ""
 }

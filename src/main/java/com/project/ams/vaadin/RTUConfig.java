@@ -1,5 +1,6 @@
 package com.project.ams.vaadin;
 
+import java.util.List; 
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -10,6 +11,7 @@ import com.project.ams.views.MainLayout;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.notification.Notification;
@@ -17,8 +19,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.Route;
 
 @Route(value = "/rtuconfig", layout = MainLayout.class)
@@ -38,6 +39,8 @@ public class RTUConfig extends VerticalLayout {
 	private final Select<String> timeFormat = new Select<>();
 	private final Select<String> timeFormat2 = new Select<>();
 //	private final Button connect = new Button("Next");
+	private Grid<Details> grid = new Grid<>(Details.class);
+	private ListDataProvider<Details> dataProvider;
 	
 	public RTUConfig(ConfigRepository configRepository) {
 		this.configRepository = configRepository;
@@ -56,6 +59,7 @@ public class RTUConfig extends VerticalLayout {
 		slave_id.setRequiredIndicatorVisible(true);
 		slave_id.setRequired(true);
 		slave_id.setErrorMessage("This field is required");
+		slave_id.setRequired(true);
 		slave_id.setWidthFull();
 
 		com_port.setLabel("COM_Port");
@@ -151,6 +155,27 @@ public class RTUConfig extends VerticalLayout {
 		v1.setPadding(true);
 		// v1.setMargin(true);
 		add(v1);
+		
+		grid.removeAllColumns();
+		grid.addColumn(Details::getId).setHeader("ID").setFrozen(true).setAutoWidth(true).setFlexGrow(0);
+		grid.addColumn(Details::getSource_id).setHeader("Source Id").setAutoWidth(true);
+		grid.addColumn(Details::getSlave_id).setHeader("Slave Id").setAutoWidth(true);
+		grid.addColumn(Details::getCom_port).setHeader("COM_Port").setAutoWidth(true);
+		grid.addColumn(Details::getBaud_rate).setHeader("Baud Rate").setAutoWidth(true);
+		grid.addColumn(Details::getData_bits).setHeader("Data Bits").setAutoWidth(true);
+		grid.addColumn(Details::getStop_bits).setHeader("Stop Bits").setAutoWidth(true);
+		grid.addColumn(Details::getParity).setHeader("Parity").setAutoWidth(true);
+		grid.addColumn(Details::getPolling_interval).setHeader("Polling Interval").setAutoWidth(true);
+		grid.addColumn(Details::getSet_time_format).setHeader("Time Format").setAutoWidth(true);
+		grid.addColumn(Details::getReport_interval).setHeader("Report Interval").setAutoWidth(true);
+		grid.addColumn(Details::getTime_format).setHeader("Time Format").setAutoWidth(true);
+
+		List<Details> list = configRepository.findAll();
+//        System.out.println("Retrieved data from repository: " + list); // Debugging line
+		dataProvider = new ListDataProvider<>(list);
+		grid.setDataProvider(dataProvider);
+		grid.setAllRowsVisible(true);
+		add(new Hr(), grid);
 	}
 
 //	private void Connection() {

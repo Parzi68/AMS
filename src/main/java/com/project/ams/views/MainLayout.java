@@ -17,12 +17,14 @@ public class MainLayout extends AppLayout {
 		DrawerToggle toggle = new DrawerToggle();
 
 		H1 title = new H1("AMS");
-		title.getStyle().set("font-size", "var(--lumo-font-size-m)").set("margin", "0");
+		title.getStyle().set("font-size", "var(--lumo-font-size-m)").set("margin", "1");
 
 		SideNav nav = getSideNav();
+		nav.getStyle().set("padding", "0.25em");
 
 		Scroller scroller = new Scroller(nav);
-		scroller.setClassName(LumoUtility.Padding.SMALL);
+		scroller.setClassName(LumoUtility.Padding.MEDIUM);
+		scroller.setClassName(LumoUtility.AlignItems.CENTER);
 
 		addToDrawer(scroller);
 		addToNavbar(toggle, title);
@@ -30,10 +32,11 @@ public class MainLayout extends AppLayout {
 
 	public SideNav getSideNav() {
 		SideNav sideNav = new SideNav();
-		sideNav.addItem(new SideNavItem("Asset Management Form", "", VaadinIcon.DASHBOARD.create()));
-//                new SideNavItem("Orders", "/orders", VaadinIcon.CART.create()),
-//                new SideNavItem("Customers", "/customers",
-//                        VaadinIcon.USER_HEART.create()),
+		
+		SideNavItem src = new SideNavItem("Source Management", "", VaadinIcon.INFO_CIRCLE.create()); 
+		SideNavItem rtu = new SideNavItem("Modbus RTU Config", "/rtuconfig", VaadinIcon.AUTOMATION.create());
+		SideNavItem tag = new SideNavItem("Tag Mapping", "/tagMapping", VaadinIcon.SPLINE_AREA_CHART.create());
+		sideNav.addItem(src,rtu,tag);
 //                new SideNavItem("Products", "/products",
 //                        VaadinIcon.PACKAGE.create()),
 //                new SideNavItem("Documents", "/documents",
@@ -41,6 +44,14 @@ public class MainLayout extends AppLayout {
 //                new SideNavItem("Tasks", "/tasks", VaadinIcon.LIST.create()),
 //                new SideNavItem("Analytics", "/analytics",
 //                        VaadinIcon.CHART.create()));
+		src.getStyle().setMarginTop("2px");
+		rtu.getStyle().setMarginTop("2px");
+		tag.getStyle().setMarginTop("2px");
+		
+		src.getStyle().setMarginBottom("4px");
+		rtu.getStyle().setMarginBottom("4px");
+		tag.getStyle().setMarginBottom("4px");
+
 		return sideNav;
 	}
 

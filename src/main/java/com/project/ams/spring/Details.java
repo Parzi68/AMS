@@ -3,44 +3,55 @@ package com.project.ams.spring;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "testing2")
+@Table(name = "RTUConfig")
 public class Details {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "source_id",columnDefinition = "serial")
-    private Long source_id;
+    @Column(name = "id",columnDefinition = "serial")
+    private Long id;
+    
+    private int source_id;
     
     private int slave_id;
 
-    @Column(name = "com_port")
+    @Column(name = "com-port")
 	public String com_port;
 
-    @Column(name = "baud_rate")
+    @Column(name = "baud-rate")
     public String baud_rate;
 
-    @Column(name = "data_bits")
+    @Column(name = "data-bits")
     public String data_bits;
 
-    @Column(name = "stop_bits")
+    @Column(name = "stop-bits")
     private String stop_bits;
 
     @Column(name = "parity")
     String parity;
 
-    @Column(name = "polling_interval")
+    @Column(name = "polling-interval")
     private int polling_interval;
 
-    @Column(name = "time_format")
+    @Column(name = "time-format")
     private String time_format;
 
-    @Column(name = "report_interval", columnDefinition = "INTEGER USING report_interval::integer")
+    @Column(name = "report-interval")
     private int report_interval;
 
-    @Column(name = "set_time_format")
+    @Column(name = "set-time-format")
     private String set_time_format;
+    
 
 
-    public Long getSource_id() {
+    public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public int getSource_id() {
         return source_id;
     }
 
@@ -52,7 +63,7 @@ public class Details {
 		this.slave_id = slave_id;
 	}
 
-	public void setSource_id(Long source_id) {
+	public void setSource_id(int source_id) {
         this.source_id = source_id;
     }
 

@@ -6,22 +6,24 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "testing")
+@Table(name = "SourceManagement")
 public class Asset {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "source_id", columnDefinition = "serial")
-    private Long source_id;
+    @Column(name = "id", columnDefinition = "serial")
+    private Long id;
+
+	private int source_id;
 
     @Column(name = "source_name")
     private String source_name;
     @Column(name = "application_name")
     private String application_name;
     @Column(name = "longitude")
-    private int longitude;
+    private String longitude;
     @Column(name = "latitude")
-    private int latitude;
+    private String latitude;
     @Column(name = "location_name")
     private String location_name;
     @Column(name = "protocol_type")
@@ -33,6 +35,14 @@ public class Asset {
     @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDate modified_date;
 
+    public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+    
     public LocalDate getInstall_date() {
         return install_date;
     }
@@ -65,19 +75,19 @@ public class Asset {
         this.application_name = application_name;
     }
 
-    public int getLongitude() {
+    public String getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(int longitude) {
+    public void setLongitude(String longitude) {
         this.longitude = longitude;
     }
 
-    public int getLatitude() {
+    public String getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(int latitude) {
+    public void setLatitude(String latitude) {
         this.latitude = latitude;
     }
 
@@ -97,11 +107,11 @@ public class Asset {
         this.protocol_type = protocol_type;
     }
 
-    public void setSource_id(Long sourceId) {
+    public void setSource_id(int sourceId) {
         this.source_id = sourceId;
     }
 
-    public Long getSource_id() {
+    public int getSource_id() {
         return source_id;
     }
 }

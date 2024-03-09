@@ -1,6 +1,9 @@
 package com.project.ams.vaadin;
 
 import java.io.ByteArrayInputStream;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.project.ams.spring.Asset;
 import com.project.ams.spring.AssetRepository;
@@ -11,6 +14,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Hr;
@@ -18,31 +22,41 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 
-@Route(value = "", layout = MainLayout.class)
-public class AssetInfo extends VerticalLayout {
+import jakarta.annotation.PostConstruct;
 
-	private final AssetRepository assetRepository;
-	private final TextField source_id = new TextField("Source Id");
-	private final TextField source_name = new TextField("Source Name");
-	private final TextField application_Name = new TextField("Application Name");
-	private final TextField longitude = new TextField("Longitude");
-	private final TextField latitude = new TextField("Latitude");
-	private final TextField location_name = new TextField("Location Name");
-	private final TextField protocol_type = new TextField("Protocol Type");
-	private final DatePicker install_date = new DatePicker("Install Date");
-	private final DatePicker modified_date = new DatePicker("Modified Date");
-	private final Button saveButton = new Button("Save");
-	private final Button nextButton = new Button("Next");
-	private final Button qrGen = new Button("Generate QR");
-	private final Anchor downloadLink = new Anchor();
+@Route(value = "Asset", layout = MainLayout.class)
+public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>{
 
-	private final Button decodebtn = new Button("Decode QR");
+	public static final String ROUTE_NAME = "Asset";
+	@Autowired
+	private AssetRepository assetRepository;
+	Asset asset = new Asset();
+	TextField source_id = new TextField("Source Id");
+	TextField source_name = new TextField("Source Name");
+	TextField application_Name = new TextField("Application Name");
+	TextField longitude = new TextField("Longitude");
+	TextField latitude = new TextField("Latitude");
+	TextField location_name = new TextField("Location Name");
+	TextField protocol_type = new TextField("Protocol Type");
+	DatePicker install_date = new DatePicker("Install Date");
+	DatePicker modified_date = new DatePicker("Modified Date");
+	Button saveButton = new Button("Save");
+	Button nextButton = new Button("Next");
+	Button qrGen = new Button("Generate QR");
+	Anchor downloadLink = new Anchor();
+	Button decodebtn = new Button("Decode QR");
+	Grid<Asset> grid = new Grid<>(Asset.class);
+	ListDataProvider<Asset> dataProvider;
 
-	public AssetInfo(AssetRepository assetRepository) {
-		this.assetRepository = assetRepository;
+//	@PostConstruct
+	public void init(String param) {
 
 		HorizontalLayout navbar = new HorizontalLayout();
 		navbar.setWidthFull();
@@ -60,34 +74,45 @@ public class AssetInfo extends VerticalLayout {
 		// making fields as required
 		source_name.setRequiredIndicatorVisible(true);
 		source_name.setErrorMessage("This field is required");
+		source_name.setRequired(true);
 		source_name.setWidthFull();
 
 		application_Name.setRequiredIndicatorVisible(true);
 		application_Name.setErrorMessage("This field is required");
+		application_Name.setRequired(true);
 		application_Name.setWidthFull();
 
 		longitude.setRequiredIndicatorVisible(true);
-		longitude.setErrorMessage("This field is required");
+		longitude.setErrorMessage("Please enter valid input");
+//		^[0-9. ]*$    Validation regex for longitude and latitude
+		longitude.setPattern("\\d[\\d. ]*\\d");
+		longitude.setRequired(true);
 		longitude.setWidthFull();
 
 		latitude.setRequiredIndicatorVisible(true);
-		latitude.setErrorMessage("This field is required");
+		latitude.setErrorMessage("Please enter valid input");
+		latitude.setPattern("\\d[\\d. ]*\\d");
+		latitude.setRequired(true);
 		latitude.setWidthFull();
 
 		protocol_type.setRequiredIndicatorVisible(true);
 		protocol_type.setErrorMessage("This field is required");
+		protocol_type.setRequired(true);
 		protocol_type.setWidthFull();
 
 		location_name.setRequiredIndicatorVisible(true);
 		location_name.setErrorMessage("This field is required");
+		location_name.setRequired(true);
 		location_name.setWidthFull();
 
 		install_date.setRequiredIndicatorVisible(true);
 		install_date.setErrorMessage("This field is required");
+		install_date.setRequired(true);
 		install_date.setWidthFull();
 
 		modified_date.setRequiredIndicatorVisible(true);
 		modified_date.setErrorMessage("This field is required");
+		modified_date.setRequired(true);
 		modified_date.setWidthFull();
 		// Fetch the latest ID from the database and increment it by 1
 		Long nextId = assetRepository.findMaxId();
@@ -99,6 +124,21 @@ public class AssetInfo extends VerticalLayout {
 		// Set the calculated ID as the value of the sourceIdField
 		source_id.setValue(String.valueOf(nextId));
 
+		if (param != null) {
+			if (param.length() > 0) {
+				for (Asset a1 : assetRepository.asset_list(Long.parseLong(param))) {
+					// source_id.setValue(Integer.parseInt(a1.getSource_id()));
+					source_name.setValue(a1.getSource_name());
+					application_Name.setValue(a1.getApplication_name());
+					longitude.setValue(a1.getLongitude());
+					latitude.setValue(a1.getLatitude());
+					location_name.setValue(a1.getLocation_name());
+					protocol_type.setValue(a1.getProtocol_type());
+					install_date.setValue(a1.getInstall_date());
+					modified_date.setValue(a1.getModified_date());
+				}
+			}
+		}
 		saveButton.addClickListener(e -> saveAsset());
 		saveButton.setAutofocus(true);
 		saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -137,11 +177,10 @@ public class AssetInfo extends VerticalLayout {
 	}
 
 	private void saveAsset() {
-		Asset asset = new Asset();
 		asset.setSource_name(source_name.getValue());
 		asset.setApplication_name(application_Name.getValue());
-		asset.setLongitude(Integer.parseInt(longitude.getValue()));
-		asset.setLatitude(Integer.parseInt(latitude.getValue()));
+		asset.setLongitude((longitude.getValue()));
+		asset.setLatitude((latitude.getValue()));
 		asset.setLocation_name(location_name.getValue());
 		asset.setProtocol_type(protocol_type.getValue());
 		asset.setInstall_date(install_date.getValue());
@@ -156,12 +195,11 @@ public class AssetInfo extends VerticalLayout {
 	}
 
 	private void generateQR() {
-		Asset asset = new Asset();
-		asset.setSource_id(Long.valueOf(source_id.getValue()));
+		asset.setSource_id(Integer.valueOf(source_id.getValue()));
 		asset.setSource_name(source_name.getValue());
 		asset.setApplication_name(application_Name.getValue());
-		asset.setLongitude(Integer.parseInt(longitude.getValue()));
-		asset.setLatitude(Integer.parseInt(latitude.getValue()));
+		asset.setLongitude((longitude.getValue()));
+		asset.setLatitude((latitude.getValue()));
 		asset.setLocation_name(location_name.getValue());
 		asset.setProtocol_type(protocol_type.getValue());
 		asset.setInstall_date(install_date.getValue());
@@ -200,5 +238,11 @@ public class AssetInfo extends VerticalLayout {
 //        previewbtn.setVisible(false);
 
 //        qrGen.getElement().executeJs("location.reload()");
+	}
+
+	@Override
+	public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
+		// TODO Auto-generated method stub
+		init(parameter);
 	}
 }

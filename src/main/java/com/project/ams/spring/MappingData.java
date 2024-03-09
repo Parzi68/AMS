@@ -8,34 +8,41 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "testing3")
+@Table(name = "TagMapping")
 public class MappingData {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-   // @Column(name = "source_id",columnDefinition = "serial")
-	private long source_id;
+   @Column(name = "id",columnDefinition = "serial")
+	private Long id;
 	
-	@Column(name = "reg_name")
+	private int source_id;
+	@Column(name = "reg-name")
 	private String reg_name;
-	@Column(name = "reg_address")
+	@Column(name = "reg-address")
 	private int reg_address;
-	@Column(name = "reg_length")
+	@Column(name = "reg-length")
 	private int reg_length;
-	@Column(name = "reg_type")
+	@Column(name = "data-type")
 	private String reg_type;
 	@Column(name = "multiplier")
 	private int multiplier;
-	@Column(name = "element_name")
+	@Column(name = "element-name")
 	private String element_name;
-	@Column(name = "point_type")
+	@Column(name = "point-type")
 	private String point_type;
 	
 	
 	
-	public long getSource_id() {
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public int getSource_id() {
 		return source_id;
 	}
-	public void setSource_id(long source_id) {
+	public void setSource_id(int source_id) {
 		this.source_id = source_id;
 	}
 	public String getReg_name() {
