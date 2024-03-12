@@ -7,29 +7,39 @@ import java.util.stream.IntStream;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fazecast.jSerialComm.SerialPort;
+import com.project.ams.spring.Asset;
 import com.project.ams.spring.ConfigRepository;
 import com.project.ams.spring.Details;
+import com.project.ams.spring.MappingData;
 import com.project.ams.views.MainLayout;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 
 import jakarta.annotation.PostConstruct;
 
 @Route(value = "/rtuconfig", layout = MainLayout.class)
-public class RTUConfig extends VerticalLayout {
+public class RTUConfig extends VerticalLayout implements HasUrlParameter<String> {
+	private static final String ROUTE_NAME = "rtuconfig";
 	@Autowired
 	private ConfigRepository configRepository;
+	Details details = new Details();
 	TextField source_id = new TextField("Source id");
 	TextField slave_id = new TextField("Slave ID");
 	Select<String> com_port = new Select<>();
@@ -44,11 +54,18 @@ public class RTUConfig extends VerticalLayout {
 	Select<String> timeFormat = new Select<>();
 	Select<String> timeFormat2 = new Select<>();
 //	private final Button connect = new Button("Next");
-	Grid<Details> grid = new Grid<>(Details.class);
-	ListDataProvider<Details> dataProvider;
+	Grid<Details> grid = new Grid<>(Details.class, false);
+	List<Details> detailsList;
 
-	@PostConstruct
-	public void init() {
+	Long main_id;
+
+
+//	@PostConstruct
+	public void init(String param) {
+		this.detailsList = configRepository.findAll();
+
+		main_id = Long.parseLong(param);
+
 		HorizontalLayout navbar = new HorizontalLayout();
 		navbar.setWidthFull();
 		H3 heading = new H3("  Modbus RTU Configuration  ");
@@ -132,13 +149,29 @@ public class RTUConfig extends VerticalLayout {
 		// Set the calculated ID as the value of the sourceIdField
 		nextId = (nextId == null) ? 1L : nextId + 1;
 		source_id.setValue(String.valueOf(nextId));
+		
+		if (!param.equals("0")) {
+			for (Details d1 : configRepository.details_list(main_id)) {
+				// source_id.setValue(Integer.parseInt(a1.getSource_id()));
+				slave_id.setValue(String.valueOf(d1.getSlave_id()));
+				com_port.setValue(d1.getCom_port());
+				baud_rate.setValue(d1.getBaud_rate());
+				data_bits.setValue(d1.getData_bits());
+				stop_bits.setValue(d1.getStop_bits());
+				parity.setValue(d1.getParity());
+				pollInterval.setValue(d1.getPolling_interval());
+				timeFormat.setValue(d1.getTime_format());
+				repInterval.setValue(d1.getReport_interval());
+				timeFormat2.setValue(d1.getSet_time_format());
+			}
+		}
 
 		backbtn.addClickListener(e -> {
 			UI.getCurrent().navigate(AssetInfo.class);
 		});
 
 		savebtn.addClickListener(e -> {
-			saveDetails();
+			saveDetails(param);
 		});
 		savebtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
@@ -162,7 +195,8 @@ public class RTUConfig extends VerticalLayout {
 		add(v1);
 
 		grid.removeAllColumns();
-		grid.addColumn(Details::getId).setHeader("ID").setFrozen(true).setAutoWidth(true).setFlexGrow(0);
+		grid.setItems(detailsList);
+		grid.addColumn(Details::getId).setHeader("Id").setFrozen(true).setFlexGrow(0).setAutoWidth(true);
 		grid.addColumn(Details::getSource_id).setHeader("Source Id").setAutoWidth(true);
 		grid.addColumn(Details::getSlave_id).setHeader("Slave Id").setAutoWidth(true);
 		grid.addColumn(Details::getCom_port).setHeader("COM_Port").setAutoWidth(true);
@@ -175,12 +209,41 @@ public class RTUConfig extends VerticalLayout {
 		grid.addColumn(Details::getReport_interval).setHeader("Report Interval").setAutoWidth(true);
 		grid.addColumn(Details::getTime_format).setHeader("Time Format").setAutoWidth(true);
 
-		List<Details> list = configRepository.findAll();
-//        System.out.println("Retrieved data from repository: " + list); // Debugging line
-		dataProvider = new ListDataProvider<>(list);
-		grid.setDataProvider(dataProvider);
+		// Add edit button column
+		grid.addComponentColumn(details -> {
+			Button editButton = new Button("Edit");
+			editButton.setIcon(new Icon(VaadinIcon.EDIT));
+			editButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+			editButton
+					.addClickListener(event -> UI.getCurrent().navigate(RTUConfig.ROUTE_NAME + "/" + details.getId()));
+			return editButton;
+		}).setAutoWidth(true);
+
+		// Add delete button column
+		grid.addComponentColumn(details -> {
+			Button deleteButton = new Button("Delete");
+			deleteButton.addClickListener(event -> deleteAsset(details.getId()));
+			deleteButton.setIcon(new Icon(VaadinIcon.TRASH));
+			deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+			return deleteButton;
+		}).setAutoWidth(true);
 		grid.setAllRowsVisible(true);
 		add(new Hr(), grid);
+	}
+
+	private void deleteAsset(Long rtuId) {
+		Dialog confirmDialog = new Dialog();
+		confirmDialog.add(new H3("Confirm Delete?"), new Button("Confirm", event -> {
+			configRepository.deleteById(rtuId);
+			refreshGrid();
+			confirmDialog.close();
+		}), new Button("Cancel", event -> confirmDialog.close()));
+		confirmDialog.open();
+	}
+
+	private void refreshGrid() {
+		detailsList = configRepository.findAll();
+		grid.setItems(detailsList);
 	}
 
 //	private void Connection() {
@@ -219,24 +282,53 @@ public class RTUConfig extends VerticalLayout {
 		}
 	}
 
-	private void saveDetails() {
-		Details details = new Details();
-		// details.setSource_id(Long.valueOf(source_id.getValue()));
-		details.setCom_port(com_port.getValue());
-		details.setBaud_rate(baud_rate.getValue());
-		details.setData_bits(data_bits.getValue());
-		details.setStop_bits(stop_bits.getValue());
-		details.setParity(parity.getValue());
-		details.setPolling_interval(pollInterval.getValue());
-		details.setTime_format(timeFormat.getValue());
-		details.setReport_interval(repInterval.getValue());
-		details.setSet_time_format(timeFormat2.getValue());
-		details.setSlave_id(Integer.parseInt(slave_id.getValue()));
-		configRepository.save(details);
-//		connect.setVisible(true);
+	private void saveDetails(String param) {
+		if (param.equals("0")) {
+	        if (!configRepository.check_source(String.valueOf(slave_id.getValue()))) {
+	            // Create a new SourceTable object
+	            Details st = new Details();
+	            st.setSource_id(Integer.parseInt(source_id.getValue()));
+	            st.setSlave_id(Integer.parseInt(slave_id.getValue()));
+	            st.setCom_port(com_port.getValue());
+	            st.setBaud_rate(baud_rate.getValue());
+	            st.setData_bits(data_bits.getValue());
+	            st.setStop_bits(stop_bits.getValue());
+	            st.setParity(parity.getValue());
+	            st.setPolling_interval(pollInterval.getValue());
+	            st.setTime_format(timeFormat.getValue());
+	            st.setReport_interval(repInterval.getValue());
+	            st.setSet_time_format(timeFormat2.getValue());
+	            // Save the source
+	            configRepository.save(st);
+	            Notification.show("Configurations has been saved successfully");
+	            savebtn.setEnabled(false);
+	        } else {
+	            Notification.show("Slave id Already Exists");
+	        }
+	    } else {
+	        // Update the existing source
+	    	Details st = new Details();
+            st.setSource_id(Integer.parseInt(source_id.getValue()));
+            st.setSlave_id(Integer.parseInt(slave_id.getValue()));
+            st.setCom_port(com_port.getValue());
+            st.setBaud_rate(baud_rate.getValue());
+            st.setData_bits(data_bits.getValue());
+            st.setStop_bits(stop_bits.getValue());
+            st.setParity(parity.getValue());
+            st.setPolling_interval(pollInterval.getValue());
+            st.setTime_format(timeFormat.getValue());
+            st.setReport_interval(repInterval.getValue());
+            st.setSet_time_format(timeFormat2.getValue());
+	        st.setId(main_id);
 
-		Notification.show("Details Added! Configure the communication parameters").setDuration(5000);
-		UI.getCurrent().navigate(TagMapping.class);
+	        // Save the updated source
+	        configRepository.save(st);
+	        Notification.show("Configurations has been updated successfully");
+	    }
 	}
 
+	@Override
+	public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
+		init(parameter);
+	}
 }

@@ -46,12 +46,13 @@ public class Index extends VerticalLayout {
 		add(navbar, hr);
 
 		btn.addClickListener(e -> {
-			UI.getCurrent().navigate(AssetInfo.class);
+			UI.getCurrent().navigate(AssetInfo.ROUTE_NAME + "/" + 0);
 		});
 		btn.setSizeFull();
 		btn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_LARGE);
 		btn.getStyle().setPadding("0.35em");
 		btn.getStyle().setJustifyContent(JustifyContent.CENTER);
+		btn.getStyle().set("font-weight", "bold");
 
 		VerticalLayout v1 = new VerticalLayout(btn);
 //		v1.setPadding(true);
@@ -78,16 +79,16 @@ public class Index extends VerticalLayout {
 			editButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
 			editButton.addClickListener(event -> UI.getCurrent().navigate(AssetInfo.ROUTE_NAME + "/" + asset.getId()));
 			return editButton;
-		}).setHeader("Edit").setFrozen(true).setAutoWidth(true).setFlexGrow(0);
+		}).setAutoWidth(true);
 
 		// Add delete button column
 		grid.addComponentColumn(asset -> {
 			Button deleteButton = new Button("Delete");
 			deleteButton.addClickListener(event -> deleteAsset(asset.getId()));
 			deleteButton.setIcon(new Icon(VaadinIcon.TRASH));
-			deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+			deleteButton.addThemeVariants(ButtonVariant.LUMO_SMALL,ButtonVariant.LUMO_ERROR);
 			return deleteButton;
-		}).setHeader("Delete").setFrozen(true).setAutoWidth(true).setFlexGrow(0);
+		}).setAutoWidth(true) ;
 
 		add(grid);
 	}

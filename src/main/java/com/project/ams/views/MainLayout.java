@@ -34,8 +34,8 @@ public class MainLayout extends AppLayout {
 		SideNav sideNav = new SideNav();
 		
 		SideNavItem src = new SideNavItem("Source Management", "", VaadinIcon.INFO_CIRCLE.create()); 
-		SideNavItem rtu = new SideNavItem("Modbus RTU Config", "/rtuconfig", VaadinIcon.AUTOMATION.create());
-		SideNavItem tag = new SideNavItem("Tag Mapping", "/tagMapping", VaadinIcon.SPLINE_AREA_CHART.create());
+		SideNavItem rtu = new SideNavItem("Modbus RTU Config", "/rtuconfig/0", VaadinIcon.AUTOMATION.create());
+		SideNavItem tag = new SideNavItem("Tag Mapping", "/tagMapping/0", VaadinIcon.SPLINE_AREA_CHART.create());
 		sideNav.addItem(src,rtu,tag);
 //                new SideNavItem("Products", "/products",
 //                        VaadinIcon.PACKAGE.create()),

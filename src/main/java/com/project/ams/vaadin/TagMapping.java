@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.project.ams.kafka.producer.service.KafkaProducerService;
+import com.project.ams.spring.Asset;
 import com.project.ams.spring.ConfigRepository;
 import com.project.ams.spring.Details;
 import com.project.ams.spring.MapRepository;
@@ -15,15 +16,21 @@ import com.project.ams.views.MainLayout;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 
 import jakarta.annotation.PostConstruct;
@@ -35,7 +42,9 @@ import net.wimpi.modbus.net.SerialConnection;
 import net.wimpi.modbus.util.SerialParameters;
 
 @Route(value = "/tagMapping", layout = MainLayout.class)
-public class TagMapping extends VerticalLayout {
+public class TagMapping extends VerticalLayout implements HasUrlParameter<String> {
+
+	private static final String ROUTE_NAME = "tagMapping";
 
 	@Autowired
 	private KafkaProducerService kafkaProducerService;
@@ -44,6 +53,7 @@ public class TagMapping extends VerticalLayout {
 	private MapRepository mapRepository;
 	@Autowired
 	private ConfigRepository configRepository;
+	MappingData mappingData = new MappingData();
 	TextField source_id = new TextField("Source Id");
 	TextField reg_name = new TextField("Register Name");
 	TextField reg_address = new TextField("Register Address");
@@ -61,11 +71,15 @@ public class TagMapping extends VerticalLayout {
 	volatile boolean stopRequested = false;
 	Button resetProd = new Button("Reset production");
 
-	Grid<MappingData> grid = new Grid<>(MappingData.class);
-	ListDataProvider<MappingData> dataProvider;
+	Grid<MappingData> grid = new Grid<>(MappingData.class, false);
+	List<MappingData> tagList;
 
-	@PostConstruct
-	public void init() {
+	Long main_id;
+
+//	@PostConstruct
+	public void init(String param) {
+		main_id = Long.parseLong(param);
+		this.tagList = mapRepository.findAll();
 
 		setSizeFull();
 
@@ -124,6 +138,21 @@ public class TagMapping extends VerticalLayout {
 		// Set the calculated ID as the value of the sourceIdField
 		nextId = (nextId == null) ? 1L : nextId + 1;
 		source_id.setValue(String.valueOf(nextId));
+		
+		if (!param.equals("0")) {
+			for (MappingData t1 : mapRepository.tag_list(main_id)) {
+				// source_id.setValue(Integer.parseInt(a1.getSource_id()));
+				source_id.setValue(String.valueOf(t1.getSource_id()));
+				reg_name.setValue(t1.getReg_name());
+				reg_address.setValue(String.valueOf(t1.getReg_address()));
+				reg_length.setValue(String.valueOf(t1.getReg_length()));
+				reg_type.setValue(t1.getReg_type());
+				multiplier.setValue(t1.getMultiplier());
+				element_name.setValue(t1.getElement_name());
+				point_type.setValue(t1.getPoint_type());
+			}
+		}
+
 
 		backbtn.addClickListener(e -> {
 			UI.getCurrent().navigate(RTUConfig.class);
@@ -131,7 +160,7 @@ public class TagMapping extends VerticalLayout {
 
 		submitbtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		submitbtn.addClickListener(e -> {
-			SaveTags();
+			SaveTags(param);
 			// Communication(0, null);
 		});
 
@@ -145,6 +174,7 @@ public class TagMapping extends VerticalLayout {
 			Notification.show("Kafka Production started!!");
 			Notification.show("You can see the output in the dashboard");
 			producebtn.setEnabled(false);
+			stopbtn.setEnabled(true);
 			dashboard.focus();
 			try {
 				kafkaProduce();
@@ -160,6 +190,7 @@ public class TagMapping extends VerticalLayout {
 		});
 
 		stopbtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE, ButtonVariant.LUMO_ERROR);
+		stopbtn.setEnabled(false);
 		stopbtn.addClickListener(e -> {
 			stopProduction();
 		});
@@ -179,9 +210,11 @@ public class TagMapping extends VerticalLayout {
 		form.setWidthFull();
 		// buttonLayout.setSizeFull();
 		add(form, buttonLayout);
+		// Grid
 		grid.removeAllColumns();
-		grid.addColumn(MappingData::getId).setHeader("ID").setAutoWidth(true).setFrozen(true).setFlexGrow(0);
-		grid.addColumn(MappingData::getSource_id).setHeader("Source Id").setAutoWidth(true);
+		grid.setItems(tagList);
+		grid.addColumn(MappingData::getId).setHeader("ID").setAutoWidth(true).setFrozen(true);
+		grid.addColumn(MappingData::getSource_id).setHeader("Source ID").setAutoWidth(true);
 		grid.addColumn(MappingData::getReg_name).setHeader("Register Name").setAutoWidth(true);
 		grid.addColumn(MappingData::getReg_address).setHeader("Register Address").setAutoWidth(true);
 		grid.addColumn(MappingData::getReg_length).setHeader("Register Length").setAutoWidth(true);
@@ -190,58 +223,74 @@ public class TagMapping extends VerticalLayout {
 		grid.addColumn(MappingData::getElement_name).setHeader("Element").setAutoWidth(true);
 		grid.addColumn(MappingData::getPoint_type).setHeader("Modbus Point Type").setAutoWidth(true);
 
-		List<MappingData> list = mapRepository.findAll();
-//        System.out.println("Retrieved data from repository: " + list); // Debugging line
-		dataProvider = new ListDataProvider<>(list);
-		grid.setDataProvider(dataProvider);
+		// Add edit button column
+		grid.addComponentColumn(mappingData -> {
+			Button editButton = new Button("Edit");
+			editButton.setIcon(new Icon(VaadinIcon.EDIT));
+			editButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+			editButton.addClickListener(
+					event -> UI.getCurrent().navigate(TagMapping.ROUTE_NAME + "/" + mappingData.getId()));
+			return editButton;
+		}).setAutoWidth(true);
+
+		// Add delete button column
+		grid.addComponentColumn(mappingData -> {
+			Button deleteButton = new Button("Delete");
+			deleteButton.addClickListener(event -> deleteAsset(mappingData.getId()));
+			deleteButton.setIcon(new Icon(VaadinIcon.TRASH));
+			deleteButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ERROR);
+			return deleteButton;
+		}).setAutoWidth(true);
 		grid.setAllRowsVisible(true);
 		add(new Hr(), grid);
 
+		
+	}
+
+	private void deleteAsset(Long tagId) {
+		Dialog confirmDialog = new Dialog();
+		confirmDialog.add(new H3("Confirm Delete?"), new Button("Confirm", event -> {
+			mapRepository.deleteById(tagId);
+			refreshGrid();
+			confirmDialog.close();
+		}), new Button("Cancel", event -> confirmDialog.close()));
+		confirmDialog.open();
+	}
+
+	private void refreshGrid() {
+		tagList = mapRepository.findAll();
+		grid.setItems(tagList);
 	}
 
 	private void resetProduction() {
 		stopRequested = false;
 		producebtn.setEnabled(true);
 		stopbtn.setVisible(true);
+		stopbtn.setEnabled(false);
 		resetProd.setVisible(false);
 		Notification.show("You can now restart the production");
 	}
 
 	private void kafkaProduce() throws Exception {
-
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		executor.execute(() -> {
-			int range = 50;
+			int range = 15;
 			while (range > 0 && !stopRequested) {
 				try {
 					Thread.sleep(1000);
 					kafkaProducerService.updateData(Math.random() + "," + Math.random() + " range: " + range);
 					range--;
-
-				}
-
-//			String getRes = getDataLNT(4, regAddress, regLength, "", con);
-//			while (!stopRequested) {
-//				try {
-//					Comm();
-//				}
-
-				catch (Exception e) {
+				} catch (Exception e) {
 					// Handle exceptions
 				}
 			}
+			// Shutdown the executor after the loop completes
 			executor.shutdown();
-			if (range == 1) {
-				producebtn.setEnabled(true);
-				Notification.show("Production Completed!!");
-			}
 		});
-
 	}
 
 	public synchronized void stopProduction() {
 		stopRequested = true;
-		producebtn.setEnabled(stopRequested);
 		Notification.show("Production Stopped!!").setDuration(2000);
 		// UI.getCurrent().getPage().executeJs("setTimeout(function() {
 		// location.reload(); }, 2000);");
@@ -250,32 +299,51 @@ public class TagMapping extends VerticalLayout {
 		stopbtn.setVisible(false);
 	}
 
-	private void SaveTags() {
-		MappingData mappingData = new MappingData();
-		mappingData.setReg_name(reg_name.getValue());
-		mappingData.setReg_address(Integer.parseInt(reg_address.getValue()));
-		mappingData.setReg_length(Integer.parseInt(reg_length.getValue()));
-		mappingData.setReg_type(reg_type.getValue());
-		mappingData.setMultiplier(multiplier.getValue());
-		mappingData.setElement_name(element_name.getValue());
-		mappingData.setPoint_type(point_type.getValue());
-		mapRepository.save(mappingData);
-		Notification.show("Tags Saved!");
+	private void SaveTags(String param) {
+		if (param.equals("0")) {
+	        if (!mapRepository.check_source(reg_name.getValue())) {
+	            // Create a new SourceTable object
+	            MappingData st = new MappingData();
+	            st.setSource_id(Integer.parseInt(source_id.getValue()));
+	            st.setReg_name(reg_name.getValue());
+	            st.setReg_address(Integer.parseInt(reg_address.getValue()));
+	            st.setReg_length(Integer.parseInt(reg_length.getValue()));
+	            st.setReg_type(reg_type.getValue());
+	            st.setMultiplier(multiplier.getValue());
+	            st.setElement_name(element_name.getValue());
+	            st.setPoint_type(point_type.getValue());
+	            // Save the source
+	            mapRepository.save(st);
+	            Notification.show("Tags have been saved successfully");
+	            submitbtn.setEnabled(false);
+	        } else {
+	            Notification.show("Register Name Already Exists");
+	        }
+	    } else {
+	        // Update the existing source
+	        MappingData st = new MappingData();
+	        st.setSource_id(Integer.parseInt(source_id.getValue()));
+	        st.setReg_name(reg_name.getValue());
+	        st.setReg_address(Integer.parseInt(reg_address.getValue()));
+            st.setReg_length(Integer.parseInt(reg_length.getValue()));
+            st.setReg_type(reg_type.getValue());
+            st.setMultiplier(multiplier.getValue());
+            st.setElement_name(element_name.getValue());
+            st.setPoint_type(point_type.getValue());
+	        st.setId(main_id);
+
+	        // Save the updated source
+	        mapRepository.save(st);
+	        Notification.show("Source has been updated successfully");
+	    }
+
 
 	}
-	/*
-	 * 
-	 * Take the Polling interval value and time format value. in the kafka produce
-	 * method, add the logic for time format for eg. if the time is in ms then
-	 * convert seconds, mins and hrs acc. and multiply the polling value with it.
-	 * add the thread and add the polling value. produce after that interval
-	 * 
-	 * 
-	 * also add the logic to stop the production.
-	 * 
-	 * 
-	 * add the grid when the data is saved0
-	 */
+
+	@Override
+	public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
+		init(parameter);
+	}
 
 //	public void Comm() {
 //		// Use getter methods from Details to access the required data

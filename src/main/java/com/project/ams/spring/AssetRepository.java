@@ -1,10 +1,13 @@
 package com.project.ams.spring;
 
-import java.util.List;
+import java.util.List; 
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import com.vaadin.flow.component.textfield.TextField;
 
 @Repository
 public interface AssetRepository extends JpaRepository<Asset , Long> {
@@ -13,7 +16,11 @@ public interface AssetRepository extends JpaRepository<Asset , Long> {
     @Query("SELECT MAX(t.source_id) FROM Asset t")
     Long findMaxId();
     
-    @Query(value="SELECT * FROM Asset where id= :id", nativeQuery = true)
+    @Query(value="SELECT * FROM source_management t WHERE t.id= :id", nativeQuery = true)
     public List<Asset> asset_list(long id);
+    
+    @Query(value = "SELECT COUNT(*) > 0 FROM source_management t WHERE t.source_name = :source_name", nativeQuery = true)
+    Boolean check_source(@Param("source_name") String source_name);
+
 }
 

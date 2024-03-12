@@ -26,15 +26,17 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 
 import jakarta.annotation.PostConstruct;
 
-@Route(value = "Asset", layout = MainLayout.class)
+@PageTitle("Asset Info")
+@Route(value = "asset", layout = MainLayout.class)
 public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>{
 
-	public static final String ROUTE_NAME = "Asset";
+	public static final String ROUTE_NAME = "asset";
 	@Autowired
 	private AssetRepository assetRepository;
 	Asset asset = new Asset();
@@ -52,11 +54,13 @@ public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>
 	Button qrGen = new Button("Generate QR");
 	Anchor downloadLink = new Anchor();
 	Button decodebtn = new Button("Decode QR");
-	Grid<Asset> grid = new Grid<>(Asset.class);
-	ListDataProvider<Asset> dataProvider;
+	
+	Long main_id;
 
 //	@PostConstruct
 	public void init(String param) {
+		
+		main_id=Long.parseLong(param);
 
 		HorizontalLayout navbar = new HorizontalLayout();
 		navbar.setWidthFull();
@@ -124,10 +128,10 @@ public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>
 		// Set the calculated ID as the value of the sourceIdField
 		source_id.setValue(String.valueOf(nextId));
 
-		if (param != null) {
-			if (param.length() > 0) {
-				for (Asset a1 : assetRepository.asset_list(Long.parseLong(param))) {
+		if (!param.equals("0")) {
+				for (Asset a1 : assetRepository.asset_list(main_id)) {
 					// source_id.setValue(Integer.parseInt(a1.getSource_id()));
+					source_id.setValue(String.valueOf(a1.getSource_id()));
 					source_name.setValue(a1.getSource_name());
 					application_Name.setValue(a1.getApplication_name());
 					longitude.setValue(a1.getLongitude());
@@ -137,9 +141,8 @@ public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>
 					install_date.setValue(a1.getInstall_date());
 					modified_date.setValue(a1.getModified_date());
 				}
-			}
 		}
-		saveButton.addClickListener(e -> saveAsset());
+		saveButton.addClickListener(e -> saveAsset(param));
 		saveButton.setAutofocus(true);
 		saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
@@ -176,21 +179,45 @@ public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>
 
 	}
 
-	private void saveAsset() {
-		asset.setSource_name(source_name.getValue());
-		asset.setApplication_name(application_Name.getValue());
-		asset.setLongitude((longitude.getValue()));
-		asset.setLatitude((latitude.getValue()));
-		asset.setLocation_name(location_name.getValue());
-		asset.setProtocol_type(protocol_type.getValue());
-		asset.setInstall_date(install_date.getValue());
-		asset.setModified_date(modified_date.getValue());
-		assetRepository.save(asset);
-		// Show the "Generate QR" button after saving
-		qrGen.setVisible(true);
-		decodebtn.setVisible(true);
+	private void saveAsset(String param) {
+		if (param.equals("0")) {
+	        if (!assetRepository.check_source(source_name.getValue())) {
+	            // Create a new SourceTable object
+	            Asset st = new Asset();
+	            st.setSource_id(Integer.parseInt(source_id.getValue()));
+	            st.setSource_name(source_name.getValue());
+	            st.setApplication_name(application_Name.getValue());
+	            st.setProtocol_type(protocol_type.getValue());
+	            st.setLongitude(longitude.getValue());
+	            st.setLatitude(latitude.getValue());
+	            st.setLocation_name(location_name.getValue());
+	            st.setInstall_date(install_date.getValue());
+	            st.setModified_date(modified_date.getValue());
+	            // Save the source
+	            assetRepository.save(st);
+	            Notification.show("Source has been saved successfully");
+	            saveButton.setEnabled(false);
+	        } else {
+	            Notification.show("Source Name Already Exists");
+	        }
+	    } else {
+	        // Update the existing source
+	        Asset st = new Asset();
+	        st.setSource_id(Integer.parseInt(source_id.getValue()));
+	        st.setSource_name(source_name.getValue());
+	        st.setApplication_name(application_Name.getValue());
+	        st.setProtocol_type(protocol_type.getValue());
+	        st.setLongitude(longitude.getValue());
+	        st.setLatitude(latitude.getValue());
+	        st.setLocation_name(location_name.getValue());
+	        st.setInstall_date(install_date.getValue());
+	        st.setModified_date(modified_date.getValue());
+	        st.setId(main_id);
 
-		Notification.show("Asset saved successfully");
+	        // Save the updated source
+	        assetRepository.save(st);
+	        Notification.show("Source has been updated successfully");
+	    }
 
 	}
 
@@ -242,7 +269,6 @@ public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>
 
 	@Override
 	public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
-		// TODO Auto-generated method stub
 		init(parameter);
 	}
 }

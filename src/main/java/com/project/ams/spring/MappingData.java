@@ -15,6 +15,8 @@ public class MappingData {
    @Column(name = "id",columnDefinition = "serial")
 	private Long id;
 	
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "source_id", columnDefinition = "serial")
 	private int source_id;
 	@Column(name = "reg-name")
 	private String reg_name;
