@@ -17,9 +17,11 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -28,6 +30,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
@@ -44,7 +47,7 @@ import net.wimpi.modbus.util.SerialParameters;
 @Route(value = "/tagMapping", layout = MainLayout.class)
 public class TagMapping extends VerticalLayout implements HasUrlParameter<String> {
 
-	private static final String ROUTE_NAME = "tagMapping";
+	public static final String ROUTE_NAME = "tagMapping";
 
 	@Autowired
 	private KafkaProducerService kafkaProducerService;
@@ -72,16 +75,12 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 	Button resetProd = new Button("Reset production");
 
 	Grid<MappingData> grid = new Grid<>(MappingData.class, false);
-	List<MappingData> tagList;
-
-	Long main_id;
-
+	ListDataProvider<MappingData> dataProvider;
+	long main_id = 0;
 //	@PostConstruct
+	@SuppressWarnings("removal")
 	public void init(String param) {
-		main_id = Long.parseLong(param);
-		this.tagList = mapRepository.findAll();
-
-		setSizeFull();
+//		setSizeFull();
 
 		HorizontalLayout navbar = new HorizontalLayout();
 		navbar.setWidthFull();
@@ -155,7 +154,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 
 
 		backbtn.addClickListener(e -> {
-			UI.getCurrent().navigate(RTUConfig.class);
+			UI.getCurrent().navigate(RTUConfig.ROUTE_NAME+"/" + mappingData.getId());
 		});
 
 		submitbtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -211,8 +210,9 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 		// buttonLayout.setSizeFull();
 		add(form, buttonLayout);
 		// Grid
-		grid.removeAllColumns();
-		grid.setItems(tagList);
+//		grid.removeAllColumns();
+		update();
+		grid.setAllRowsVisible(true);
 		grid.addColumn(MappingData::getId).setHeader("ID").setAutoWidth(true).setFrozen(true);
 		grid.addColumn(MappingData::getSource_id).setHeader("Source ID").setAutoWidth(true);
 		grid.addColumn(MappingData::getReg_name).setHeader("Register Name").setAutoWidth(true);
@@ -224,24 +224,78 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 		grid.addColumn(MappingData::getPoint_type).setHeader("Modbus Point Type").setAutoWidth(true);
 
 		// Add edit button column
-		grid.addComponentColumn(mappingData -> {
-			Button editButton = new Button("Edit");
-			editButton.setIcon(new Icon(VaadinIcon.EDIT));
-			editButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
-			editButton.addClickListener(
-					event -> UI.getCurrent().navigate(TagMapping.ROUTE_NAME + "/" + mappingData.getId()));
-			return editButton;
-		}).setAutoWidth(true);
+//		grid.addComponentColumn(mappingData -> {
+//			Button editButton = new Button("Edit");
+//			editButton.setIcon(new Icon(VaadinIcon.EDIT));
+//			editButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+//			editButton.addClickListener(
+//					event -> UI.getCurrent().navigate(TagMapping.ROUTE_NAME + "/" + mappingData.getId()));
+//			return editButton;
+//		}).setAutoWidth(true);
+		 Grid.Column<MappingData> editsource = grid.addComponentColumn(editdata -> {
+				// create edit button for each row
+				Button addinst = new Button("EDIT");
+				// set icon
+				addinst.setIcon(new Icon(VaadinIcon.EDIT));
+				// set theme
+				addinst.addThemeVariants(ButtonVariant.LUMO_SMALL);
+				// on click operation
+				addinst.addClickListener(ed -> {
+					//Long locationId = editdata.getId()
+					main_id=editdata.getId();
+					source_id.setValue(String.valueOf(editdata.getSource_id()));
+					reg_name.setValue(editdata.getReg_name());
+					reg_address.setValue(String.valueOf(editdata.getReg_address()));
+					reg_length.setValue(String.valueOf(editdata.getReg_length()));
+					reg_type.setValue((editdata.getReg_type()));
+					multiplier.setValue(editdata.getMultiplier());
+					element_name.setValue(editdata.getElement_name());
+					point_type.setValue(editdata.getPoint_type());
+					// Audit Trial
+				});
+				return addinst;
+			}).setHeader("Edit").setTextAlign(ColumnTextAlign.CENTER);
 
 		// Add delete button column
-		grid.addComponentColumn(mappingData -> {
-			Button deleteButton = new Button("Delete");
-			deleteButton.addClickListener(event -> deleteAsset(mappingData.getId()));
-			deleteButton.setIcon(new Icon(VaadinIcon.TRASH));
-			deleteButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ERROR);
-			return deleteButton;
-		}).setAutoWidth(true);
-		grid.setAllRowsVisible(true);
+//		grid.addComponentColumn(mappingData -> {
+//			Button deleteButton = new Button("Delete");
+//			deleteButton.addClickListener(event -> deleteAsset(mappingData.getId()));
+//			deleteButton.setIcon(new Icon(VaadinIcon.TRASH));
+//			deleteButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ERROR);
+//			return deleteButton;
+//		}).setAutoWidth(true);
+		 grid.addColumn(new ComponentRenderer<>(item -> {
+				Button deletebtn = new Button("Delete");
+				deletebtn.setIcon(new Icon(VaadinIcon.TRASH));
+				deletebtn.addThemeVariants(ButtonVariant.LUMO_ERROR);
+				deletebtn.setWidthFull();
+				deletebtn.addClickListener(even -> {
+					Dialog dialog = new Dialog();
+					dialog.open();
+					dialog.add(new VerticalLayout(new H3("Confirm Delete?"),
+							new Label("Are you sure you want to delete?")));
+					dialog.setCloseOnEsc(false);
+					dialog.setCloseOnOutsideClick(false);
+					VerticalLayout layout = new VerticalLayout();
+					HorizontalLayout buttons = new HorizontalLayout();
+					Button confirmButton = new Button("Confirm", ev -> {
+						mapRepository.delete(item);
+						dialog.close();
+						//UI.getCurrent().getPage().reload();
+						update();
+					});
+					Button cancelButton = new Button("Cancel", ev -> {
+						dialog.close();
+					});
+					buttons.add(confirmButton, cancelButton);
+					layout.add(buttons);
+					layout.setHorizontalComponentAlignment(Alignment.CENTER, buttons);
+					confirmButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+					dialog.add(layout);
+				});
+				return deletebtn;
+			})).setHeader("Delete").setAutoWidth(true).setResizable(true);
+		
 		add(new Hr(), grid);
 
 		
@@ -251,16 +305,17 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 		Dialog confirmDialog = new Dialog();
 		confirmDialog.add(new H3("Confirm Delete?"), new Button("Confirm", event -> {
 			mapRepository.deleteById(tagId);
-			refreshGrid();
+//			refreshGrid();
+			update();
 			confirmDialog.close();
 		}), new Button("Cancel", event -> confirmDialog.close()));
 		confirmDialog.open();
 	}
 
-	private void refreshGrid() {
-		tagList = mapRepository.findAll();
-		grid.setItems(tagList);
-	}
+//	private void refreshGrid() {
+//		tagList = mapRepository.findAll();
+//		grid.setItems(tagList);
+//	}
 
 	private void resetProduction() {
 		stopRequested = false;
@@ -316,6 +371,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 	            mapRepository.save(st);
 	            Notification.show("Tags have been saved successfully");
 	            submitbtn.setEnabled(false);
+	            update();
 	        } else {
 	            Notification.show("Register Name Already Exists");
 	        }
@@ -335,9 +391,17 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 	        // Save the updated source
 	        mapRepository.save(st);
 	        Notification.show("Source has been updated successfully");
+	        update();
 	    }
 
 
+	}
+	
+	public void update() {
+		List<MappingData> list = mapRepository.findAll();
+		dataProvider = new ListDataProvider<>(list);
+		grid.setItems(list);
+		grid.setDataProvider(dataProvider);
 	}
 
 	@Override

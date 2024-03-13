@@ -7,7 +7,6 @@ import java.util.stream.IntStream;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fazecast.jSerialComm.SerialPort;
-import com.project.ams.spring.Asset;
 import com.project.ams.spring.ConfigRepository;
 import com.project.ams.spring.Details;
 import com.project.ams.spring.MappingData;
@@ -16,9 +15,11 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -27,16 +28,15 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 
-import jakarta.annotation.PostConstruct;
-
 @Route(value = "/rtuconfig", layout = MainLayout.class)
 public class RTUConfig extends VerticalLayout implements HasUrlParameter<String> {
-	private static final String ROUTE_NAME = "rtuconfig";
+	public static final String ROUTE_NAME = "rtuconfig";
 	@Autowired
 	private ConfigRepository configRepository;
 	Details details = new Details();
@@ -55,16 +55,14 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 	Select<String> timeFormat2 = new Select<>();
 //	private final Button connect = new Button("Next");
 	Grid<Details> grid = new Grid<>(Details.class, false);
-	List<Details> detailsList;
-
-	Long main_id;
+	ListDataProvider<Details> dataProvider;
+	long main_id = 0;
 
 
 //	@PostConstruct
+	@SuppressWarnings("removal")
 	public void init(String param) {
-		this.detailsList = configRepository.findAll();
-
-		main_id = Long.parseLong(param);
+//		main_id = Long.parseLong(param);
 
 		HorizontalLayout navbar = new HorizontalLayout();
 		navbar.setWidthFull();
@@ -167,7 +165,7 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 		}
 
 		backbtn.addClickListener(e -> {
-			UI.getCurrent().navigate(AssetInfo.class);
+			UI.getCurrent().navigate(AssetInfo.ROUTE_NAME+"/" + details.getId());
 		});
 
 		savebtn.addClickListener(e -> {
@@ -194,8 +192,8 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 		// v1.setMargin(true);
 		add(v1);
 
-		grid.removeAllColumns();
-		grid.setItems(detailsList);
+		update();
+		grid.setAllRowsVisible(true);
 		grid.addColumn(Details::getId).setHeader("Id").setFrozen(true).setFlexGrow(0).setAutoWidth(true);
 		grid.addColumn(Details::getSource_id).setHeader("Source Id").setAutoWidth(true);
 		grid.addColumn(Details::getSlave_id).setHeader("Slave Id").setAutoWidth(true);
@@ -210,40 +208,67 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 		grid.addColumn(Details::getTime_format).setHeader("Time Format").setAutoWidth(true);
 
 		// Add edit button column
-		grid.addComponentColumn(details -> {
-			Button editButton = new Button("Edit");
-			editButton.setIcon(new Icon(VaadinIcon.EDIT));
-			editButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
-			editButton
-					.addClickListener(event -> UI.getCurrent().navigate(RTUConfig.ROUTE_NAME + "/" + details.getId()));
-			return editButton;
-		}).setAutoWidth(true);
+		Grid.Column<Details> editsource = grid.addComponentColumn(editdata -> {
+			// create edit button for each row
+			Button addinst = new Button("EDIT");
+			// set icon
+			addinst.setIcon(new Icon(VaadinIcon.EDIT));
+			// set theme
+			addinst.addThemeVariants(ButtonVariant.LUMO_SMALL);
+			// on click operation
+			addinst.addClickListener(ed -> {
+				//Long locationId = editdata.getId()
+				main_id=editdata.getId();
+				source_id.setValue(String.valueOf(editdata.getSource_id()));
+				slave_id.setValue(String.valueOf(editdata.getSlave_id()));
+				com_port.setValue(editdata.getCom_port());
+				baud_rate.setValue(editdata.getBaud_rate());
+				data_bits.setValue((editdata.getData_bits()));
+				stop_bits.setValue(editdata.getStop_bits());
+				parity.setValue(editdata.getParity());
+				pollInterval.setValue(editdata.getPolling_interval());
+				timeFormat.setValue(editdata.getTime_format());
+				repInterval.setValue(editdata.getReport_interval());
+				timeFormat2.setValue(editdata.getSet_time_format());
+				// Audit Trial
+			});
+			return addinst;
+		}).setHeader("Edit").setTextAlign(ColumnTextAlign.CENTER);
 
 		// Add delete button column
-		grid.addComponentColumn(details -> {
-			Button deleteButton = new Button("Delete");
-			deleteButton.addClickListener(event -> deleteAsset(details.getId()));
-			deleteButton.setIcon(new Icon(VaadinIcon.TRASH));
-			deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
-			return deleteButton;
-		}).setAutoWidth(true);
-		grid.setAllRowsVisible(true);
+		grid.addColumn(new ComponentRenderer<>(item -> {
+			Button deletebtn = new Button("Delete");
+			deletebtn.setIcon(new Icon(VaadinIcon.TRASH));
+			deletebtn.addThemeVariants(ButtonVariant.LUMO_ERROR);
+			deletebtn.setWidthFull();
+			deletebtn.addClickListener(even -> {
+				Dialog dialog = new Dialog();
+				dialog.open();
+				dialog.add(new VerticalLayout(new H3("Confirm Delete?"),
+						new Label("Are you sure you want to delete?")));
+				dialog.setCloseOnEsc(false);
+				dialog.setCloseOnOutsideClick(false);
+				VerticalLayout layout = new VerticalLayout();
+				HorizontalLayout buttons = new HorizontalLayout();
+				Button confirmButton = new Button("Confirm", ev -> {
+					configRepository.delete(item);
+					dialog.close();
+					//UI.getCurrent().getPage().reload();
+					update();
+				});
+				Button cancelButton = new Button("Cancel", ev -> {
+					dialog.close();
+				});
+				buttons.add(confirmButton, cancelButton);
+				layout.add(buttons);
+				layout.setHorizontalComponentAlignment(Alignment.CENTER, buttons);
+				confirmButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+				dialog.add(layout);
+			});
+			return deletebtn;
+		})).setHeader("Delete").setAutoWidth(true).setResizable(true);
+		
 		add(new Hr(), grid);
-	}
-
-	private void deleteAsset(Long rtuId) {
-		Dialog confirmDialog = new Dialog();
-		confirmDialog.add(new H3("Confirm Delete?"), new Button("Confirm", event -> {
-			configRepository.deleteById(rtuId);
-			refreshGrid();
-			confirmDialog.close();
-		}), new Button("Cancel", event -> confirmDialog.close()));
-		confirmDialog.open();
-	}
-
-	private void refreshGrid() {
-		detailsList = configRepository.findAll();
-		grid.setItems(detailsList);
 	}
 
 //	private void Connection() {
@@ -302,6 +327,7 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 	            configRepository.save(st);
 	            Notification.show("Configurations has been saved successfully");
 	            savebtn.setEnabled(false);
+	            update();
 	        } else {
 	            Notification.show("Slave id Already Exists");
 	        }
@@ -320,11 +346,18 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
             st.setReport_interval(repInterval.getValue());
             st.setSet_time_format(timeFormat2.getValue());
 	        st.setId(main_id);
-
 	        // Save the updated source
 	        configRepository.save(st);
 	        Notification.show("Configurations has been updated successfully");
+	        update();
 	    }
+	}
+	
+	public void update() {
+		List<Details> list = configRepository.findAll();
+		dataProvider = new ListDataProvider<>(list);
+		grid.setItems(list);
+		grid.setDataProvider(dataProvider);
 	}
 
 	@Override

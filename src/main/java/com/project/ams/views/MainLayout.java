@@ -1,5 +1,8 @@
 package com.project.ams.views;
 
+import com.project.ams.vaadin.Index;
+import com.project.ams.vaadin.RTUConfig;
+import com.project.ams.vaadin.TagMapping;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.H1;
@@ -33,9 +36,9 @@ public class MainLayout extends AppLayout {
 	public SideNav getSideNav() {
 		SideNav sideNav = new SideNav();
 		
-		SideNavItem src = new SideNavItem("Source Management", "", VaadinIcon.INFO_CIRCLE.create()); 
-		SideNavItem rtu = new SideNavItem("Modbus RTU Config", "/rtuconfig/0", VaadinIcon.AUTOMATION.create());
-		SideNavItem tag = new SideNavItem("Tag Mapping", "/tagMapping/0", VaadinIcon.SPLINE_AREA_CHART.create());
+		SideNavItem src = new SideNavItem("Source Management", Index.class, VaadinIcon.INFO_CIRCLE.create()); 
+		SideNavItem rtu = new SideNavItem("Modbus RTU Config", RTUConfig.ROUTE_NAME + "/" + 0, VaadinIcon.AUTOMATION.create());
+		SideNavItem tag = new SideNavItem("Tag Mapping", TagMapping.ROUTE_NAME + "/" + 0, VaadinIcon.SPLINE_AREA_CHART.create());
 		sideNav.addItem(src,rtu,tag);
 //                new SideNavItem("Products", "/products",
 //                        VaadinIcon.PACKAGE.create()),
