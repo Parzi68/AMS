@@ -4,14 +4,13 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.catalina.mapper.MappingData;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.project.ams.kafka.producer.service.KafkaProducerService;
-import com.project.ams.spring.Asset;
 import com.project.ams.spring.ConfigRepository;
-import com.project.ams.spring.Details;
 import com.project.ams.spring.MapRepository;
-import com.project.ams.spring.MappingData;
+import com.project.ams.spring.Mappingdata;
 import com.project.ams.views.MainLayout;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -36,14 +35,6 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 
-import jakarta.annotation.PostConstruct;
-import net.wimpi.modbus.ModbusCoupler;
-import net.wimpi.modbus.io.ModbusSerialTransaction;
-import net.wimpi.modbus.msg.ReadMultipleRegistersRequest;
-import net.wimpi.modbus.msg.ReadMultipleRegistersResponse;
-import net.wimpi.modbus.net.SerialConnection;
-import net.wimpi.modbus.util.SerialParameters;
-
 @Route(value = "/tagMapping", layout = MainLayout.class)
 public class TagMapping extends VerticalLayout implements HasUrlParameter<String> {
 
@@ -53,10 +44,10 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 	private KafkaProducerService kafkaProducerService;
 
 	@Autowired
-	private MapRepository mapRepository;
+	MapRepository mapRepository;
 	@Autowired
-	private ConfigRepository configRepository;
-	MappingData mappingData = new MappingData();
+	ConfigRepository configRepository;
+	Mappingdata mappingData = new Mappingdata();
 	TextField source_id = new TextField("Source Id");
 	TextField reg_name = new TextField("Register Name");
 	TextField reg_address = new TextField("Register Address");
@@ -74,8 +65,8 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 	volatile boolean stopRequested = false;
 	Button resetProd = new Button("Reset production");
 
-	Grid<MappingData> grid = new Grid<>(MappingData.class, false);
-	ListDataProvider<MappingData> dataProvider;
+	Grid<Mappingdata> grid = new Grid<>(Mappingdata.class, false);
+	ListDataProvider<Mappingdata> dataProvider;
 	long main_id = 0;
 //	@PostConstruct
 	@SuppressWarnings("removal")
@@ -88,9 +79,10 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 		navbar.add(heading);
 		Hr hr = new Hr();
 		hr.setHeight("5px");
-		add(navbar, hr);
+//		add(navbar, hr);
 
 		source_id.setReadOnly(true);
+		source_id.setValue(param);
 		source_id.setWidthFull();
 
 		reg_name.setRequiredIndicatorVisible(true);
@@ -132,14 +124,14 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 		point_type.setWidthFull();
 
 		// Fetch the latest ID from the database and increment it by 1
-		Long nextId = mapRepository.findMaxId();
+//		Long nextId = mapRepository.findMaxId();
 
 		// Set the calculated ID as the value of the sourceIdField
-		nextId = (nextId == null) ? 1L : nextId + 1;
-		source_id.setValue(String.valueOf(nextId));
+//		nextId = (nextId == null) ? 1L : nextId + 1;
+//		source_id.setValue(String.valueOf(nextId));
 		
 		if (!param.equals("0")) {
-			for (MappingData t1 : mapRepository.tag_list(main_id)) {
+			for (Mappingdata t1 : mapRepository.tag_list(main_id)) {
 				// source_id.setValue(Integer.parseInt(a1.getSource_id()));
 				source_id.setValue(String.valueOf(t1.getSource_id()));
 				reg_name.setValue(t1.getReg_name());
@@ -154,7 +146,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 
 
 		backbtn.addClickListener(e -> {
-			UI.getCurrent().navigate(RTUConfig.ROUTE_NAME+"/" + mappingData.getId());
+			UI.getCurrent().navigate(RTUConfig.ROUTE_NAME+"/" + source_id.getValue());
 		});
 
 		submitbtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -208,20 +200,20 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 		form.setSpacing(true);
 		form.setWidthFull();
 		// buttonLayout.setSizeFull();
-		add(form, buttonLayout);
+//		add(navbar, hr,form, buttonLayout);
 		// Grid
 //		grid.removeAllColumns();
 		update();
 		grid.setAllRowsVisible(true);
-		grid.addColumn(MappingData::getId).setHeader("ID").setAutoWidth(true).setFrozen(true);
-		grid.addColumn(MappingData::getSource_id).setHeader("Source ID").setAutoWidth(true);
-		grid.addColumn(MappingData::getReg_name).setHeader("Register Name").setAutoWidth(true);
-		grid.addColumn(MappingData::getReg_address).setHeader("Register Address").setAutoWidth(true);
-		grid.addColumn(MappingData::getReg_length).setHeader("Register Length").setAutoWidth(true);
-		grid.addColumn(MappingData::getReg_type).setHeader("Register Data Type").setAutoWidth(true);
-		grid.addColumn(MappingData::getMultiplier).setHeader("Multiplier").setAutoWidth(true);
-		grid.addColumn(MappingData::getElement_name).setHeader("Element").setAutoWidth(true);
-		grid.addColumn(MappingData::getPoint_type).setHeader("Modbus Point Type").setAutoWidth(true);
+		grid.addColumn(Mappingdata::getId).setHeader("ID").setAutoWidth(true).setFrozen(true);
+		grid.addColumn(Mappingdata::getSource_id).setHeader("Source ID").setAutoWidth(true);
+		grid.addColumn(Mappingdata::getReg_name).setHeader("Register Name").setAutoWidth(true);
+		grid.addColumn(Mappingdata::getReg_address).setHeader("Register Address").setAutoWidth(true);
+		grid.addColumn(Mappingdata::getReg_length).setHeader("Register Length").setAutoWidth(true);
+		grid.addColumn(Mappingdata::getReg_type).setHeader("Register Data Type").setAutoWidth(true);
+		grid.addColumn(Mappingdata::getMultiplier).setHeader("Multiplier").setAutoWidth(true);
+		grid.addColumn(Mappingdata::getElement_name).setHeader("Element").setAutoWidth(true);
+		grid.addColumn(Mappingdata::getPoint_type).setHeader("Modbus Point Type").setAutoWidth(true);
 
 		// Add edit button column
 //		grid.addComponentColumn(mappingData -> {
@@ -232,7 +224,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 //					event -> UI.getCurrent().navigate(TagMapping.ROUTE_NAME + "/" + mappingData.getId()));
 //			return editButton;
 //		}).setAutoWidth(true);
-		 Grid.Column<MappingData> editsource = grid.addComponentColumn(editdata -> {
+		 Grid.Column<Mappingdata> editsource = grid.addComponentColumn(editdata -> {
 				// create edit button for each row
 				Button addinst = new Button("EDIT");
 				// set icon
@@ -296,20 +288,9 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 				return deletebtn;
 			})).setHeader("Delete").setAutoWidth(true).setResizable(true);
 		
-		add(new Hr(), grid);
+		add(navbar, hr,form, buttonLayout,new Hr(), grid);
 
 		
-	}
-
-	private void deleteAsset(Long tagId) {
-		Dialog confirmDialog = new Dialog();
-		confirmDialog.add(new H3("Confirm Delete?"), new Button("Confirm", event -> {
-			mapRepository.deleteById(tagId);
-//			refreshGrid();
-			update();
-			confirmDialog.close();
-		}), new Button("Cancel", event -> confirmDialog.close()));
-		confirmDialog.open();
 	}
 
 //	private void refreshGrid() {
@@ -336,7 +317,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 					kafkaProducerService.updateData(Math.random() + "," + Math.random() + " range: " + range);
 					range--;
 				} catch (Exception e) {
-					// Handle exceptions
+					 e.printStackTrace();
 				}
 			}
 			// Shutdown the executor after the loop completes
@@ -347,8 +328,8 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 	public synchronized void stopProduction() {
 		stopRequested = true;
 		Notification.show("Production Stopped!!").setDuration(2000);
-		// UI.getCurrent().getPage().executeJs("setTimeout(function() {
-		// location.reload(); }, 2000);");
+//		 UI.getCurrent().getPage().executeJs("setTimeout(function() {
+//		 location.reload(); }, 2000);");
 		producebtn.setEnabled(false);
 		resetProd.setVisible(true);
 		stopbtn.setVisible(false);
@@ -358,7 +339,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 		if (param.equals("0")) {
 	        if (!mapRepository.check_source(reg_name.getValue())) {
 	            // Create a new SourceTable object
-	            MappingData st = new MappingData();
+	            Mappingdata st = new Mappingdata();
 	            st.setSource_id(Integer.parseInt(source_id.getValue()));
 	            st.setReg_name(reg_name.getValue());
 	            st.setReg_address(Integer.parseInt(reg_address.getValue()));
@@ -377,7 +358,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 	        }
 	    } else {
 	        // Update the existing source
-	        MappingData st = new MappingData();
+	        Mappingdata st = new Mappingdata();
 	        st.setSource_id(Integer.parseInt(source_id.getValue()));
 	        st.setReg_name(reg_name.getValue());
 	        st.setReg_address(Integer.parseInt(reg_address.getValue()));
@@ -398,7 +379,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 	}
 	
 	public void update() {
-		List<MappingData> list = mapRepository.findAll();
+		List<Mappingdata> list = mapRepository.findAll();
 		dataProvider = new ListDataProvider<>(list);
 		grid.setItems(list);
 		grid.setDataProvider(dataProvider);
@@ -411,13 +392,13 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 
 //	public void Comm() {
 //		// Use getter methods from Details to access the required data
-//		String comPort = configRepository.comPort();
-//		String baudRate = configRepository.baudRate();
-//		String dataBits = configRepository.dataBits();
-//		String parity = configRepository.parity();
-//		String stopBits = configRepository.stopBits();
-//		int regAddress = mapRepository.RegAddress();
-//		int regLength = mapRepository.RegLength();
+//		String comPort = configRepository.comPort(details.getCom_port());
+//		String baudRate = configRepository.baudRate(details.getBaud_rate());
+//		String dataBits = configRepository.dataBits(details.getData_bits());
+//		String parity = configRepository.parity(details.getParity());
+//		String stopBits = configRepository.stopBits(details.getStop_bits());
+//		int regAddress = mapRepository.RegAddress(Integer.parseInt(reg_address.getValue()));
+//		int regLength = mapRepository.RegLength(Integer.parseInt(reg_length.getValue()));
 //
 //		System.out.println(comPort + baudRate + dataBits + parity + stopBits + regAddress + regLength); // Debugging
 //																										// line....
@@ -450,7 +431,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 //			Notification.show("An error occurred while trying to connect to Modbus RTU Device").setDuration(3000);
 //		}
 //}
-//
+
 //	public static String getDataLNT(int SlaveId, int reference, int register, String headVal, SerialConnection con) {
 //
 //		ModbusSerialTransaction trans = null;
@@ -553,7 +534,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 //		
 //		new ModbusRTUExample();
 //		ModbusRTUExample.getDataLNT(slave_id, regAddress, regLength, " ", con);
-//	
+	
 //	}
 
 }

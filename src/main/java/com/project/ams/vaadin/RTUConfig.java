@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fazecast.jSerialComm.SerialPort;
 import com.project.ams.spring.ConfigRepository;
-import com.project.ams.spring.Details;
-import com.project.ams.spring.MappingData;
+import com.project.ams.spring.Rtuconfig;
 import com.project.ams.views.MainLayout;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -34,12 +33,13 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 
+@SuppressWarnings("removal")
 @Route(value = "/rtuconfig", layout = MainLayout.class)
 public class RTUConfig extends VerticalLayout implements HasUrlParameter<String> {
 	public static final String ROUTE_NAME = "rtuconfig";
 	@Autowired
 	private ConfigRepository configRepository;
-	Details details = new Details();
+	Rtuconfig config = new Rtuconfig();
 	TextField source_id = new TextField("Source id");
 	TextField slave_id = new TextField("Slave ID");
 	Select<String> com_port = new Select<>();
@@ -47,15 +47,15 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 	Select<String> data_bits = new Select<>();
 	Select<String> stop_bits = new Select<>();
 	Select<String> parity = new Select<>();
-	Button backbtn = new Button("Back");
-	Button savebtn = new Button("Save");
 	Select<Integer> pollInterval = new Select<>();
 	Select<Integer> repInterval = new Select<>();
 	Select<String> timeFormat = new Select<>();
 	Select<String> timeFormat2 = new Select<>();
-//	private final Button connect = new Button("Next");
-	Grid<Details> grid = new Grid<>(Details.class, false);
-	ListDataProvider<Details> dataProvider;
+	Button backbtn = new Button("Back");
+	Button savebtn = new Button("Save");
+	Button next = new Button("Next");
+	Grid<Rtuconfig> grid = new Grid<>(Rtuconfig.class, false);
+	ListDataProvider<Rtuconfig> dataProvider;
 	long main_id = 0;
 
 
@@ -70,9 +70,10 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 		navbar.add(heading);
 		Hr hr = new Hr();
 		hr.setHeight("5px");
-		add(navbar, hr);
+//		add(navbar, hr);
 
 		source_id.setReadOnly(true);
+		source_id.setValue(param);
 		source_id.setWidthFull();
 
 		slave_id.setRequiredIndicatorVisible(true);
@@ -142,14 +143,14 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 		setComPortValue();
 
 		// Fetch the latest ID from the database and increment it by 1
-		Long nextId = configRepository.findMaxId();
+//		Long nextId = configRepository.findMaxId();
 
 		// Set the calculated ID as the value of the sourceIdField
-		nextId = (nextId == null) ? 1L : nextId + 1;
-		source_id.setValue(String.valueOf(nextId));
+//		nextId = (nextId == null) ? 1L : nextId + 1;
+//		source_id.setValue(String.valueOf(nextId));
 		
 		if (!param.equals("0")) {
-			for (Details d1 : configRepository.details_list(main_id)) {
+			for (Rtuconfig d1 : configRepository.details_list(main_id)) {
 				// source_id.setValue(Integer.parseInt(a1.getSource_id()));
 				slave_id.setValue(String.valueOf(d1.getSlave_id()));
 				com_port.setValue(d1.getCom_port());
@@ -165,7 +166,7 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 		}
 
 		backbtn.addClickListener(e -> {
-			UI.getCurrent().navigate(AssetInfo.ROUTE_NAME+"/" + details.getId());
+			UI.getCurrent().navigate(AssetInfo.ROUTE_NAME+"/" + source_id.getValue());
 		});
 
 		savebtn.addClickListener(e -> {
@@ -179,8 +180,13 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 //		});
 //		connect.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
 //		connect.setVisible(false);
+		
+		next.addThemeVariants(ButtonVariant.LUMO_CONTRAST,ButtonVariant.LUMO_PRIMARY);
+		next.addClickListener(e -> {
+			UI.getCurrent().navigate(TagMapping.ROUTE_NAME+"/"+source_id.getValue());
+		});
 
-		HorizontalLayout buttonLayout = new HorizontalLayout(backbtn, savebtn);
+		HorizontalLayout buttonLayout = new HorizontalLayout(backbtn, savebtn,next);
 		buttonLayout.setSpacing(true);
 		HorizontalLayout h2 = new HorizontalLayout(pollInterval, timeFormat);
 		h2.setSpacing(true);
@@ -190,25 +196,25 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 				h2, h3, buttonLayout);
 		v1.setPadding(true);
 		// v1.setMargin(true);
-		add(v1);
+//		add(navbar, hr,v1);
 
 		update();
 		grid.setAllRowsVisible(true);
-		grid.addColumn(Details::getId).setHeader("Id").setFrozen(true).setFlexGrow(0).setAutoWidth(true);
-		grid.addColumn(Details::getSource_id).setHeader("Source Id").setAutoWidth(true);
-		grid.addColumn(Details::getSlave_id).setHeader("Slave Id").setAutoWidth(true);
-		grid.addColumn(Details::getCom_port).setHeader("COM_Port").setAutoWidth(true);
-		grid.addColumn(Details::getBaud_rate).setHeader("Baud Rate").setAutoWidth(true);
-		grid.addColumn(Details::getData_bits).setHeader("Data Bits").setAutoWidth(true);
-		grid.addColumn(Details::getStop_bits).setHeader("Stop Bits").setAutoWidth(true);
-		grid.addColumn(Details::getParity).setHeader("Parity").setAutoWidth(true);
-		grid.addColumn(Details::getPolling_interval).setHeader("Polling Interval").setAutoWidth(true);
-		grid.addColumn(Details::getSet_time_format).setHeader("Time Format").setAutoWidth(true);
-		grid.addColumn(Details::getReport_interval).setHeader("Report Interval").setAutoWidth(true);
-		grid.addColumn(Details::getTime_format).setHeader("Time Format").setAutoWidth(true);
+		grid.addColumn(Rtuconfig::getId).setHeader("Id").setFrozen(true).setFlexGrow(0).setAutoWidth(true);
+		grid.addColumn(Rtuconfig::getSource_id).setHeader("Source Id").setAutoWidth(true);
+		grid.addColumn(Rtuconfig::getSlave_id).setHeader("Slave Id").setAutoWidth(true);
+		grid.addColumn(Rtuconfig::getCom_port).setHeader("COM_Port").setAutoWidth(true);
+		grid.addColumn(Rtuconfig::getBaud_rate).setHeader("Baud Rate").setAutoWidth(true);
+		grid.addColumn(Rtuconfig::getData_bits).setHeader("Data Bits").setAutoWidth(true);
+		grid.addColumn(Rtuconfig::getStop_bits).setHeader("Stop Bits").setAutoWidth(true);
+		grid.addColumn(Rtuconfig::getParity).setHeader("Parity").setAutoWidth(true);
+		grid.addColumn(Rtuconfig::getPolling_interval).setHeader("Polling Interval").setAutoWidth(true);
+		grid.addColumn(Rtuconfig::getSet_time_format).setHeader("Time Format").setAutoWidth(true);
+		grid.addColumn(Rtuconfig::getReport_interval).setHeader("Report Interval").setAutoWidth(true);
+		grid.addColumn(Rtuconfig::getTime_format).setHeader("Time Format").setAutoWidth(true);
 
 		// Add edit button column
-		Grid.Column<Details> editsource = grid.addComponentColumn(editdata -> {
+		Grid.Column<Rtuconfig> editsource = grid.addComponentColumn(editdata -> {
 			// create edit button for each row
 			Button addinst = new Button("EDIT");
 			// set icon
@@ -268,7 +274,7 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 			return deletebtn;
 		})).setHeader("Delete").setAutoWidth(true).setResizable(true);
 		
-		add(new Hr(), grid);
+		add(navbar, hr,v1,new Hr(), grid);
 	}
 
 //	private void Connection() {
@@ -309,9 +315,9 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 
 	private void saveDetails(String param) {
 		if (param.equals("0")) {
-	        if (!configRepository.check_source(String.valueOf(slave_id.getValue()))) {
+	        if (!configRepository.check_source(Integer.parseInt(slave_id.getValue()))){
 	            // Create a new SourceTable object
-	            Details st = new Details();
+	        	Rtuconfig st = new Rtuconfig();
 	            st.setSource_id(Integer.parseInt(source_id.getValue()));
 	            st.setSlave_id(Integer.parseInt(slave_id.getValue()));
 	            st.setCom_port(com_port.getValue());
@@ -333,7 +339,7 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 	        }
 	    } else {
 	        // Update the existing source
-	    	Details st = new Details();
+	    	Rtuconfig st = new Rtuconfig();
             st.setSource_id(Integer.parseInt(source_id.getValue()));
             st.setSlave_id(Integer.parseInt(slave_id.getValue()));
             st.setCom_port(com_port.getValue());
@@ -354,7 +360,7 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 	}
 	
 	public void update() {
-		List<Details> list = configRepository.findAll();
+		List<Rtuconfig> list = configRepository.findAll();
 		dataProvider = new ListDataProvider<>(list);
 		grid.setItems(list);
 		grid.setDataProvider(dataProvider);

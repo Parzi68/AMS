@@ -6,35 +6,27 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "SourceManagement")
 public class Asset {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", columnDefinition = "serial")
+//    @Column(columnDefinition = "serial")
     private Long id;
 
     
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "source_id", columnDefinition = "serial")
+//    @Column(columnDefinition = "serial")
 	private int source_id;
 
-    @Column(name = "source_name")
+   
     private String source_name;
-    @Column(name = "application_name")
     private String application_name;
-    @Column(name = "longitude")
     private String longitude;
-    @Column(name = "latitude")
     private String latitude;
-    @Column(name = "location_name")
     private String location_name;
-    @Column(name = "protocol_type")
     private String protocol_type;
-    @Column(name = "install_date")
     @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDate install_date;
-    @Column(name = "modified_date")
     @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDate modified_date;
 

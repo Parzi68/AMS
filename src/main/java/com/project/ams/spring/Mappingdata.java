@@ -1,36 +1,24 @@
 package com.project.ams.spring;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "TagMapping")
-public class MappingData {
+public class Mappingdata {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-   @Column(name = "id",columnDefinition = "serial")
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(columnDefinition = "serial")
 	private Long id;
 	
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "source_id", columnDefinition = "serial")
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(columnDefinition = "serial")
 	private int source_id;
-	@Column(name = "reg-name")
 	private String reg_name;
-	@Column(name = "reg-address")
 	private int reg_address;
-	@Column(name = "reg-length")
 	private int reg_length;
-	@Column(name = "data-type")
 	private String reg_type;
-	@Column(name = "multiplier")
 	private int multiplier;
-	@Column(name = "element-name")
 	private String element_name;
-	@Column(name = "point-type")
 	private String point_type;
 	
 	

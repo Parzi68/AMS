@@ -148,7 +148,7 @@ public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>
 
 		nextButton.setAutofocus(true);
 		nextButton.addClickListener(e -> {
-			UI.getCurrent().navigate(RTUConfig.ROUTE_NAME+"/" + asset.getId());
+			UI.getCurrent().navigate(RTUConfig.ROUTE_NAME+"/" + source_id.getValue());
 		});
 		// Initially, hide the "Generate QR" button
 		qrGen.setVisible(false);

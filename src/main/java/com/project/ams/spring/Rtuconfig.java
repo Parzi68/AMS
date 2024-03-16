@@ -3,42 +3,25 @@ package com.project.ams.spring;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "RTUConfig")
-public class Details {
+public class Rtuconfig {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id",columnDefinition = "serial")
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(columnDefinition = "serial")
     private Long id;
     
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(columnDefinition = "serial")
     private int source_id;
     
     private int slave_id;
-
-    @Column(name = "com-port")
 	public String com_port;
-
-    @Column(name = "baud-rate")
     public String baud_rate;
-
-    @Column(name = "data-bits")
     public String data_bits;
-
-    @Column(name = "stop-bits")
     private String stop_bits;
-
-    @Column(name = "parity")
     String parity;
-
-    @Column(name = "polling-interval")
     private int polling_interval;
-
-    @Column(name = "time-format")
     private String time_format;
-
-    @Column(name = "report-interval")
     private int report_interval;
-
-    @Column(name = "set-time-format")
     private String set_time_format;
     
 

@@ -2,34 +2,35 @@ package com.project.ams.spring;
 
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;  
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ConfigRepository extends JpaRepository<Details, Long> {
-    @Query("SELECT MAX(d.source_id) FROM Details d")
-    Long findMaxId();
+public interface ConfigRepository extends JpaRepository<Rtuconfig, Long> {
+//    @Query("SELECT MAX(d.source_id) FROM Rtuconfig d")
+//    Long findMaxId();
     
+	
     @Query(value="SELECT * FROM rtuconfig d where d.id= :id", nativeQuery = true)
-    public List<Details> details_list(long id);
+    public List<Rtuconfig> details_list(long id);
     
     @Query(value = "SELECT COUNT(*) > 0 FROM rtuconfig t WHERE t.slave_id = :slave_id", nativeQuery = true)
-    Boolean check_source(@Param("slave_id") String slave_id);
-    
-//    @Query("SELECT com_port FROM Details d WHERE d.source_id = 28")
-//    String comPort();
+    Boolean check_source(@Param("slave_id") int slave_id);
 //    
-//    @Query("SELECT baud_rate FROM Details d WHERE d.source_id = 28")
-//    String baudRate();
+//    @Query("SELECT com_port FROM rtuconfig d WHERE d.com_port = :com_port")
+//    String comPort(@Param("com_port") String string);
 //    
-//    @Query("SELECT parity FROM Details d WHERE d.source_id = 28")
-//    String parity();
+//    @Query("SELECT baud_rate FROM rtuconfig d WHERE d.baud_rate = :baud_rate")
+//    String baudRate(@Param("baud_rate") String string);
 //    
-//    @Query("SELECT data_bits FROM Details d WHERE d.source_id = 28")
-//    String dataBits();
+//    @Query("SELECT parity FROM rtuconfig d WHERE d.parity = :parity")
+//    String parity(@Param("parity") String parity);
 //    
-//    @Query("SELECT stop_bits FROM Details d WHERE d.source_id = 28")
-//    String stopBits();
+//    @Query("SELECT data_bits FROM rtuconfig d WHERE d.data_bits = :data_bits")
+//    String dataBits(@Param("data_bits") String data_bits);
+//    
+//    @Query("SELECT stop_bits FROM rtuconfig d WHERE d.stop_bits = :stop_bits")
+//    String stopBits(@Param("stop_bits") String string);
 }
