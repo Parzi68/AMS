@@ -1,14 +1,14 @@
 package com.project.ams.vaadin;
 
-import java.util.List;
+import java.util.List; 
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fazecast.jSerialComm.SerialPort;
-import com.project.ams.spring.ConfigRepository;
-import com.project.ams.spring.Rtuconfig;
+import com.project.ams.spring.Repository.ConfigRepository;
+import com.project.ams.spring.model.Rtuconfig;
 import com.project.ams.views.MainLayout;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -272,7 +272,7 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 				dialog.add(layout);
 			});
 			return deletebtn;
-		})).setHeader("Delete").setAutoWidth(true).setResizable(true);
+		})).setHeader("Delete").setAutoWidth(true);
 		
 		add(navbar, hr,v1,new Hr(), grid);
 	}

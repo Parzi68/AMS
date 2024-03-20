@@ -8,9 +8,9 @@ import org.apache.catalina.mapper.MappingData;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.project.ams.kafka.producer.service.KafkaProducerService;
-import com.project.ams.spring.ConfigRepository;
-import com.project.ams.spring.MapRepository;
-import com.project.ams.spring.Mappingdata;
+import com.project.ams.spring.Repository.ConfigRepository;
+import com.project.ams.spring.Repository.MapRepository;
+import com.project.ams.spring.model.Mappingdata;
 import com.project.ams.views.MainLayout;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -34,6 +34,8 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
+
+import net.wimpi.modbus.net.SerialConnection;
 
 @Route(value = "/tagMapping", layout = MainLayout.class)
 public class TagMapping extends VerticalLayout implements HasUrlParameter<String> {
@@ -68,6 +70,9 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 	Grid<Mappingdata> grid = new Grid<>(Mappingdata.class, false);
 	ListDataProvider<Mappingdata> dataProvider;
 	long main_id = 0;
+	SerialConnection con = null;
+	
+	
 //	@PostConstruct
 	@SuppressWarnings("removal")
 	public void init(String param) {
@@ -152,7 +157,6 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 		submitbtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		submitbtn.addClickListener(e -> {
 			SaveTags(param);
-			// Communication(0, null);
 		});
 
 		connbtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
@@ -286,7 +290,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 					dialog.add(layout);
 				});
 				return deletebtn;
-			})).setHeader("Delete").setAutoWidth(true).setResizable(true);
+			})).setHeader("Delete").setAutoWidth(true);
 		
 		add(navbar, hr,form, buttonLayout,new Hr(), grid);
 
@@ -402,7 +406,6 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 //
 //		System.out.println(comPort + baudRate + dataBits + parity + stopBits + regAddress + regLength); // Debugging
 //																										// line....
-//		SerialConnection con = null;
 //		try {
 //			SerialParameters params = new SerialParameters();
 //			params.setPortName(comPort);

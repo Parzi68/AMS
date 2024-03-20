@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.project.ams.spring.Asset;
-import com.project.ams.spring.AssetRepository;
+import com.project.ams.spring.Repository.AssetRepository;
+import com.project.ams.spring.model.Asset;
 import com.project.ams.vaadin.service.JsonConverter;
 import com.project.ams.vaadin.service.QRCodeGenerator;
 import com.project.ams.views.MainLayout;
@@ -68,7 +68,7 @@ public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>
 		navbar.add(heading);
 		Hr hr = new Hr();
 		hr.setHeight("5px");
-		add(navbar, hr);
+//		add(navbar, hr);
 //        VerticalLayout nav = new VerticalLayout(navbar,hr);
 //        add(nav);
 
@@ -151,12 +151,12 @@ public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>
 			UI.getCurrent().navigate(RTUConfig.ROUTE_NAME+"/" + source_id.getValue());
 		});
 		// Initially, hide the "Generate QR" button
-		qrGen.setVisible(false);
+		qrGen.setVisible(true);
 		qrGen.addThemeVariants(ButtonVariant.LUMO_ERROR);
 		qrGen.setAutofocus(true);
 		qrGen.addClickListener(e -> generateQR());
 
-		decodebtn.setVisible(false);
+		decodebtn.setVisible(true);
 		decodebtn.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
 		decodebtn.addClickListener(e -> {
 			UI.getCurrent().navigate(Dashboard.class);
@@ -175,7 +175,7 @@ public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>
 				location_name, protocol_type, install_date, modified_date, h1);
 		v1.setSpacing(true);
 		// v1.setMargin(true);
-		add(v1);
+		add(navbar, hr,v1);
 
 	}
 
@@ -253,19 +253,8 @@ public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>
 		// Show the anchor for downloading
 		downloadLink.setVisible(true);
 		decodebtn.setVisible(true);
-
-		clearForm();
 	}
 
-	private void clearForm() {
-		UI.getCurrent().getPage().executeJs("setTimeout(function() { location.reload(); }, 20000);");
-
-		// Hide the "Generate QR" button after clearing the form
-//        qrGen.setVisible(false);
-//        previewbtn.setVisible(false);
-
-//        qrGen.getElement().executeJs("location.reload()");
-	}
 
 	@Override
 	public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {

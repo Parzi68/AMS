@@ -1,4 +1,4 @@
-package com.project.ams.spring;
+package com.project.ams.spring.Repository;
 
 import java.util.List; 
 
@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.project.ams.spring.model.Asset;
 import com.vaadin.flow.component.textfield.TextField;
 
 @Repository

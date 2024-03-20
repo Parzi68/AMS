@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.2</version>
+		<version>3.2.3</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.project</groupId>
@@ -25,18 +25,22 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-spring-boot-starter</artifactId>
 		</dependency>
 
-<!-- Modbus -->
-<!-- https://mvnrepository.com/artifact/com.digitalpetri.modbus/modbus -->
-<dependency>
-    <groupId>com.digitalpetri.modbus</groupId>
-    <artifactId>modbus</artifactId>
-    <version>1.2.0</version>
-    <type>pom</type>
-</dependency>
+		<!-- Modbus -->
+		<!-- https://mvnrepository.com/artifact/com.digitalpetri.modbus/modbus -->
+		<dependency>
+			<groupId>com.digitalpetri.modbus</groupId>
+			<artifactId>modbus</artifactId>
+			<version>1.2.0</version>
+			<type>pom</type>
+		</dependency>
 
 		<dependency>
 			<groupId>com.digitalpetri.modbus</groupId>
@@ -48,16 +52,16 @@
 			<artifactId>jrxtx</artifactId>
 			<version>1.0.0</version>
 		</dependency>-->
-		
+
 		<dependency>
 			<groupId>org.rxtx</groupId>
 			<artifactId>rxtx</artifactId>
 			<version>2.1.7</version>
 		</dependency>
 		<dependency>
-		    <groupId>com.fazecast</groupId>
-		    <artifactId>jSerialComm</artifactId>
-		    <version>2.6.2</version>
+			<groupId>com.fazecast</groupId>
+			<artifactId>jSerialComm</artifactId>
+			<version>2.6.2</version>
 		</dependency>
 		<dependency>
 			<groupId>net.wimpi</groupId>
@@ -75,7 +79,20 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			</dependency>
+		</dependency>
+		<!--
+		https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.5</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.15.1</version>
+		</dependency>
 
 
 		<dependency>
@@ -89,7 +106,7 @@
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-core</artifactId>
-			</dependency>
+		</dependency>
 
 
 		<!-- QR Libraries -->
@@ -122,12 +139,11 @@
 			<artifactId>jackson-datatype-jsr310</artifactId>
 			<version>2.16.1</version>
 		</dependency>
-		
+
 		<!-- end -->
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-jpa</artifactId>
-			<version>3.2.2</version>
 		</dependency>
 
 		<dependency>
@@ -154,11 +170,6 @@
 		</dependency>
 
 
-
-		<!--<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>-->
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

@@ -1,4 +1,4 @@
-package com.project.ams.spring;
+package com.project.ams.spring.model;
 
 import jakarta.persistence.*;
 

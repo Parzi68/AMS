@@ -16,6 +16,7 @@ import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.project.ams.views.MainLayout;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Image;
@@ -27,22 +28,25 @@ import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.Route;
 
+import jakarta.annotation.PostConstruct;
+
 @Route(value = "/dashboard", layout = MainLayout.class)
 public class Dashboard extends VerticalLayout {
 
-	private final Upload upload = new Upload();
-	private final Button decode = new Button("Decode QR");
-	private final TextField sourceId = new TextField("Source ID");
-	private final TextField sourceName = new TextField("Source Name");
-	private final TextField applicationName = new TextField("Application Name");
-	private final TextField longitude = new TextField("Longitude");
-	private final TextField latitude = new TextField("Latitude");
-	private final TextField locationName = new TextField("Location Name");
-	private final TextField protocolType = new TextField("Protocol Type");
-	private final TextField installDate = new TextField("Install Date");
-	private final TextField modifiedDate = new TextField("Modified Date");
+	Upload upload = new Upload();
+	Button decode = new Button("Decode QR");
+	TextField sourceId = new TextField("Source ID");
+	TextField sourceName = new TextField("Source Name");
+	TextField applicationName = new TextField("Application Name");
+	TextField longitude = new TextField("Longitude");
+	TextField latitude = new TextField("Latitude");
+	TextField locationName = new TextField("Location Name");
+	TextField protocolType = new TextField("Protocol Type");
+	TextField installDate = new TextField("Install Date");
+	TextField modifiedDate = new TextField("Modified Date");
 
-	public Dashboard() {
+	@PostConstruct
+	public void init() {
 
 		HorizontalLayout navbar = new HorizontalLayout();
 		navbar.setWidthFull();
@@ -50,18 +54,22 @@ public class Dashboard extends VerticalLayout {
 		navbar.add(heading);
 		Hr hr = new Hr();
 		hr.setHeight("5px");
-		add(navbar, hr);
+//		add(navbar, hr);
 
 		MemoryBuffer buffer = new MemoryBuffer();
 		upload.setReceiver(buffer);
 		upload.setMaxFiles(1);
 		upload.setAcceptedFileTypes("image/png");
-		upload.setMaxFileSize(1000);
+		upload.setMaxFileSize(1000000);
 		upload.addSucceededListener(event -> {
 			// Handle successful upload if needed
 			Notification.show("File uploaded successfully");
 		});
+		upload.addFailedListener(e -> {
+			Notification.show("Failed due to " + e.getReason().getMessage());
+		});
 
+		decode.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		decode.addClickListener(e -> {
 			try {
 				decodeQR();
@@ -70,7 +78,7 @@ public class Dashboard extends VerticalLayout {
 			}
 		});
 
-		add(upload, decode);
+		add(navbar, hr, upload, decode);
 
 	}
 

@@ -1,4 +1,4 @@
-package com.project.ams.spring;
+package com.project.ams.spring.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
@@ -14,7 +14,7 @@ public class Asset {
     private Long id;
 
     
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
 //    @Column(columnDefinition = "serial")
 	private int source_id;
 
