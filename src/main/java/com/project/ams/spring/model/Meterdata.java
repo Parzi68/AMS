@@ -1,10 +1,9 @@
 package com.project.ams.spring.model;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
@@ -12,14 +11,14 @@ public class Meterdata {
 	@Id
 //	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
-	private LocalDate Created;
+	private Timestamp Created;
 	private int source_id;
 	private String value;
-	public LocalDate getCreated() {
+	public Timestamp getCreated() {
 		return Created;
 	}
-	public void setCreated(LocalDate created) {
-		Created = created;
+	public void setCreated(Timestamp timestamp) {
+		Created = timestamp;
 	}
 	public int getSource_id() {
 		return source_id;

@@ -2,14 +2,18 @@ package com.project.ams.views;
 
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
 
+@PageTitle("Login")
 @Route("/login")
+@AnonymousAllowed
 public class LoginView extends VerticalLayout{
 
 	    public LoginView() {
-//	        setSizeFull();
-//	        setAlignItems(Alignment.CENTER);
+	        setPadding(true);
+	        setAlignItems(Alignment.CENTER);
 //	        setJustifyContentMode(JustifyContentMode.CENTER);
 
 //	        LoginForm loginForm = new LoginForm();
@@ -29,13 +33,10 @@ public class LoginView extends VerticalLayout{
 //	        overlay.setError(true);
 //	        overlay.setForgotPasswordButtonVisible(false);
 	        overlay.setOpened(true);
+	        overlay.setForgotPasswordButtonVisible(false);
+	        overlay.setAction("/");
 	        overlay.getElement().setAttribute("no-autofocus", "");
-	        add(overlay);	        
-	    }
-
-	    private void handleLogin(String username, String password) {
-	        // Perform authentication and email verification logic here
-	        // For example, you could send a verification email to the user's email address
-	        // and prompt them to click a confirmation link before allowing them to log in
+	        add(overlay);
+	        overlay.setError(true);
 	    }
 }

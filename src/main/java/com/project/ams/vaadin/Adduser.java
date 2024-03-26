@@ -1,5 +1,9 @@
 package com.project.ams.vaadin;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.project.ams.spring.Repository.UserRepository;
+import com.project.ams.spring.model.User;
 import com.project.ams.views.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -12,13 +16,20 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.security.RolesAllowed;
 
+@PageTitle("Add User")
 @Route(value="/Adduser", layout=MainLayout.class)
+@RolesAllowed("ADMIN")
 public class Adduser extends VerticalLayout
 {
+	@Autowired
+	private UserRepository userRepository;
+	User user = new User();
 	EmailField email = new EmailField("Enter e-mail");
 	TextField username = new TextField("Enter Username");
 	PasswordField pass = new PasswordField("Enter Password");
@@ -57,7 +68,10 @@ public class Adduser extends VerticalLayout
 	}
 
 	public void AddUser() {
-		// TODO Auto-generated method stub
+		user.setEmail(email.getValue());
+		user.setUsername(username.getValue());
+		user.setPassword(pass.getValue());
+		userRepository.save(user);
 		System.out.println("-------- Adding User -------");
 	}
 

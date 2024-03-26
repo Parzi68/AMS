@@ -29,9 +29,11 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.security.RolesAllowed;
 
 @PageTitle("Asset Info")
 @Route(value = "/", layout = MainLayout.class)
+
 public class Index extends VerticalLayout {
 	Button btn = new Button("Add Source");
 	Grid<Asset> grid = new Grid<>(Asset.class, false);

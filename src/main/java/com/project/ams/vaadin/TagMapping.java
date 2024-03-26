@@ -61,18 +61,17 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 	Button backbtn = new Button("Back");
 	Button submitbtn = new Button("Submit");
 	Button connbtn = new Button("Connect");
-	Button producebtn = new Button("Read Data");
+//	Button producebtn = new Button("Read Data");
 	Button dashboard = new Button("View Dashboard");
-	Button stopbtn = new Button("Stop Producing");
-	volatile boolean stopRequested = false;
-	Button resetProd = new Button("Reset production");
+//	Button stopbtn = new Button("Stop Producing");
+//	volatile boolean stopRequested = false;
+//	Button resetProd = new Button("Reset production");
 
 	Grid<Mappingdata> grid = new Grid<>(Mappingdata.class, false);
 	ListDataProvider<Mappingdata> dataProvider;
 	long main_id = 0;
 	SerialConnection con = null;
-	
-	
+
 //	@PostConstruct
 	@SuppressWarnings("removal")
 	public void init(String param) {
@@ -134,7 +133,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 		// Set the calculated ID as the value of the sourceIdField
 //		nextId = (nextId == null) ? 1L : nextId + 1;
 //		source_id.setValue(String.valueOf(nextId));
-		
+
 		if (!param.equals("0")) {
 			for (Mappingdata t1 : mapRepository.tag_list(main_id)) {
 				// source_id.setValue(Integer.parseInt(a1.getSource_id()));
@@ -149,9 +148,8 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 			}
 		}
 
-
 		backbtn.addClickListener(e -> {
-			UI.getCurrent().navigate(RTUConfig.ROUTE_NAME+"/" + source_id.getValue());
+			UI.getCurrent().navigate(RTUConfig.ROUTE_NAME + "/" + source_id.getValue());
 		});
 
 		submitbtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -164,40 +162,39 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 //			Comm();
 		});
 
-		producebtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
-		producebtn.addClickListener(e -> {
-			Notification.show("Kafka Production started!!");
-			Notification.show("You can see the output in the dashboard");
-			producebtn.setEnabled(false);
-			stopbtn.setEnabled(true);
-			dashboard.focus();
-			try {
-				kafkaProduce();
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		});
+//		producebtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
+//		producebtn.addClickListener(e -> {
+//			Notification.show("Kafka Production started!!");
+//			Notification.show("You can see the output in the dashboard");
+//			producebtn.setEnabled(false);
+//			stopbtn.setEnabled(true);
+//			dashboard.focus();
+//			try {
+//				kafkaProduce();
+//			} catch (Exception e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+//		});
 
 		dashboard.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
 		dashboard.addClickListener(e -> {
 			UI.getCurrent().getPage().open("http://localhost:3000/goto/Bf_1I7TSR?orgId=1", "Grafana Dashboard");
 		});
 
-		stopbtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE, ButtonVariant.LUMO_ERROR);
-		stopbtn.setEnabled(false);
-		stopbtn.addClickListener(e -> {
-			stopProduction();
-		});
+//		stopbtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE, ButtonVariant.LUMO_ERROR);
+//		stopbtn.setEnabled(false);
+//		stopbtn.addClickListener(e -> {
+//			stopProduction();
+//		});
 
-		resetProd.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SUCCESS);
-		resetProd.setVisible(false);
-		resetProd.addClickListener(e -> {
-			resetProduction();
-		});
+//		resetProd.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SUCCESS);
+//		resetProd.setVisible(false);
+//		resetProd.addClickListener(e -> {
+//			resetProduction();
+//		});
 
-		HorizontalLayout buttonLayout = new HorizontalLayout(backbtn, submitbtn, connbtn, producebtn, dashboard,
-				stopbtn, resetProd);
+		HorizontalLayout buttonLayout = new HorizontalLayout(backbtn, submitbtn, connbtn, dashboard);
 		VerticalLayout v1 = new VerticalLayout(source_id, reg_name, reg_address, reg_length);
 		VerticalLayout v2 = new VerticalLayout(reg_type, multiplier, element_name, point_type);
 		HorizontalLayout form = new HorizontalLayout(v1, v2);
@@ -228,29 +225,29 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 //					event -> UI.getCurrent().navigate(TagMapping.ROUTE_NAME + "/" + mappingData.getId()));
 //			return editButton;
 //		}).setAutoWidth(true);
-		 Grid.Column<Mappingdata> editsource = grid.addComponentColumn(editdata -> {
-				// create edit button for each row
-				Button addinst = new Button("EDIT");
-				// set icon
-				addinst.setIcon(new Icon(VaadinIcon.EDIT));
-				// set theme
-				addinst.addThemeVariants(ButtonVariant.LUMO_SMALL);
-				// on click operation
-				addinst.addClickListener(ed -> {
-					//Long locationId = editdata.getId()
-					main_id=editdata.getId();
-					source_id.setValue(String.valueOf(editdata.getSource_id()));
-					reg_name.setValue(editdata.getReg_name());
-					reg_address.setValue(String.valueOf(editdata.getReg_address()));
-					reg_length.setValue(String.valueOf(editdata.getReg_length()));
-					reg_type.setValue((editdata.getReg_type()));
-					multiplier.setValue(editdata.getMultiplier());
-					element_name.setValue(editdata.getElement_name());
-					point_type.setValue(editdata.getPoint_type());
-					// Audit Trial
-				});
-				return addinst;
-			}).setHeader("Edit").setTextAlign(ColumnTextAlign.CENTER);
+		Grid.Column<Mappingdata> editsource = grid.addComponentColumn(editdata -> {
+			// create edit button for each row
+			Button addinst = new Button("EDIT");
+			// set icon
+			addinst.setIcon(new Icon(VaadinIcon.EDIT));
+			// set theme
+			addinst.addThemeVariants(ButtonVariant.LUMO_SMALL);
+			// on click operation
+			addinst.addClickListener(ed -> {
+				// Long locationId = editdata.getId()
+				main_id = editdata.getId();
+				source_id.setValue(String.valueOf(editdata.getSource_id()));
+				reg_name.setValue(editdata.getReg_name());
+				reg_address.setValue(String.valueOf(editdata.getReg_address()));
+				reg_length.setValue(String.valueOf(editdata.getReg_length()));
+				reg_type.setValue((editdata.getReg_type()));
+				multiplier.setValue(editdata.getMultiplier());
+				element_name.setValue(editdata.getElement_name());
+				point_type.setValue(editdata.getPoint_type());
+				// Audit Trial
+			});
+			return addinst;
+		}).setHeader("Edit").setTextAlign(ColumnTextAlign.CENTER);
 
 		// Add delete button column
 //		grid.addComponentColumn(mappingData -> {
@@ -260,128 +257,126 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 //			deleteButton.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ERROR);
 //			return deleteButton;
 //		}).setAutoWidth(true);
-		 grid.addColumn(new ComponentRenderer<>(item -> {
-				Button deletebtn = new Button("Delete");
-				deletebtn.setIcon(new Icon(VaadinIcon.TRASH));
-				deletebtn.addThemeVariants(ButtonVariant.LUMO_ERROR);
-				deletebtn.setWidthFull();
-				deletebtn.addClickListener(even -> {
-					Dialog dialog = new Dialog();
-					dialog.open();
-					dialog.add(new VerticalLayout(new H3("Confirm Delete?"),
-							new Label("Are you sure you want to delete?")));
-					dialog.setCloseOnEsc(false);
-					dialog.setCloseOnOutsideClick(false);
-					VerticalLayout layout = new VerticalLayout();
-					HorizontalLayout buttons = new HorizontalLayout();
-					Button confirmButton = new Button("Confirm", ev -> {
-						mapRepository.delete(item);
-						dialog.close();
-						//UI.getCurrent().getPage().reload();
-						update();
-					});
-					Button cancelButton = new Button("Cancel", ev -> {
-						dialog.close();
-					});
-					buttons.add(confirmButton, cancelButton);
-					layout.add(buttons);
-					layout.setHorizontalComponentAlignment(Alignment.CENTER, buttons);
-					confirmButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-					dialog.add(layout);
+		grid.addColumn(new ComponentRenderer<>(item -> {
+			Button deletebtn = new Button("Delete");
+			deletebtn.setIcon(new Icon(VaadinIcon.TRASH));
+			deletebtn.addThemeVariants(ButtonVariant.LUMO_ERROR);
+			deletebtn.setWidthFull();
+			deletebtn.addClickListener(even -> {
+				Dialog dialog = new Dialog();
+				dialog.open();
+				dialog.add(
+						new VerticalLayout(new H3("Confirm Delete?"), new Label("Are you sure you want to delete?")));
+				dialog.setCloseOnEsc(false);
+				dialog.setCloseOnOutsideClick(false);
+				VerticalLayout layout = new VerticalLayout();
+				HorizontalLayout buttons = new HorizontalLayout();
+				Button confirmButton = new Button("Confirm", ev -> {
+					mapRepository.delete(item);
+					dialog.close();
+					// UI.getCurrent().getPage().reload();
+					update();
 				});
-				return deletebtn;
-			})).setHeader("Delete").setAutoWidth(true);
-		
-		add(navbar, hr,form, buttonLayout,new Hr(), grid);
+				Button cancelButton = new Button("Cancel", ev -> {
+					dialog.close();
+				});
+				buttons.add(confirmButton, cancelButton);
+				layout.add(buttons);
+				layout.setHorizontalComponentAlignment(Alignment.CENTER, buttons);
+				confirmButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+				dialog.add(layout);
+			});
+			return deletebtn;
+		})).setHeader("Delete").setAutoWidth(true);
 
-		
+		add(navbar, hr, form, buttonLayout, new Hr(), grid);
+
 	}
 
 //	private void refreshGrid() {
 //		tagList = mapRepository.findAll();
 //		grid.setItems(tagList);
 //	}
+//
+//	private void resetProduction() {
+//		stopRequested = false;
+//		producebtn.setEnabled(true);
+//		stopbtn.setVisible(true);
+//		stopbtn.setEnabled(false);
+//		resetProd.setVisible(false);
+//		Notification.show("You can now restart the production");
+//	}
 
-	private void resetProduction() {
-		stopRequested = false;
-		producebtn.setEnabled(true);
-		stopbtn.setVisible(true);
-		stopbtn.setEnabled(false);
-		resetProd.setVisible(false);
-		Notification.show("You can now restart the production");
-	}
+//	private void kafkaProduce() throws Exception {
+//		ExecutorService executor = Executors.newSingleThreadExecutor();
+//		executor.execute(() -> {
+//			int range = 15;
+//			while (range > 0 && !stopRequested) {
+//				try {
+//					Thread.sleep(1000);
+//					kafkaProducerService.updateData(Math.random() + "," + Math.random() + " range: " + range);
+//					range--;
+//				} catch (Exception e) {
+//					 e.printStackTrace();
+//				}
+//			}
+//			// Shutdown the executor after the loop completes
+//			executor.shutdown();
+//		});
+//	}
 
-	private void kafkaProduce() throws Exception {
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-		executor.execute(() -> {
-			int range = 15;
-			while (range > 0 && !stopRequested) {
-				try {
-					Thread.sleep(1000);
-					kafkaProducerService.updateData(Math.random() + "," + Math.random() + " range: " + range);
-					range--;
-				} catch (Exception e) {
-					 e.printStackTrace();
-				}
-			}
-			// Shutdown the executor after the loop completes
-			executor.shutdown();
-		});
-	}
-
-	public synchronized void stopProduction() {
-		stopRequested = true;
-		Notification.show("Production Stopped!!").setDuration(2000);
-//		 UI.getCurrent().getPage().executeJs("setTimeout(function() {
-//		 location.reload(); }, 2000);");
-		producebtn.setEnabled(false);
-		resetProd.setVisible(true);
-		stopbtn.setVisible(false);
-	}
+//	public synchronized void stopProduction() {
+//		stopRequested = true;
+//		Notification.show("Production Stopped!!").setDuration(2000);
+////		 UI.getCurrent().getPage().executeJs("setTimeout(function() {
+////		 location.reload(); }, 2000);");
+//		producebtn.setEnabled(false);
+//		resetProd.setVisible(true);
+//		stopbtn.setVisible(false);
+//	}
 
 	private void SaveTags(String param) {
 		if (param.equals("0")) {
-	        if (!mapRepository.check_source(reg_name.getValue())) {
-	            // Create a new SourceTable object
-	            Mappingdata st = new Mappingdata();
-	            st.setSource_id(Integer.parseInt(source_id.getValue()));
-	            st.setReg_name(reg_name.getValue());
-	            st.setReg_address(Integer.parseInt(reg_address.getValue()));
-	            st.setReg_length(Integer.parseInt(reg_length.getValue()));
-	            st.setReg_type(reg_type.getValue());
-	            st.setMultiplier(multiplier.getValue());
-	            st.setElement_name(element_name.getValue());
-	            st.setPoint_type(point_type.getValue());
-	            // Save the source
-	            mapRepository.save(st);
-	            Notification.show("Tags have been saved successfully");
-	            submitbtn.setEnabled(false);
-	            update();
-	        } else {
-	            Notification.show("Register Name Already Exists");
-	        }
-	    } else {
-	        // Update the existing source
-	        Mappingdata st = new Mappingdata();
-	        st.setSource_id(Integer.parseInt(source_id.getValue()));
-	        st.setReg_name(reg_name.getValue());
-	        st.setReg_address(Integer.parseInt(reg_address.getValue()));
-            st.setReg_length(Integer.parseInt(reg_length.getValue()));
-            st.setReg_type(reg_type.getValue());
-            st.setMultiplier(multiplier.getValue());
-            st.setElement_name(element_name.getValue());
-            st.setPoint_type(point_type.getValue());
-	        st.setId(main_id);
+			if (!mapRepository.check_source(reg_name.getValue())) {
+				// Create a new SourceTable object
+				Mappingdata st = new Mappingdata();
+				st.setSource_id(Integer.parseInt(source_id.getValue()));
+				st.setReg_name(reg_name.getValue());
+				st.setReg_address(Integer.parseInt(reg_address.getValue()));
+				st.setReg_length(Integer.parseInt(reg_length.getValue()));
+				st.setReg_type(reg_type.getValue());
+				st.setMultiplier(multiplier.getValue());
+				st.setElement_name(element_name.getValue());
+				st.setPoint_type(point_type.getValue());
+				// Save the source
+				mapRepository.save(st);
+				Notification.show("Tags have been saved successfully");
+				submitbtn.setEnabled(false);
+				update();
+			} else {
+				Notification.show("Register Name Already Exists");
+			}
+		} else {
+			// Update the existing source
+			Mappingdata st = new Mappingdata();
+			st.setSource_id(Integer.parseInt(source_id.getValue()));
+			st.setReg_name(reg_name.getValue());
+			st.setReg_address(Integer.parseInt(reg_address.getValue()));
+			st.setReg_length(Integer.parseInt(reg_length.getValue()));
+			st.setReg_type(reg_type.getValue());
+			st.setMultiplier(multiplier.getValue());
+			st.setElement_name(element_name.getValue());
+			st.setPoint_type(point_type.getValue());
+			st.setId(main_id);
 
-	        // Save the updated source
-	        mapRepository.save(st);
-	        Notification.show("Source has been updated successfully");
-	        update();
-	    }
-
+			// Save the updated source
+			mapRepository.save(st);
+			Notification.show("Source has been updated successfully");
+			update();
+		}
 
 	}
-	
+
 	public void update() {
 		List<Mappingdata> list = mapRepository.findAll();
 		dataProvider = new ListDataProvider<>(list);
@@ -537,7 +532,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 //		
 //		new ModbusRTUExample();
 //		ModbusRTUExample.getDataLNT(slave_id, regAddress, regLength, " ", con);
-	
+
 //	}
 
 }

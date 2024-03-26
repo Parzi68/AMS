@@ -1,6 +1,7 @@
 package com.project.ams;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,15 @@ import com.project.ams.spring.model.Meterdata;
 
 import net.wimpi.modbus.ModbusCoupler;
 import net.wimpi.modbus.io.ModbusSerialTransaction;
+import net.wimpi.modbus.msg.ReadCoilsRequest;
+import net.wimpi.modbus.msg.ReadCoilsResponse;
+import net.wimpi.modbus.msg.ReadInputDiscretesRequest;
 import net.wimpi.modbus.msg.ReadInputRegistersRequest;
 import net.wimpi.modbus.msg.ReadInputRegistersResponse;
 import net.wimpi.modbus.msg.ReadMultipleRegistersRequest;
 import net.wimpi.modbus.msg.ReadMultipleRegistersResponse;
 import net.wimpi.modbus.net.SerialConnection;
+import net.wimpi.modbus.util.BitVector;
 import net.wimpi.modbus.util.SerialParameters;
 
 public class ReadData extends Thread {
@@ -34,7 +39,7 @@ public class ReadData extends Thread {
 
 	String com_port = "", parity = "", baud_rate = "", stop_bits = "", data_bits = "", getRes = "", reg_length = "",
 			reg_address = "", point_type = "";
-	LocalDate currentDate;
+//	LocalDateTime currentDate;
 
 	Vector vcPort = new Vector();
 	Vector vcSlave = new Vector();
@@ -129,14 +134,14 @@ public class ReadData extends Thread {
 											hexVal = hexToFloat(getRes);
 											System.out.println("Value........" + reg_name + "........." + hexVal);
 											Meterdata mt = new Meterdata();
-											mt.setCreated(currentDate);
+											mt.setCreated(new Timestamp(System.currentTimeMillis()));
 											mt.setSource_id(source_id);
 											mt.setValue("" + hexVal);
 											meterRepository.save(mt);
 										}
 										if (reg_type.equalsIgnoreCase("integer")) {
 											Meterdata mt = new Meterdata();
-											mt.setCreated(currentDate);
+											mt.setCreated(new Timestamp(System.currentTimeMillis()));
 											mt.setSource_id(source_id);
 											mt.setValue("" + hexToInteger(getRes));
 											meterRepository.save(mt);
@@ -160,39 +165,168 @@ public class ReadData extends Thread {
 
 	}
 
-	public synchronized String getCoilData(int slave_id, int reg_address, int reg_length, String string, SerialConnection con) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public synchronized String getDISCRETESData(int slave_id, int reg_address, int reg_length, String string,
+	public synchronized String getCoilData(int slave_id, int reg_address, int reg_length, String headVal,
 			SerialConnection con) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public synchronized String getData(int slave_id, int reg_address, int reg_length, String headVal,
-			SerialConnection con) {
+		
 		ModbusSerialTransaction trans = null;
-		ReadInputRegistersRequest req = null;
+		ReadCoilsRequest req = null;
+		ReadCoilsResponse res = null;
+
+		String getResponse = "";
+
+		int slaveID = slave_id, ref = reg_address, registers = reg_length;
+		StringBuilder sb = null;
+
+		try {
+			ModbusCoupler.getReference().setUnitID(slaveID);
+			// ModbusCoupler.getReference().setMaster(false);
+
+			req = new ReadCoilsRequest(ref, registers);
+			req.setUnitID(slaveID);
+			req.setHeadless();
+			trans = new ModbusSerialTransaction(con);
+
+			System.out.println("Sending request  -----slaveid--" + slaveID + "--Reference--" + ref + "--"
+					+ registers + "-----Value--" + req.getHexMessage());
+
+			trans.setRequest(req);
+			trans.execute();
+			BitVector bitvector = ((ReadCoilsResponse) trans.getResponse()).getCoils();
+			bitvector.forceSize(registers);
+			System.out.println("Get responce  1  :::::" + bitvector);
+			String str = "" + bitvector;
+
+			if (str == null) {
+				boolean anyLeft = true;
+				int k = 0;
+				while (anyLeft == true) {
+					try {
+						wait(10000);
+
+					} catch (Exception th) {
+					}
+					trans.setRequest(req);
+					trans.execute();
+					bitvector = ((ReadCoilsResponse) trans.getResponse()).getCoils();
+					bitvector.forceSize(registers);
+					str = "" + bitvector;
+					if (str != null) {
+						anyLeft = false;
+					}
+					k++;
+
+					if (k == 30) {
+						anyLeft = false;
+
+					}
+				}
+			}
+
+			sb = new StringBuilder(str);
+			sb.reverse();
+
+			System.out.println("Get responce  2 reverse value  :::::" + sb);
+
+			con.close();
+		} catch (Exception ex) {
+			System.out.println("Reading Error - " + ex);
+
+		}
+
+		return "" + sb.toString().trim();
+	}
+
+	public synchronized String getDISCRETESData(int slave_id, int reg_address, int reg_length, String headVal,
+			SerialConnection con) {
+		
+		ModbusSerialTransaction trans = null;
+		ReadInputDiscretesRequest req = null;
 		ReadInputRegistersResponse res = null;
 
 		String getResponse = "";
 
-		int slaveID = slave_id, ref = reg_length, registers = reg_address;
+		int slaveID = slave_id, ref = reg_address, registers = reg_length;
 
 		try {
 
 			ModbusCoupler.getReference().setUnitID(slaveID);
 			// ModbusCoupler.getReference().setMaster(false);
 
+			req = new ReadInputDiscretesRequest(ref, registers);
+			req.setUnitID(slaveID);
+			req.setHeadless();
+			trans = new ModbusSerialTransaction(con);
+
+			System.out.println("Sending request  -----slaveid--" + slaveID + "--Reference--" + ref + "--" + registers
+					+ "-----Value--" + req.getHexMessage());
+
+			trans.setRequest(req);
+			trans.execute();
+			res = (ReadInputRegistersResponse) trans.getResponse();
+
+			if (res == null) {
+
+				boolean anyLeft = true;
+				int k = 0;
+				while (anyLeft == true) {
+					try {
+						wait(10000);
+
+					} catch (Exception th) {
+					}
+					trans.setRequest(req);
+					trans.execute();
+					res = (ReadInputRegistersResponse) trans.getResponse();
+					if (res != null) {
+						anyLeft = false;
+					}
+					k++;
+
+					if (k == 30) {
+						anyLeft = false;
+
+					}
+				}
+
+			}
+			if (res != null) {
+				getResponse = res.getHexMessage();
+				getResponse = getResponse.replaceAll(" ", "");
+				if (!headVal.isEmpty()) {
+					getResponse = getResponse.substring(6, getResponse.length());
+				}
+
+			}
+
+			con.close();
+		} catch (Exception ex) {
+			System.out.println("Reading Error - " + ex);
+
+		}
+
+		System.out.println("Response From the Meter - " + getResponse);
+		return getResponse;
+	}
+
+	public synchronized String getData(int slave_id, int reg_address, int reg_length, String headVal,
+			SerialConnection con) {
+		
+		ModbusSerialTransaction trans = null;
+		ReadInputRegistersRequest req = null;
+		ReadInputRegistersResponse res = null;
+
+		String getResponse = "";
+		int slaveID = slave_id, ref = reg_address, registers = reg_length;
+		try {
+			ModbusCoupler.getReference().setUnitID(slaveID);
+			// ModbusCoupler.getReference().setMaster(false);
 			req = new ReadInputRegistersRequest(ref, registers);
 			req.setUnitID(slaveID);
 			req.setHeadless();
 			trans = new ModbusSerialTransaction(con);
 
-			System.out.println("Sending request  - Savan----slaveid--" + slaveID + "--Reference--" + ref + "--"
-					+ registers + "-----Value--" + req.getHexMessage());
+			System.out.println("Sending request  -----slaveid--" + slaveID + "--Reference--" + ref + "--" + registers
+					+ "-----Value--" + req.getHexMessage());
 
 			trans.setRequest(req);
 			trans.execute();
@@ -237,7 +371,7 @@ public class ReadData extends Thread {
 
 		}
 
-		System.out.println("Response From Savan Meter - " + getResponse);
+		System.out.println("Response From the Meter - " + getResponse);
 		return getResponse;
 
 	}
@@ -251,7 +385,7 @@ public class ReadData extends Thread {
 
 		String getResponse = "";
 
-		int slaveID = slave_id, ref = reg_length, registers = reg_address;
+		int slaveID = slave_id, ref = reg_address, registers = reg_length;
 
 		try {
 
@@ -262,6 +396,8 @@ public class ReadData extends Thread {
 			req.setUnitID(slaveID);
 			req.setHeadless();
 			trans = new ModbusSerialTransaction(con);
+			
+			System.out.println("Slave id : "+slave_id+" ref: "+ref+" registers: "+registers);//debugging line
 
 			System.out.println("Sending request  -----slaveid--" + slaveID + "--Reference--" + ref + "--" + registers
 					+ "-----Value--" + req.getHexMessage());
@@ -306,13 +442,14 @@ public class ReadData extends Thread {
 				getResponse = res.getHexMessage();
 				getResponse = getResponse.replaceAll(" ", "");
 
-				if (headval.isEmpty()) {
+				//if (headval.isEmpty()) {
 					getResponse = getResponse.substring(6, getResponse.length());
-				}
+				//}
 
 			}
 
 			con.close();
+			System.out.println("---- Connection Closed!! ----");
 
 		} catch (Exception ex) {
 			System.out.println("Reading Error - " + ex);
