@@ -2,6 +2,7 @@ package com.project.ams;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +79,12 @@ public class ReadData extends Thread {
 						data_bits = htConnectionParameters.split(",")[1].toString();
 						stop_bits = htConnectionParameters.split(",")[2].toString();
 						parity = htConnectionParameters.split(",")[3].toString();
+						
+//						baud_rate = htConnectionParameters.get("baud_rate").toString();
+//						data_bits = htConnectionParameters.get("data_bits").toString();
+//						stop_bits = htConnectionParameters.get("stop_bits").toString();
+//						parity = htConnectionParameters.get("parity").toString();
+
 
 						System.out.println("==local_source Sources-- Parameters -+++" + com_port + "+++++-" + slave_id
 								+ "---==" + baud_rate + "--" + data_bits + "^^^^" + stop_bits + "--" + parity + "");
@@ -133,18 +140,18 @@ public class ReadData extends Thread {
 										if (reg_type.equalsIgnoreCase("float")) {
 											hexVal = hexToFloat(getRes);
 											System.out.println("Value........" + reg_name + "........." + hexVal);
-											Meterdata mt = new Meterdata();
-											mt.setCreated(new Timestamp(System.currentTimeMillis()));
-											mt.setSource_id(source_id);
-											mt.setValue("" + hexVal);
-											meterRepository.save(mt);
+//											Meterdata mt = new Meterdata();
+//											mt.setTime(new Timestamp(System.currentTimeMillis()));
+//											mt.setVR(getRes);
+//											mt.setValue("" + hexVal);
+//											meterRepository.save(mt);
 										}
 										if (reg_type.equalsIgnoreCase("integer")) {
-											Meterdata mt = new Meterdata();
-											mt.setCreated(new Timestamp(System.currentTimeMillis()));
-											mt.setSource_id(source_id);
-											mt.setValue("" + hexToInteger(getRes));
-											meterRepository.save(mt);
+//											Meterdata mt = new Meterdata();
+//											mt.setTime(new Timestamp(System.currentTimeMillis()));
+//											mt.setSource_id(source_id);
+//											mt.setValue("" + hexToInteger(getRes));
+//											meterRepository.save(mt);
 										}
 									}
 								}
@@ -449,7 +456,7 @@ public class ReadData extends Thread {
 			}
 
 			con.close();
-			System.out.println("---- Connection Closed!! ----");
+//			System.out.println("---- Connection Closed!! ----");
 
 		} catch (Exception ex) {
 			System.out.println("Reading Error - " + ex);

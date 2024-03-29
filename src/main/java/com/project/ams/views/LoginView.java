@@ -1,5 +1,6 @@
 package com.project.ams.views;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
@@ -34,8 +35,11 @@ public class LoginView extends VerticalLayout{
 //	        overlay.setForgotPasswordButtonVisible(false);
 	        overlay.setOpened(true);
 	        overlay.setForgotPasswordButtonVisible(false);
-	        overlay.setAction("/");
 	        overlay.getElement().setAttribute("no-autofocus", "");
+	        overlay.addLoginListener(e->{
+	        	UI.getCurrent().getPage().executeJs("window.open('http://localhost:8081/');");
+	        });
+	        
 	        add(overlay);
 	        overlay.setError(true);
 	    }

@@ -26,7 +26,7 @@ public class ModbusRTUExample {
                 con.open();
             }
 
-            Thread thread = new Thread(new ReadingTask(con, 4, 99, 2, 2));
+            Thread thread = new Thread(new ReadingTask(con, 4, 133, 2, 10));
             thread.start();
 
         } catch (Exception e) {

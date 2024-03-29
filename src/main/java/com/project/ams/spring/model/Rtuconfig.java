@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 @Entity
 public class Rtuconfig {
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 //    @Column(columnDefinition = "serial")
     private Long id;
     
