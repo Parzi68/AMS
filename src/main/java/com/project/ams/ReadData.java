@@ -1,13 +1,7 @@
 package com.project.ams;
 
-<<<<<<< HEAD
 import java.text.SimpleDateFormat;
 import java.util.Date;
-=======
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
->>>>>>> 8c5066f6f9b274b6ac859353c86315473cdadee2
 import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -145,7 +139,6 @@ public class ReadData extends Thread {
 										if (reg_type.equalsIgnoreCase("float")) {
 											hexVal = hexToFloat(getRes);
 											System.out.println("Value........" + reg_name + "........." + hexVal);
-<<<<<<< HEAD
 											name=reg_name;
 											final_name=final_name+""+"\""+name+"\",";
 											value1=""+hexVal;
@@ -153,20 +146,6 @@ public class ReadData extends Thread {
 										}
 										if (reg_type.equalsIgnoreCase("integer")) {
 
-=======
-//											Meterdata mt = new Meterdata();
-//											mt.setTime(new Timestamp(System.currentTimeMillis()));
-//											mt.setVR(getRes);
-//											mt.setValue("" + hexVal);
-//											meterRepository.save(mt);
-										}
-										if (reg_type.equalsIgnoreCase("integer")) {
-//											Meterdata mt = new Meterdata();
-//											mt.setTime(new Timestamp(System.currentTimeMillis()));
-//											mt.setSource_id(source_id);
-//											mt.setValue("" + hexToInteger(getRes));
-//											meterRepository.save(mt);
->>>>>>> 8c5066f6f9b274b6ac859353c86315473cdadee2
 										}
 									}
 								} // tag loop
