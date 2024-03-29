@@ -23,8 +23,8 @@ public class ControllerFile {
 	
 	@PostConstruct
 	public void init() {
-		ReadData rtu = new ReadData(meterRepository,configRepository,mapRepository);
-		Thread t1 = new Thread(rtu,"rtu service");
-		t1.start();
+//		ReadData rtu = new ReadData(meterRepository,configRepository,mapRepository);
+//		Thread t1 = new Thread(rtu,"rtu service");
+//		t1.start();
 	}
 }
