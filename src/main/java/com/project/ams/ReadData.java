@@ -1,7 +1,7 @@
 package com.project.ams;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.project.ams.spring.Repository.ConfigRepository;
 import com.project.ams.spring.Repository.MapRepository;
 import com.project.ams.spring.Repository.MeterRepository;
-import com.project.ams.spring.model.Meterdata;
 
 import net.wimpi.modbus.ModbusCoupler;
 import net.wimpi.modbus.io.ModbusSerialTransaction;
@@ -78,6 +77,12 @@ public class ReadData extends Thread {
 						data_bits = htConnectionParameters.split(",")[1].toString();
 						stop_bits = htConnectionParameters.split(",")[2].toString();
 						parity = htConnectionParameters.split(",")[3].toString();
+						
+//						baud_rate = htConnectionParameters.get("baud_rate").toString();
+//						data_bits = htConnectionParameters.get("data_bits").toString();
+//						stop_bits = htConnectionParameters.get("stop_bits").toString();
+//						parity = htConnectionParameters.get("parity").toString();
+
 
 						System.out.println("==local_source Sources-- Parameters -+++" + com_port + "+++++-" + slave_id
 								+ "---==" + baud_rate + "--" + data_bits + "^^^^" + stop_bits + "--" + parity + "");
@@ -101,6 +106,7 @@ public class ReadData extends Thread {
 							vcRegName = mapRepository.get_RegName(source_id);
 
 							if (!vcRegName.isEmpty()) {
+								String name="",final_name="",value1="",value_final="",cloumn_name="",all_value="";
 								for (int t = 0; t < vcRegName.size(); t++) {
 									String reg_name = vcRegName.get(t).toString();
 									System.out.println("Register name..... " + reg_name);
@@ -133,22 +139,32 @@ public class ReadData extends Thread {
 										if (reg_type.equalsIgnoreCase("float")) {
 											hexVal = hexToFloat(getRes);
 											System.out.println("Value........" + reg_name + "........." + hexVal);
-											Meterdata mt = new Meterdata();
-											mt.setCreated(new Timestamp(System.currentTimeMillis()));
-											mt.setSource_id(source_id);
-											mt.setValue("" + hexVal);
-											meterRepository.save(mt);
+											name=reg_name;
+											final_name=final_name+""+"\""+name+"\",";
+											value1=""+hexVal;
+											value_final=value_final+""+"'"+value1+"',";
 										}
 										if (reg_type.equalsIgnoreCase("integer")) {
-											Meterdata mt = new Meterdata();
-											mt.setCreated(new Timestamp(System.currentTimeMillis()));
-											mt.setSource_id(source_id);
-											mt.setValue("" + hexToInteger(getRes));
-											meterRepository.save(mt);
+
 										}
 									}
-								}
-							}
+								} // tag loop
+								cloumn_name=final_name;
+								all_value=value_final;
+								String final_date="";
+								SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+								Date date = new Date();
+								final_date=dateformat.format(date);
+								
+								String insert_query_col="source_id,"+cloumn_name+"\"time\"";
+								String insert_query_val=source_id+","+all_value+"'"+final_date+"'";
+								
+								String query="INSERT INTO meterdata("+insert_query_col+") values ("+insert_query_val+");";
+								int rc =silcoreDBConnectionConstants.insertPOSTGresSqlData(query);
+								System.out.println("my Query...."+query);
+								
+								
+							} // tag empty check
 
 						} catch (Exception e) {
 							System.out.println("Connection error due to: " + e);
@@ -449,7 +465,7 @@ public class ReadData extends Thread {
 			}
 
 			con.close();
-			System.out.println("---- Connection Closed!! ----");
+//			System.out.println("---- Connection Closed!! ----");
 
 		} catch (Exception ex) {
 			System.out.println("Reading Error - " + ex);

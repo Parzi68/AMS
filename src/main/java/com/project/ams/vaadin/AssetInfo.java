@@ -21,6 +21,7 @@ import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.BeforeEvent;
@@ -42,11 +43,11 @@ public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>
 	Asset asset = new Asset();
 	TextField source_id = new TextField("Source Id");
 	TextField source_name = new TextField("Source Name");
-	TextField application_Name = new TextField("Application Name");
+	Select<String> application_Name = new Select<>();
 	TextField longitude = new TextField("Longitude");
 	TextField latitude = new TextField("Latitude");
 	TextField location_name = new TextField("Location Name");
-	TextField protocol_type = new TextField("Protocol Type");
+	Select<String> protocol_type = new Select<>();
 	DatePicker install_date = new DatePicker("Install Date");
 	DatePicker modified_date = new DatePicker("Modified Date");
 	Button saveButton = new Button("Save");
@@ -83,7 +84,8 @@ public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>
 
 		application_Name.setRequiredIndicatorVisible(true);
 		application_Name.setErrorMessage("This field is required");
-		application_Name.setRequired(true);
+		application_Name.setLabel("Application Name");
+		application_Name.setItems("EMS");
 		application_Name.setWidthFull();
 
 		longitude.setRequiredIndicatorVisible(true);
@@ -101,7 +103,8 @@ public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>
 
 		protocol_type.setRequiredIndicatorVisible(true);
 		protocol_type.setErrorMessage("This field is required");
-		protocol_type.setRequired(true);
+		protocol_type.setLabel("Protocol Type");
+		protocol_type.setItems("MODBUS: RTU", "MODBUS: TCP");
 		protocol_type.setWidthFull();
 
 		location_name.setRequiredIndicatorVisible(true);

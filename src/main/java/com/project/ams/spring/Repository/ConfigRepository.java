@@ -32,10 +32,10 @@ public interface ConfigRepository extends JpaRepository<Rtuconfig, Long> {
     @Query(value = "SELECT source_id from rtuconfig t where t.slave_id =:slave_id", nativeQuery = true)
     Integer get_source_name(int slave_id);
     
-    @Query(value = "SELECT baud_rate , data_bits , stop_bits , parity from rtuconfig t where t.slave_id =:slave_id AND t.com_port =:com_port", nativeQuery = true)
-    public String modbus_rtu_configuration(@Param("slave_id")int slave_id,@Param("com_port") String com_port);
+  @Query(value = "SELECT baud_rate , data_bits , stop_bits , parity from rtuconfig t where t.slave_id =:slave_id AND t.com_port =:com_port", nativeQuery = true)
+    String modbus_rtu_configuration(@Param("slave_id")int slave_id,@Param("com_port") String com_port);
 //    
-//    @Query("SELECT com_port FROM rtuconfig d WHERE d.com_port = :com_port")
+//    @Query("SELECT com_port FROM rtuconfig d WHERE d.com_port = :com_port")  
 //    String comPort(@Param("com_port") String string);
 //    
 //    @Query("SELECT baud_rate FROM rtuconfig d WHERE d.baud_rate = :baud_rate")

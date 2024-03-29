@@ -60,7 +60,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 	Select<String> point_type = new Select<>();
 	Button backbtn = new Button("Back");
 	Button submitbtn = new Button("Submit");
-	Button connbtn = new Button("Connect");
+//	Button connbtn = new Button("Connect");
 //	Button producebtn = new Button("Read Data");
 	Button dashboard = new Button("View Dashboard");
 //	Button stopbtn = new Button("Stop Producing");
@@ -75,6 +75,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 //	@PostConstruct
 	@SuppressWarnings("removal")
 	public void init(String param) {
+//		main_id = Long.parseLong(param);
 //		setSizeFull();
 
 		HorizontalLayout navbar = new HorizontalLayout();
@@ -157,10 +158,10 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 			SaveTags(param);
 		});
 
-		connbtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
-		connbtn.addClickListener(e -> {
-//			Comm();
-		});
+//		connbtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
+//		connbtn.addClickListener(e -> {
+////			Comm();
+//		});
 
 //		producebtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_CONTRAST);
 //		producebtn.addClickListener(e -> {
@@ -194,7 +195,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 //			resetProduction();
 //		});
 
-		HorizontalLayout buttonLayout = new HorizontalLayout(backbtn, submitbtn, connbtn, dashboard);
+		HorizontalLayout buttonLayout = new HorizontalLayout(backbtn, submitbtn, dashboard);
 		VerticalLayout v1 = new VerticalLayout(source_id, reg_name, reg_address, reg_length);
 		VerticalLayout v2 = new VerticalLayout(reg_type, multiplier, element_name, point_type);
 		HorizontalLayout form = new HorizontalLayout(v1, v2);
@@ -206,14 +207,14 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 //		grid.removeAllColumns();
 		update();
 		grid.setAllRowsVisible(true);
-		grid.addColumn(Mappingdata::getId).setHeader("ID").setAutoWidth(true).setFrozen(true);
-		grid.addColumn(Mappingdata::getSource_id).setHeader("Source ID").setAutoWidth(true);
-		grid.addColumn(Mappingdata::getReg_name).setHeader("Register Name").setAutoWidth(true);
-		grid.addColumn(Mappingdata::getReg_address).setHeader("Register Address").setAutoWidth(true);
+//		grid.addColumn(Mappingdata::getId).setHeader("ID").setAutoWidth(true).setFrozen(true);
+//		grid.addColumn(Mappingdata::getSource_id).setHeader("Source ID").setAutoWidth(true);
+		grid.addColumn(Mappingdata::getReg_name).setHeader("Register Name").setAutoWidth(true).setSortable(true).setFrozen(true);
+		grid.addColumn(Mappingdata::getReg_address).setHeader("Register Address").setAutoWidth(true).setSortable(true);
 		grid.addColumn(Mappingdata::getReg_length).setHeader("Register Length").setAutoWidth(true);
 		grid.addColumn(Mappingdata::getReg_type).setHeader("Register Data Type").setAutoWidth(true);
 		grid.addColumn(Mappingdata::getMultiplier).setHeader("Multiplier").setAutoWidth(true);
-		grid.addColumn(Mappingdata::getElement_name).setHeader("Element").setAutoWidth(true);
+		grid.addColumn(Mappingdata::getElement_name).setHeader("Element").setAutoWidth(true).setSortable(true);
 		grid.addColumn(Mappingdata::getPoint_type).setHeader("Modbus Point Type").setAutoWidth(true);
 
 		// Add edit button column
@@ -247,7 +248,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 				// Audit Trial
 			});
 			return addinst;
-		}).setHeader("Edit").setTextAlign(ColumnTextAlign.CENTER);
+		}).setTextAlign(ColumnTextAlign.CENTER).setAutoWidth(true);
 
 		// Add delete button column
 //		grid.addComponentColumn(mappingData -> {
@@ -287,7 +288,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 				dialog.add(layout);
 			});
 			return deletebtn;
-		})).setHeader("Delete").setAutoWidth(true);
+		})).setAutoWidth(true);
 
 		add(navbar, hr, form, buttonLayout, new Hr(), grid);
 
@@ -337,7 +338,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 
 	private void SaveTags(String param) {
 		if (param.equals("0")) {
-			if (!mapRepository.check_source(reg_name.getValue())) {
+			if (!mapRepository.check_source(Integer.parseInt(reg_address.getValue()))) {
 				// Create a new SourceTable object
 				Mappingdata st = new Mappingdata();
 				st.setSource_id(Integer.parseInt(source_id.getValue()));

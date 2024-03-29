@@ -33,7 +33,7 @@ import jakarta.annotation.security.RolesAllowed;
 
 @PageTitle("Asset Info")
 @Route(value = "/", layout = MainLayout.class)
-
+@RolesAllowed("ADMIN")
 public class Index extends VerticalLayout {
 	Button btn = new Button("Add Source");
 	Grid<Asset> grid = new Grid<>(Asset.class, false);
@@ -65,8 +65,8 @@ public class Index extends VerticalLayout {
 		// Set up the grid
 		update();
 		grid.removeAllColumns();
-		grid.addColumn(Asset::getId).setHeader("ID").setFrozen(true).setAutoWidth(true).setFlexGrow(0);
-		grid.addColumn(Asset::getSource_id).setHeader("Source Id").setAutoWidth(true);
+//		grid.addColumn(Asset::getId).setHeader("ID").setFrozen(true).setAutoWidth(true).setFlexGrow(0);
+		grid.addColumn(Asset::getSource_id).setHeader("Source Id").setAutoWidth(true).setAutoWidth(true).setFrozen(true);
 		grid.addColumn(Asset::getSource_name).setHeader("Source Name").setAutoWidth(true);
 		grid.addColumn(Asset::getApplication_name).setHeader("Application Name").setAutoWidth(true);
 		grid.addColumn(Asset::getLongitude).setHeader("Longitude").setAutoWidth(true);

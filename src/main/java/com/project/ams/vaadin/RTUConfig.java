@@ -62,7 +62,7 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 //	@PostConstruct
 	@SuppressWarnings("removal")
 	public void init(String param) {
-//		main_id = Long.parseLong(param);
+		main_id = Long.parseLong(param);
 
 		HorizontalLayout navbar = new HorizontalLayout();
 		navbar.setWidthFull();
@@ -200,8 +200,8 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 
 		update();
 		grid.setAllRowsVisible(true);
-		grid.addColumn(Rtuconfig::getId).setHeader("Id").setFrozen(true).setFlexGrow(0).setAutoWidth(true);
-		grid.addColumn(Rtuconfig::getSource_id).setHeader("Source Id").setAutoWidth(true);
+//		grid.addColumn(Rtuconfig::getId).setHeader("Id").setFrozen(true).setFlexGrow(0).setAutoWidth(true);
+		grid.addColumn(Rtuconfig::getSource_id).setHeader("Source Id").setAutoWidth(true).setFrozen(true).setAutoWidth(true);
 		grid.addColumn(Rtuconfig::getSlave_id).setHeader("Slave Id").setAutoWidth(true);
 		grid.addColumn(Rtuconfig::getCom_port).setHeader("COM_Port").setAutoWidth(true);
 		grid.addColumn(Rtuconfig::getBaud_rate).setHeader("Baud Rate").setAutoWidth(true);
@@ -239,7 +239,7 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 				// Audit Trial
 			});
 			return addinst;
-		}).setHeader("Edit").setTextAlign(ColumnTextAlign.CENTER);
+		}).setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
 
 		// Add delete button column
 		grid.addColumn(new ComponentRenderer<>(item -> {
@@ -272,39 +272,10 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 				dialog.add(layout);
 			});
 			return deletebtn;
-		})).setHeader("Delete").setAutoWidth(true);
+		})).setAutoWidth(true);
 		
 		add(navbar, hr,v1,new Hr(), grid);
 	}
-
-//	private void Connection() {
-//		SerialConnection con = null;
-//		try{
-//              SerialParameters params = new SerialParameters();
-//			  params.setPortName(com_port.getValue());
-//			  params.setBaudRate(baud_rate.getValue());
-//			  params.setDatabits(data_bits.getValue());
-//			  params.setParity(parity.getValue());
-//			  params.setStopbits(stop_bits.getValue()); // only for hubli
-//			  params.setEncoding("RTU");
-//			  params.setEcho(false);
-//			  con = new SerialConnection(params);
-//			  
-//			  if (!con.isOpen()) {
-//		            con.open();
-//		            Notification.show("Modbus RTU Device Connected Successfully").setDuration(3000);
-//		            Notification.show("Reading.........").setDuration(3000);
-//		            UI.getCurrent().navigate(TagMapping.class);
-//		        } else {
-//		            Notification.show("Failed to connect to Modbus RTU Device").setDuration(3000);
-//		            con.close();
-//		        }
-//		    } catch (Exception e) {
-//		        System.out.println(e);
-//		        Notification.show("An error occurred while trying to connect to Modbus RTU Device").setDuration(3000);
-//		        con.close();
-//		    }
-//	}
 
 	private void setComPortValue() {
 		SerialPort[] ports = SerialPort.getCommPorts();
