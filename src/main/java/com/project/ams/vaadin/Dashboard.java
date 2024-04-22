@@ -17,6 +17,8 @@ import com.google.zxing.common.HybridBinarizer;
 import com.project.ams.views.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Image;
@@ -26,6 +28,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
+import com.vaadin.flow.dom.Style.JustifyContent;
 import com.vaadin.flow.router.Route;
 
 import jakarta.annotation.PostConstruct;
@@ -108,20 +111,28 @@ public class Dashboard extends VerticalLayout {
 		VerticalLayout v2 = new VerticalLayout();
 		H3 details = new H3("Asset details:");
 		v2.add(details, image);
-		HorizontalLayout h1 = new HorizontalLayout(sourceId, longitude, protocolType);
-		h1.setSpacing(true);
-		HorizontalLayout h2 = new HorizontalLayout(sourceName, latitude, installDate);
-		h2.setSpacing(true);
-		HorizontalLayout h3 = new HorizontalLayout(applicationName, locationName, modifiedDate);
-		h3.setSpacing(true);
-		VerticalLayout v1 = new VerticalLayout(h1, h2, h3);
-		v1.setSpacing(false);
-		v1.getThemeList().add("spacing-xl");
-		v1.setWidthFull();
-		v1.setHeightFull();
-		v1.setAlignItems(Alignment.CENTER);
-		v1.setMargin(true);
-		add(v2, v1);
+		FormLayout h1 = new FormLayout();
+		h1.add(sourceId, sourceName, applicationName, longitude, latitude, locationName, protocolType, installDate, modifiedDate);
+		h1.setResponsiveSteps(// Use one column by default
+                new ResponsiveStep("0", 1),
+                // Use two columns, if the layout's width exceeds 320px
+                new ResponsiveStep("320px", 2),
+                // Use three columns, if the layout's width exceeds 500px
+                new ResponsiveStep("500px", 3));
+//		h1.setSpacing(true);
+//		FormLayout h2 = new FormLayout();
+//		h2.add(sourceName, latitude, installDate);
+////		h2.setSpacing(true);
+//		FormLayout h3 = new FormLayout();
+//		h3.add(applicationName, locationName, modifiedDate);
+////		h3.setSpacing(true);
+		VerticalLayout v1 = new VerticalLayout(h1);
+//		v1.setSpacing(false);
+//		v1.getThemeList().add("spacing-xl");
+		v1.setSizeFull();
+//		v1.setHeightFull();
+//		v1.setMargin(true);
+		add(v2,v1);
 
 		Notification.show("QR code decoded successfully");
 	}

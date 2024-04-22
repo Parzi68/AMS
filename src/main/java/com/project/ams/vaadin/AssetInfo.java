@@ -1,7 +1,6 @@
 package com.project.ams.vaadin;
 
 import java.io.ByteArrayInputStream;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,7 +13,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.datepicker.DatePicker;
-import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Hr;
@@ -23,15 +22,12 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
-
-import jakarta.annotation.PostConstruct;
 
 @PageTitle("Asset Info")
 @Route(value = "asset", layout = MainLayout.class)
@@ -165,7 +161,7 @@ public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>
 			UI.getCurrent().navigate(Dashboard.class);
 		});
 
-		HorizontalLayout h1 = new HorizontalLayout(saveButton, nextButton, qrGen, downloadLink, decodebtn);
+		FormLayout h1 = new FormLayout(saveButton, nextButton, qrGen, downloadLink, decodebtn);
 		// Create an Anchor for downloading the QR Code
 		downloadLink.getElement().getThemeList().add("button");
 		downloadLink.getElement().setAttribute("download", true);
@@ -173,7 +169,7 @@ public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>
 		downloadLink.setVisible(false); // Initially hide the anchor
 
 //		h1.add(downloadLink); // Add the anchor to the layout
-		h1.setSpacing(true);
+//		h1.setSpacing(true);
 		VerticalLayout v1 = new VerticalLayout(source_id, source_name, application_Name, longitude, latitude,
 				location_name, protocol_type, install_date, modified_date, h1);
 		v1.setSpacing(true);

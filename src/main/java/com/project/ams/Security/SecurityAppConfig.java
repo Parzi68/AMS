@@ -14,7 +14,7 @@
 //import org.springframework.security.web.SecurityFilterChain;
 //
 //@Configuration
-//@EnableWebSecurity(debug = true)
+//@EnableWebSecurity
 //public class SecurityAppConfig {
 //
 ////	private final UserDetailsService userDetailsService;
@@ -45,17 +45,17 @@
 //    	
 ////    	httpSecurity.authorizeHttpRequests().anyRequest().authenticated();
 //    	httpSecurity.authorizeHttpRequests(customizer -> {
-//    		customizer.requestMatchers("/login" , "/logout").permitAll();
-//    		customizer.anyRequest().hasRole("ADMIN");
+//    		customizer.anyRequest().permitAll();
+////    		customizer.anyRequest().hasRole("ADMIN");
 //    	});
 ////    	httpSecurity.formLogin().loginPage("/login");
 //    	
 //    	httpSecurity.formLogin(customizer -> {
-////    		customizer.loginPage("/login");
-////    		customizer.isCustomLoginPage();
-////    		customizer.loginProcessingUrl("/login");
+//    		customizer.loginPage("/login");
+//    		customizer.isCustomLoginPage();	
+//    		customizer.loginProcessingUrl("/login");
 ////    		UI.getCurrent().getPage().executeJs("window.open('http://localhost:8081/');");
-//    		customizer.defaultSuccessUrl("http://localhost:8081/");
+//    		customizer.defaultSuccessUrl("/");
 //    	});
 ////    	httpSecurity.httpBasic();
 //    	httpSecurity.httpBasic(Customizer.withDefaults());

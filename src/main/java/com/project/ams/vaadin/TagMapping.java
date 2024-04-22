@@ -1,13 +1,9 @@
 package com.project.ams.vaadin;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import org.apache.catalina.mapper.MappingData;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.project.ams.kafka.producer.service.KafkaProducerService;
 import com.project.ams.spring.Repository.ConfigRepository;
 import com.project.ams.spring.Repository.MapRepository;
 import com.project.ams.spring.model.Mappingdata;
@@ -16,6 +12,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H3;
@@ -24,6 +21,7 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
@@ -42,8 +40,8 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 
 	public static final String ROUTE_NAME = "tagMapping";
 
-	@Autowired
-	private KafkaProducerService kafkaProducerService;
+//	@Autowired
+//	private KafkaProducerService kafkaProducerService;
 
 	@Autowired
 	MapRepository mapRepository;
@@ -198,8 +196,8 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 		HorizontalLayout buttonLayout = new HorizontalLayout(backbtn, submitbtn, dashboard);
 		VerticalLayout v1 = new VerticalLayout(source_id, reg_name, reg_address, reg_length);
 		VerticalLayout v2 = new VerticalLayout(reg_type, multiplier, element_name, point_type);
-		HorizontalLayout form = new HorizontalLayout(v1, v2);
-		form.setSpacing(true);
+		FormLayout form = new FormLayout(v1, v2);
+//		form.setSpacing(true);
 		form.setWidthFull();
 		// buttonLayout.setSizeFull();
 //		add(navbar, hr,form, buttonLayout);

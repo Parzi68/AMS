@@ -33,6 +33,9 @@ public class ReadData extends Thread {
 
 	@Autowired
 	private MapRepository mapRepository;
+	
+//	@Autowired
+//	private KafkaProducerService kafkaProducerService;
 
 	SerialConnection con = null;
 
@@ -52,6 +55,7 @@ public class ReadData extends Thread {
 		this.configRepository = configRepository;
 		this.mapRepository = mapRepository;
 		this.meterRepository = meterRepository;
+//		this.kafkaProducerService=kafkaProducerService;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -139,6 +143,8 @@ public class ReadData extends Thread {
 										if (reg_type.equalsIgnoreCase("float")) {
 											hexVal = hexToFloat(getRes);
 											System.out.println("Value........" + reg_name + "........." + hexVal);
+//											kafkaProducerService.updateData("Value........" + reg_name + "........." + hexVal);
+//											System.out.println("-------- KAFKA PRODUCING ----------");
 											name=reg_name;
 											final_name=final_name+""+"\""+name+"\",";
 											value1=""+hexVal;

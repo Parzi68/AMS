@@ -14,6 +14,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H3;
@@ -188,10 +189,12 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 
 		HorizontalLayout buttonLayout = new HorizontalLayout(backbtn, savebtn,next);
 		buttonLayout.setSpacing(true);
-		HorizontalLayout h2 = new HorizontalLayout(pollInterval, timeFormat);
-		h2.setSpacing(true);
-		HorizontalLayout h3 = new HorizontalLayout(repInterval, timeFormat2);
-		h3.setSpacing(true);
+		FormLayout h2 = new FormLayout();
+		h2.add(pollInterval, timeFormat);
+//		h2.setSpacing(true);
+		FormLayout h3 = new FormLayout();
+		h3.add(repInterval, timeFormat2);
+//		h3.setSpacing(true);
 		VerticalLayout v1 = new VerticalLayout(source_id, slave_id, com_port, baud_rate, data_bits, stop_bits, parity,
 				h2, h3, buttonLayout);
 		v1.setPadding(true);

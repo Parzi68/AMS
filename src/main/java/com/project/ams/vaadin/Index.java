@@ -27,13 +27,15 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.dom.Style.JustifyContent;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.RolesAllowed;
 
 @PageTitle("Asset Info")
-@Route(value = "/", layout = MainLayout.class)
-@RolesAllowed("ADMIN")
+@Route(value = "", layout = MainLayout.class)
+@RouteAlias("index")
+//@RolesAllowed("ADMIN")
 public class Index extends VerticalLayout {
 	Button btn = new Button("Add Source");
 	Grid<Asset> grid = new Grid<>(Asset.class, false);

@@ -1,15 +1,19 @@
 package com.project.ams.views;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.login.LoginOverlay;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
-@PageTitle("Login")
-@Route("/login")
-@AnonymousAllowed
+@PageTitle("Login | AMS")
+@Route("login")
+@RouteAlias("logout")
+@CrossOrigin(origins = "*")
 public class LoginView extends VerticalLayout{
 
 	    public LoginView() {
