@@ -29,11 +29,16 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.dom.Style.JustifyContent;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.security.RolesAllowed;
 
+
+@PageTitle("Decode Page  |  AMS")
 @Route(value = "/dashboard", layout = MainLayout.class)
+@RolesAllowed("ADMIN")
 public class Dashboard extends VerticalLayout {
 
 	Upload upload = new Upload();

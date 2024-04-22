@@ -31,11 +31,15 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import jakarta.annotation.security.RolesAllowed;
 import net.wimpi.modbus.net.SerialConnection;
 
+@PageTitle("Tag Mapping  |  AMS")
 @Route(value = "/tagMapping", layout = MainLayout.class)
+@RolesAllowed("ADMIN")
 public class TagMapping extends VerticalLayout implements HasUrlParameter<String> {
 
 	public static final String ROUTE_NAME = "tagMapping";

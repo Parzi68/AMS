@@ -35,7 +35,7 @@ import jakarta.annotation.security.RolesAllowed;
 @PageTitle("Asset Info")
 @Route(value = "", layout = MainLayout.class)
 @RouteAlias("index")
-//@RolesAllowed("ADMIN")
+@RolesAllowed("ADMIN")
 public class Index extends VerticalLayout {
 	Button btn = new Button("Add Source");
 	Grid<Asset> grid = new Grid<>(Asset.class, false);

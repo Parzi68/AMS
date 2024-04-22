@@ -32,10 +32,15 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import jakarta.annotation.security.RolesAllowed;
+
+@PageTitle("RTU Config  |  AMS")
 @SuppressWarnings("removal")
 @Route(value = "/rtuconfig", layout = MainLayout.class)
+@RolesAllowed("ADMIN")
 public class RTUConfig extends VerticalLayout implements HasUrlParameter<String> {
 	public static final String ROUTE_NAME = "rtuconfig";
 	@Autowired

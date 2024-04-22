@@ -1,5 +1,8 @@
 package com.project.ams.views;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.project.ams.Security.SecurityService;
 import com.project.ams.vaadin.Adduser;
 import com.project.ams.vaadin.Index;
 import com.project.ams.vaadin.RTUConfig;
@@ -7,21 +10,26 @@ import com.project.ams.vaadin.TagMapping;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
-import com.vaadin.flow.dom.Style.AlignItems;
-import com.vaadin.flow.dom.Style.AlignSelf;
-import com.vaadin.flow.dom.Style.JustifyContent;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 @Route
 public class MainLayout extends AppLayout {
+	
+	 private SecurityService securityService;
 
-	public MainLayout() {
+	public MainLayout(@Autowired SecurityService securityService) {
+		 this.securityService = securityService;
+		 
 		DrawerToggle toggle = new DrawerToggle();
 
 		H1 title = new H1("AMS");
@@ -33,9 +41,30 @@ public class MainLayout extends AppLayout {
 		Scroller scroller = new Scroller(nav);
 		scroller.setClassName(LumoUtility.Padding.MEDIUM);
 		scroller.setClassName(LumoUtility.AlignItems.CENTER);
+		
+		HorizontalLayout header;
+        
+		
+		if (securityService.getAuthenticatedUser() != null) {
+			 Button logout = new Button("Logout", click -> securityService.logout());
+	            logout.addThemeVariants(ButtonVariant.LUMO_CONTRAST, ButtonVariant.LUMO_TERTIARY_INLINE);
+
+	            HorizontalLayout logoutLayout = new HorizontalLayout(logout);
+	            logoutLayout.setWidthFull();
+	            logoutLayout.getStyle().setMarginRight("30px");
+	            logoutLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+
+	            header = new HorizontalLayout(toggle, title, logoutLayout);
+	            header.addClassName("header");
+	            header.setWidth("100%");
+	            header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
+
+        } else {
+            header = new HorizontalLayout(toggle,title);
+        }
 
 		addToDrawer(scroller);
-		addToNavbar(toggle, title);
+		addToNavbar(header);
 	}
 
 	public SideNav getSideNav() {

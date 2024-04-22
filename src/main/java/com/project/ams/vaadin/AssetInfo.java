@@ -14,6 +14,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Hr;
@@ -29,8 +30,11 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 
-@PageTitle("Asset Info")
+import jakarta.annotation.security.RolesAllowed;
+
+@PageTitle("Asset Info  |  AMS")
 @Route(value = "asset", layout = MainLayout.class)
+@RolesAllowed("ADMIN")
 public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>{
 
 	public static final String ROUTE_NAME = "asset";
@@ -162,6 +166,12 @@ public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>
 		});
 
 		FormLayout h1 = new FormLayout(saveButton, nextButton, qrGen, downloadLink, decodebtn);
+		h1.setResponsiveSteps(        // Use one column by default
+		        new ResponsiveStep("0", 1),
+		        // Use two columns, if the layout's width exceeds 320px
+		        new ResponsiveStep("320px", 1),
+		        // Use three columns, if the layout's width exceeds 500px
+		        new ResponsiveStep("500px", 5));
 		// Create an Anchor for downloading the QR Code
 		downloadLink.getElement().getThemeList().add("button");
 		downloadLink.getElement().setAttribute("download", true);

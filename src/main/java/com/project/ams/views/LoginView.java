@@ -2,9 +2,11 @@ package com.project.ams.views;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.login.LoginOverlay;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
@@ -14,37 +16,38 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 @Route("login")
 @RouteAlias("logout")
 @CrossOrigin(origins = "*")
-public class LoginView extends VerticalLayout{
+@AnonymousAllowed
+public class LoginView extends VerticalLayout implements BeforeEnterObserver{
 
-	    public LoginView() {
-	        setPadding(true);
-	        setAlignItems(Alignment.CENTER);
-//	        setJustifyContentMode(JustifyContentMode.CENTER);
+	private LoginForm login = new LoginForm();
 
-//	        LoginForm loginForm = new LoginForm();
-//	        loginForm.setForgotPasswordButtonVisible(true);
-//	        loginForm.addLoginListener(e -> handleLogin(e.getUsername(), e.getPassword()));
+    public LoginView() {
+        addClassName("login-view");
+        getStyle().setBackgroundColor("#202024");
+        setSizeFull();
 
-//	        VerticalLayout layout = new VerticalLayout();
-//	        layout.setPadding(false);
-//	        layout.setSpacing(false);
-//	        layout.getStyle().set("background-color", "blue");
-//	        layout.getStyle().set("color", "white");
-//	        layout.getStyle().set("padding", "20px");
-	        LoginOverlay overlay = new LoginOverlay();
-	        overlay.setTitle("AMS");
-	        overlay.setDescription(null);
-//	        overlay.addForgotPasswordListener(e -> UI.getCurrent().navigate(ForgetPassword.class) );
-//	        overlay.setError(true);
-//	        overlay.setForgotPasswordButtonVisible(false);
-	        overlay.setOpened(true);
-	        overlay.setForgotPasswordButtonVisible(false);
-	        overlay.getElement().setAttribute("no-autofocus", "");
-	        overlay.addLoginListener(e->{
-	        	UI.getCurrent().getPage().executeJs("window.open('http://localhost:8081/');");
-	        });
-	        
-	        add(overlay);
-	        overlay.setError(true);
-	    }
+        setJustifyContentMode(JustifyContentMode.CENTER);
+        setAlignItems(Alignment.CENTER);
+
+        login.setAction("login");
+        login.getStyle().setBorder("3px");
+        login.getStyle().setBorderRadius("3px");
+        login.setForgotPasswordButtonVisible(false);
+
+        H1 header = new H1("AMS");
+        header.getStyle().setColor("#fff");
+        
+        add(header, login);
+    }
+
+		@Override
+		public void beforeEnter(BeforeEnterEvent event) {
+			 if(event.getLocation()
+			            .getQueryParameters()
+			            .getParameters()
+			            .containsKey("error")) {
+			            login.setError(true);
+			        }
+			
+		}
 }
