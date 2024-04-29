@@ -9,10 +9,19 @@ import jakarta.persistence.Id;
 public class Userdetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long id;
-	String email;
-	String username;
-	String password;
+	private Long id;
+	private String email;
+	private String username;
+	private String password;
+	private String role;
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
 
 	public Long getId() {
 		return id;

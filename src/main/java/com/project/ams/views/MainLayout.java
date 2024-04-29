@@ -14,23 +14,19 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
-import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.Lumo;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-@Route
+
 public class MainLayout extends AppLayout {
 	
-	 private SecurityService securityService;
-
-	public MainLayout(@Autowired SecurityService securityService) {
-		 this.securityService = securityService;
-		 
-		DrawerToggle toggle = new DrawerToggle();
+	 public MainLayout(@Autowired SecurityService securityService) {
+		 DrawerToggle toggle = new DrawerToggle();
 
 		H1 title = new H1("AMS");
 		title.getStyle().set("font-size", "var(--lumo-font-size-m)").set("margin", "1");
@@ -84,6 +80,7 @@ public class MainLayout extends AppLayout {
 //                new SideNavItem("Tasks", "/tasks", VaadinIcon.LIST.create()),
 //                new SideNavItem("Analytics", "/analytics",
 //                        VaadinIcon.CHART.create()));
+		
 		src.getStyle().setMarginTop("2px");
 		rtu.getStyle().setMarginTop("2px");
 		tag.getStyle().setMarginTop("2px");
@@ -96,5 +93,11 @@ public class MainLayout extends AppLayout {
 
 		return sideNav;
 	}
+	
+//	private void setTheme(boolean dark) {
+//        var js = "document.documentElement.setAttribute('theme', $0)";
+//
+//        getElement().executeJs(js, dark ? Lumo.DARK : Lumo.LIGHT);
+//    }
 
 }

@@ -11,6 +11,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 
 @PageTitle("Login | AMS")
 @Route("login")
@@ -30,8 +31,8 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver{
         setAlignItems(Alignment.CENTER);
 
         login.setAction("login");
-        login.getStyle().setBorder("3px");
         login.getStyle().setBorderRadius("3px");
+        login.getStyle().setBoxShadow(LumoUtility.BoxShadow.XSMALL);
         login.setForgotPasswordButtonVisible(false);
 
         H1 header = new H1("AMS");
