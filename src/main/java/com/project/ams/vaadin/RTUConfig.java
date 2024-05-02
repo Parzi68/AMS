@@ -40,7 +40,7 @@ import jakarta.annotation.security.RolesAllowed;
 @PageTitle("RTU Config  |  AMS")
 @SuppressWarnings("removal")
 @Route(value = "/rtuconfig", layout = MainLayout.class)
-@RolesAllowed("ADMIN")
+//@RolesAllowed("ADMIN")
 public class RTUConfig extends VerticalLayout implements HasUrlParameter<String> {
 	public static final String ROUTE_NAME = "rtuconfig";
 	@Autowired

@@ -38,7 +38,7 @@ import jakarta.annotation.security.RolesAllowed;
 
 @PageTitle("Decode Page  |  AMS")
 @Route(value = "/dashboard", layout = MainLayout.class)
-@RolesAllowed("ADMIN")
+//@RolesAllowed("ADMIN")
 public class Dashboard extends VerticalLayout {
 
 	Upload upload = new Upload();

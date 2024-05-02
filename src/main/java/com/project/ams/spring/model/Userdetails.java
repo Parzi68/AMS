@@ -1,6 +1,6 @@
 package com.project.ams.spring.model;
 
-import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GeneratedValue; 
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

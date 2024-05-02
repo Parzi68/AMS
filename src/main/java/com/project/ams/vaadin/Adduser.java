@@ -26,6 +26,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.BeforeEvent;
@@ -37,7 +38,7 @@ import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 
 @PageTitle("Add User  |  AMS")
-@RolesAllowed("ADMIN")
+//@RolesAllowed("ADMIN")
 @Route(value = "/Adduser", layout = MainLayout.class)
 public class Adduser extends VerticalLayout implements HasUrlParameter<String> {
 	
@@ -57,6 +58,7 @@ public class Adduser extends VerticalLayout implements HasUrlParameter<String> {
 	Button cancel = new Button("Cancel");
 	Grid<Userdetails> users = new Grid<>(Userdetails.class, false);
 	ListDataProvider<Userdetails> dataProvider;
+	Binder<Userdetails> binder = new Binder<>();
 	
 	long main_id = 0;
 
@@ -81,6 +83,10 @@ public class Adduser extends VerticalLayout implements HasUrlParameter<String> {
 				pass.setValue(t1.getPassword());
 			}
 		}
+		
+		binder.forField(username).asRequired("Please fill this field").bind(Userdetails::getUsername,Userdetails::setUsername);
+		binder.forField(pass).asRequired("Please fill this field").bind(Userdetails::getPassword, Userdetails::setPassword);
+		binder.forField(email).asRequired("Please fill this field").bind(Userdetails::getEmail,Userdetails::setEmail);
 		
 		id.setReadOnly(true);
 		id.setValue(String.valueOf(user.getId()));

@@ -14,7 +14,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.RolesAllowed;
 
 @Route(value ="/user", layout = UserLayout.class)
-@RolesAllowed("OPERATOR")
+//@RolesAllowed("OPERATOR")
 public class UserPage extends VerticalLayout{
 
 	Button dashboard = new Button("View Dashboard");

@@ -39,7 +39,7 @@ import net.wimpi.modbus.net.SerialConnection;
 
 @PageTitle("Tag Mapping  |  AMS")
 @Route(value = "/tagMapping", layout = MainLayout.class)
-@RolesAllowed("ADMIN")
+//@RolesAllowed("ADMIN")
 public class TagMapping extends VerticalLayout implements HasUrlParameter<String> {
 
 	public static final String ROUTE_NAME = "tagMapping";
