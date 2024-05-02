@@ -171,7 +171,8 @@ public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>
 		        // Use two columns, if the layout's width exceeds 320px
 		        new ResponsiveStep("320px", 1),
 		        // Use three columns, if the layout's width exceeds 500px
-		        new ResponsiveStep("500px", 5));
+		        new ResponsiveStep("500px", 8));
+//		h1.setWidth("15px");
 		// Create an Anchor for downloading the QR Code
 		downloadLink.getElement().getThemeList().add("button");
 		downloadLink.getElement().setAttribute("download", true);

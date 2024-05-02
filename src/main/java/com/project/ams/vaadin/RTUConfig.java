@@ -45,7 +45,8 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 	public static final String ROUTE_NAME = "rtuconfig";
 	@Autowired
 	private ConfigRepository configRepository;
-	Rtuconfig config = new Rtuconfig();
+//	Rtuconfig config = new Rtuconfig();
+	TextField id = new TextField("id");
 	TextField source_id = new TextField("Source id");
 	TextField slave_id = new TextField("Slave ID");
 	Select<String> com_port = new Select<>();
@@ -233,6 +234,7 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 			addinst.addClickListener(ed -> {
 				//Long locationId = editdata.getId()
 				main_id=editdata.getId();
+				id.setValue(String.valueOf(editdata.getId()));
 				source_id.setValue(String.valueOf(editdata.getSource_id()));
 				slave_id.setValue(String.valueOf(editdata.getSlave_id()));
 				com_port.setValue(editdata.getCom_port());
@@ -253,7 +255,7 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 		grid.addColumn(new ComponentRenderer<>(item -> {
 			Button deletebtn = new Button("Delete");
 			deletebtn.setIcon(new Icon(VaadinIcon.TRASH));
-			deletebtn.addThemeVariants(ButtonVariant.LUMO_ERROR);
+			deletebtn.addThemeVariants(ButtonVariant.LUMO_SMALL,ButtonVariant.LUMO_ERROR);
 			deletebtn.setWidthFull();
 			deletebtn.addClickListener(even -> {
 				Dialog dialog = new Dialog();
@@ -297,6 +299,7 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 	        if (!configRepository.check_source(Integer.parseInt(slave_id.getValue()))){
 	            // Create a new SourceTable object
 	        	Rtuconfig st = new Rtuconfig();
+	        	st.setId(Long.parseLong(id.getValue()));
 	            st.setSource_id(Integer.parseInt(source_id.getValue()));
 	            st.setSlave_id(Integer.parseInt(slave_id.getValue()));
 	            st.setCom_port(com_port.getValue());
@@ -319,6 +322,7 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 	    } else {
 	        // Update the existing source
 	    	Rtuconfig st = new Rtuconfig();
+	    	st.setId(Long.parseLong(id.getValue()));
             st.setSource_id(Integer.parseInt(source_id.getValue()));
             st.setSlave_id(Integer.parseInt(slave_id.getValue()));
             st.setCom_port(com_port.getValue());

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.project.ams.spring.Repository.UserRepository;
-import com.project.ams.spring.model.Mappingdata;
 import com.project.ams.spring.model.Userdetails;
 import com.project.ams.views.MainLayout;
 import com.vaadin.flow.component.button.Button;
@@ -35,7 +34,6 @@ import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.RolesAllowed;
 
 @PageTitle("Add User  |  AMS")
@@ -48,7 +46,10 @@ public class Adduser extends VerticalLayout implements HasUrlParameter<String> {
 	@Autowired
 	private UserRepository userRepository;
 	
-	Userdetails user = new Userdetails();
+//	Userdetails userdetails = new Userdetails();
+	
+	private Userdetails user = new Userdetails();
+	TextField id = new TextField("Id");
 	EmailField email = new EmailField("Enter email");
 	TextField username = new TextField("Enter Username");
 	PasswordField pass = new PasswordField("Enter Password");
@@ -62,6 +63,7 @@ public class Adduser extends VerticalLayout implements HasUrlParameter<String> {
 	@SuppressWarnings("removal")
 //	@PostConstruct
 	public void init(String param) {
+//		Userdetails userdetails = new Userdetails();
 		
 //		main_id = Long.parseLong(param);
 
@@ -79,6 +81,32 @@ public class Adduser extends VerticalLayout implements HasUrlParameter<String> {
 				pass.setValue(t1.getPassword());
 			}
 		}
+		
+		id.setReadOnly(true);
+		id.setValue(String.valueOf(user.getId()));
+		// Fetch the latest ID from the database and increment it by 1
+		Long nextId = userRepository.findMaxId();
+
+		// If no records exist, set nextId to 1, otherwise increment the found max ID by
+		// 1
+		nextId = (nextId == null) ? 1L : nextId + 1;
+		id.setValue(String.valueOf(nextId));
+		
+		
+		email.setErrorMessage("Please enter email address");
+		email.setRequired(true);
+		email.setRequiredIndicatorVisible(true);
+		
+		username.setErrorMessage("Please fill this field!");
+		username.setRequired(true);
+		username.setRequiredIndicatorVisible(true);
+		
+		
+		pass.setErrorMessage("Please fill this field!");
+		pass.setRequired(true);
+		pass.setRequiredIndicatorVisible(true);
+		
+		
 		add.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 		add.getElement().getStyle().set("margin-top", "15px");
 		add.addClickListener(e -> {
@@ -92,14 +120,14 @@ public class Adduser extends VerticalLayout implements HasUrlParameter<String> {
 		FormLayout form = new FormLayout();
 		form.getStyle().setPadding("10px");
 //		form.getStyle().setAlignItems(AlignItems.CENTER);
-		form.add(email, username, pass, buttonLayout);
+		form.add(id, email, username, pass, buttonLayout);
 		form.setResponsiveSteps(
 				// Use one column by default
 				new ResponsiveStep("0", 1));
 
 		update();
 		users.setAllRowsVisible(true);
-		users.addColumn(Userdetails::getId).setHeader("ID").setAutoWidth(true).setFrozen(true);
+		users.addColumn(Userdetails::getId).setHeader("ID").setAutoWidth(true).setFrozen(true).setSortable(true);
 		users.addColumn(Userdetails::getEmail).setHeader("Email").setAutoWidth(true);
 		users.addColumn(Userdetails::getUsername).setHeader("UserName").setAutoWidth(true);
 		// Edit button
@@ -114,6 +142,7 @@ public class Adduser extends VerticalLayout implements HasUrlParameter<String> {
 			addinst.addClickListener(ed -> {
 				// Long locationId = editdata.getId()
 				main_id = editdata.getId();
+				id.setValue(String.valueOf(editdata.getId()));
 				email.setValue(editdata.getEmail());
 				username.setValue(editdata.getUsername());
 				pass.setValue(editdata.getPassword());
@@ -125,7 +154,7 @@ public class Adduser extends VerticalLayout implements HasUrlParameter<String> {
 		users.addColumn(new ComponentRenderer<>(item -> {
 			Button deletebtn = new Button("Delete");
 			deletebtn.setIcon(new Icon(VaadinIcon.TRASH));
-			deletebtn.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_SMALL);
+			deletebtn.addThemeVariants(ButtonVariant.LUMO_SMALL,ButtonVariant.LUMO_ERROR);
 			deletebtn.setWidthFull();
 			deletebtn.addClickListener(even -> {
 				Dialog dialog = new Dialog();
@@ -162,6 +191,7 @@ public class Adduser extends VerticalLayout implements HasUrlParameter<String> {
 			if (!userRepository.check_source(username.getValue())) {
 				// Create a new SourceTable object
 				Userdetails st = new Userdetails();
+				st.setId(Long.parseLong(id.getValue()));
 				st.setEmail(email.getValue());
 				st.setUsername(username.getValue());
 				BCryptPasswordEncoder bycrypt = new BCryptPasswordEncoder();
@@ -171,7 +201,7 @@ public class Adduser extends VerticalLayout implements HasUrlParameter<String> {
 				// Save the source
 				userRepository.save(st);
 				update();
-				Notification.show("Credentials have been saved successfully");
+				Notification.show("Users have been updated successfully!");
 				System.out.println("-------- Adding User -------");
 //				add.setEnabled(false);
 				
@@ -181,6 +211,7 @@ public class Adduser extends VerticalLayout implements HasUrlParameter<String> {
 		} else {
 			// Update the existing source
 			Userdetails st = new Userdetails();
+			st.setId(Long.parseLong(id.getValue()));
 			st.setEmail(email.getValue());
 			st.setUsername(username.getValue());
 			BCryptPasswordEncoder bycrypt = new BCryptPasswordEncoder();
@@ -191,7 +222,8 @@ public class Adduser extends VerticalLayout implements HasUrlParameter<String> {
 
 			// Save the updated source
 			userRepository.save(st);
-			Notification.show("Credentials have been updated successfully");
+			Notification.show("Users have been updated successfully!");
+			System.out.println("-------- Updating User -------");
 			update();
 		}
 	}

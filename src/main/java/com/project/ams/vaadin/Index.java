@@ -32,8 +32,8 @@ import com.vaadin.flow.router.RouteAlias;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.RolesAllowed;
 
-@PageTitle("Asset Info")
-@Route(value = "", layout = MainLayout.class)
+@PageTitle("Asset Info  |  AMS")
+@Route(value = "/", layout = MainLayout.class)
 @RouteAlias("index")
 @RolesAllowed("ADMIN")
 public class Index extends VerticalLayout {

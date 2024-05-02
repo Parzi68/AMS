@@ -9,7 +9,6 @@ import jakarta.persistence.Id;
 public class Mappingdata {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(columnDefinition = "serial")
 	private Long id;
 	
 //	@GeneratedValue(strategy = GenerationType.IDENTITY)

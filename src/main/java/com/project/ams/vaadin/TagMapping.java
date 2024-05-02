@@ -51,7 +51,8 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 	MapRepository mapRepository;
 	@Autowired
 	ConfigRepository configRepository;
-	Mappingdata mappingData = new Mappingdata();
+//	private Mappingdata mappingData = new Mappingdata();
+	TextField id = new TextField("id");
 	TextField source_id = new TextField("Source Id");
 	TextField reg_name = new TextField("Register Name");
 	TextField reg_address = new TextField("Register Address");
@@ -88,6 +89,8 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 		hr.setHeight("5px");
 //		add(navbar, hr);
 
+		
+		
 		source_id.setReadOnly(true);
 		source_id.setValue(param);
 		source_id.setWidthFull();
@@ -239,6 +242,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 			addinst.addClickListener(ed -> {
 				// Long locationId = editdata.getId()
 				main_id = editdata.getId();
+				id.setValue(String.valueOf(editdata.getId()));
 				source_id.setValue(String.valueOf(editdata.getSource_id()));
 				reg_name.setValue(editdata.getReg_name());
 				reg_address.setValue(String.valueOf(editdata.getReg_address()));
@@ -343,6 +347,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 			if (!mapRepository.check_source(Integer.parseInt(reg_address.getValue()))) {
 				// Create a new SourceTable object
 				Mappingdata st = new Mappingdata();
+				st.setId(Long.parseLong(id.getValue()));
 				st.setSource_id(Integer.parseInt(source_id.getValue()));
 				st.setReg_name(reg_name.getValue());
 				st.setReg_address(Integer.parseInt(reg_address.getValue()));
@@ -354,7 +359,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 				// Save the source
 				mapRepository.save(st);
 				Notification.show("Tags have been saved successfully");
-				submitbtn.setEnabled(false);
+//				submitbtn.setEnabled(false);
 				update();
 			} else {
 				Notification.show("Register Name Already Exists");
@@ -362,6 +367,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 		} else {
 			// Update the existing source
 			Mappingdata st = new Mappingdata();
+			st.setId(Long.parseLong(id.getValue()));
 			st.setSource_id(Integer.parseInt(source_id.getValue()));
 			st.setReg_name(reg_name.getValue());
 			st.setReg_address(Integer.parseInt(reg_address.getValue()));

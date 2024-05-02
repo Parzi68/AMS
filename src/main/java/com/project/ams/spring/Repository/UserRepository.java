@@ -12,6 +12,11 @@ import com.project.ams.spring.model.Userdetails;
 
 @Repository
 public interface UserRepository extends JpaRepository<Userdetails, Long>{
+	
+	 // Custom query to find the maximum ID in the Asset table
+    @Query("SELECT MAX(t.id) FROM Userdetails t")
+    Long findMaxId();
+	
 	@Query(value = "SELECT * FROM user t where t.id= :id", nativeQuery = true)
 	public List<Userdetails> user_list(long id);
 	

@@ -29,8 +29,8 @@ public class SecurityAppConfig extends VaadinWebSecurity {
 	@Autowired
 	DataSource dataSource;
 	
-	@Autowired
-	AuthenticationSuccessHandler authenticationSuccessHandler;
+//	@Autowired
+//	private CustomAuthenticationHandler customAuthenticationHandler;
 	
 	@Autowired
 	HttpSecurity httpSecurity;
@@ -50,11 +50,6 @@ public class SecurityAppConfig extends VaadinWebSecurity {
 //
 //		return jdbcUserDetailsManager(dataSource);
 //	}
-	
-//	@Bean
-//	public CustomUserDetailsManager customUserDetailsManager() {
-//		return new CustomUserDetailsManager();
-//	}
 
 	@Bean
 	SecurityFilterChain HttpSec() throws Exception {
@@ -62,14 +57,19 @@ public class SecurityAppConfig extends VaadinWebSecurity {
         httpSecurity.csrf(csrf -> csrf.disable());
 
 //		httpSecurity.authorizeHttpRequests(auth -> {
-//			auth.requestMatchers(new AntPathRequestMatcher("/public/**")).permitAll();
+//			auth.anyRequest().authenticated();
 //		});
+        
+//        httpSecurity.authorizeHttpRequests(auth -> {
+//        	auth.requestMatchers("/source","/asset","/tagMapping","dashboard","/rtuconfig","/Adduser").hasAnyRole("ADMIN");
+//        	auth.requestMatchers("/user").hasAnyRole("OPERATOR");
+//        });
 
 		httpSecurity.formLogin(login -> {
 			login.loginPage("/login");
 			login.permitAll(true);
-//    		login.defaultSuccessUrl("/");
-    		login.successHandler(authenticationSuccessHandler);
+//    		login.defaultSuccessUrl("/",false);
+//    		login.successHandler(customAuthenticationHandler);
 		});
 
 		httpSecurity.httpBasic(Customizer.withDefaults());

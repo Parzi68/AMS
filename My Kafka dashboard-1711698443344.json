@@ -288,7 +288,7 @@
           "disableTextWrap": false,
           "editorMode": "builder",
           "exemplar": true,
-          "expr": "kafka_cluster_partition_replicascount{job=~\"kafka\", topic=~\"demoemo|docker|kafka\"}",
+          "expr": "kafka_cluster_partition_replicascount{job=\"kafka\", topic=~\"demoemo|docker|kafka|meter\"}",
           "format": "table",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
@@ -388,7 +388,7 @@
             "uid": "ca296ced-410c-45dc-b411-0314948ad9e8"
           },
           "editorMode": "code",
-          "expr": "sum(kafka_controller_kafkacontroller_activecontrollercount{job=~\"kafka\"})",
+          "expr": "sum(kafka_controller_kafkacontroller_activecontrollercount{job=\"kafka\"})",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -540,15 +540,15 @@
           "disableTextWrap": false,
           "editorMode": "builder",
           "exemplar": true,
-          "expr": "sum by(instance) (rate(kafka_server_brokertopicmetrics_bytesout_total{instance=~\"kafka1:9101|kafka2:9102|kafka3:9103 \", job=\"kafka\", topic=~\"demoemo|docker|kafka|kafka1\"}[2m]))",
+          "expr": "sum by(instance) (rate(kafka_server_brokertopicmetrics_bytesin_total{job=\"kafka\", instance=~\"kafka1:9101|kafka2:9102|kafka3:9103\", topic=~\"demoemo|docker|kafka|kafka1|meter\"}[2m]))",
           "format": "time_series",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
           "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "Bytes Out [{{instance}}]",
-          "refId": "B",
+          "legendFormat": "Bytes In [{{instance}}]",
+          "refId": "A",
           "useBackend": false
         },
         {
@@ -559,15 +559,15 @@
           "disableTextWrap": false,
           "editorMode": "builder",
           "exemplar": true,
-          "expr": "sum by(instance) (rate(kafka_server_brokertopicmetrics_bytesin_total{job=\"kafka\", instance=~\"kafka1:9101|kafka2:9102|kafka3:9103\", topic=~\"demoemo|docker|kafka|kafka1\"}[2m]))",
+          "expr": "sum by(instance) (rate(kafka_server_brokertopicmetrics_bytesout_total{instance=~\"kafka1:9101|kafka2:9102|kafka3:9103\", job=\"kafka\", topic=~\"demoemo|docker|kafka|kafka1|meter\"}[2m]))",
           "format": "time_series",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
           "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "Bytes In [{{instance}}]",
-          "refId": "A",
+          "legendFormat": "Bytes Out [{{instance}}]",
+          "refId": "B",
           "useBackend": false
         }
       ],
@@ -806,7 +806,7 @@
           "disableTextWrap": false,
           "editorMode": "builder",
           "exemplar": true,
-          "expr": "sum without(topic) (increase(kafka_server_brokertopicmetrics_messagesin_total{job=\"kafka\", topic=~\"docker|kafka1\"}[1m]))",
+          "expr": "sum without(topic) (increase(kafka_server_brokertopicmetrics_messagesin_total{job=\"kafka\", topic=~\"docker|kafka1|meter\"}[1m]))",
           "format": "time_series",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
@@ -918,7 +918,7 @@
           "disableTextWrap": false,
           "editorMode": "builder",
           "exemplar": true,
-          "expr": "sum without(topic) (kafka_server_brokertopicmetrics_bytesin_total{job=\"kafka\", topic=~\"docker|kafka1\"})",
+          "expr": "sum without(topic) (kafka_server_brokertopicmetrics_bytesin_total{job=\"kafka\", topic=~\"docker|kafka1|meter\"})",
           "format": "time_series",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
@@ -1030,7 +1030,7 @@
           "disableTextWrap": false,
           "editorMode": "builder",
           "exemplar": true,
-          "expr": "sum without(topic) (increase(kafka_server_brokertopicmetrics_bytesout_total{job=\"kafka\", topic=~\"docker|demoemo|kafka|kafka1\"}[1m]))",
+          "expr": "sum without(topic) (increase(kafka_server_brokertopicmetrics_bytesout_total{job=\"kafka\", topic=~\"docker|demoemo|kafka|kafka1|meter\"}[1m]))",
           "format": "time_series",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
@@ -1363,17 +1363,21 @@
             "type": "prometheus",
             "uid": "ca296ced-410c-45dc-b411-0314948ad9e8"
           },
-          "editorMode": "code",
+          "disableTextWrap": false,
+          "editorMode": "builder",
           "exemplar": true,
-          "expr": "sum without(instance)(kafka_server_brokertopicmetrics_bytesout_total{job=\"kafka\",topic!=\"\"})",
+          "expr": "sum without(instance) (kafka_server_brokertopicmetrics_bytesout_total{job=\"kafka\", topic=~\"meter\"})",
           "format": "time_series",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{topic}}",
           "metric": "kafka_server_brokertopicmetrics_bytesin_total",
           "range": true,
           "refId": "A",
-          "step": 4
+          "step": 4,
+          "useBackend": false
         }
       ],
       "thresholds": [],
@@ -1425,7 +1429,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1472,7 +1477,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "sum by(topic) (kafka_server_brokertopicmetrics_bytesin_total{job=\"kafka\", topic=~\"docker|demoemo|kafka1|tag1|tag2|tag4|tag3\"})",
+          "expr": "sum by(topic) (kafka_server_brokertopicmetrics_bytesin_total{job=\"kafka\", topic=~\"docker|demoemo|kafka1|tag1|tag2|tag4|tag3|meter\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -1500,7 +1505,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -1543,7 +1549,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "sum by(topic) (kafka_server_brokertopicmetrics_bytesout_total{job=\"kafka\", topic=~\"docker|demoemo|kafka1|tag1|tag2\"})",
+          "expr": "sum by(topic) (kafka_server_brokertopicmetrics_bytesout_total{job=\"kafka\", topic=~\"docker|demoemo|kafka1|tag1|tag2|meter\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -1572,7 +1578,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -1614,7 +1621,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "sum by(topic) (kafka_server_brokertopicmetrics_messagesin_total{instance=~\"kafka1:9101|kafka2:9102\", topic=~\"docker|demoemo|kafka1|tag1|tag2|tag4|tag3\"})",
+          "expr": "sum by(topic) (kafka_server_brokertopicmetrics_messagesin_total{instance=~\"kafka1:9101|kafka2:9102|kafka3:9103\", topic=~\"docker|demoemo|kafka1|tag1|tag2|tag4|tag3|meter\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -1642,7 +1649,8 @@
             "mode": "percentage",
             "steps": [
               {
-                "color": "dark-green"
+                "color": "dark-green",
+                "value": null
               }
             ]
           },
@@ -1713,7 +1721,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "blue"
+                "color": "blue",
+                "value": null
               }
             ]
           },
@@ -1755,20 +1764,20 @@
       "type": "stat"
     }
   ],
-  "refresh": false,
+  "refresh": "auto",
   "schemaVersion": 39,
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "2024-02-20T06:34:11.621Z",
-    "to": "2024-02-20T12:34:11.621Z"
+    "from": "now-15m",
+    "to": "now"
   },
   "timepicker": {},
   "timezone": "",
-  "title": "My Kafka dashboard",
+  "title": "My Kafka dashboard1",
   "uid": "ca185735-f7d4-443c-8887-35e9db43a471",
-  "version": 20,
+  "version": 28,
   "weekStart": ""
 }

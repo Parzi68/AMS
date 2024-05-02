@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import com.project.ams.spring.Repository.ConfigRepository;
 import com.project.ams.spring.Repository.MapRepository;
@@ -36,6 +37,9 @@ public class ReadData extends Thread {
 	
 //	@Autowired
 //	private KafkaProducerService kafkaProducerService;
+	
+	@Autowired
+	private KafkaTemplate<String, String> kafkaTemplate;
 
 	SerialConnection con = null;
 
@@ -51,10 +55,11 @@ public class ReadData extends Thread {
 	public ReadData() {
 	}
 
-	public ReadData(MeterRepository meterRepository, ConfigRepository configRepository, MapRepository mapRepository) {
+	public ReadData(MeterRepository meterRepository, ConfigRepository configRepository, MapRepository mapRepository,KafkaTemplate<String, String> kafkaTemplate) {
 		this.configRepository = configRepository;
 		this.mapRepository = mapRepository;
 		this.meterRepository = meterRepository;
+		this.kafkaTemplate=kafkaTemplate;
 //		this.kafkaProducerService=kafkaProducerService;
 	}
 
@@ -142,9 +147,10 @@ public class ReadData extends Thread {
 										Float hexVal = null;
 										if (reg_type.equalsIgnoreCase("float")) {
 											hexVal = hexToFloat(getRes);
+											kafkaTemplate.send("meter",""+hexVal);
 											System.out.println("Value........" + reg_name + "........." + hexVal);
 //											kafkaProducerService.updateData("Value........" + reg_name + "........." + hexVal);
-//											System.out.println("-------- KAFKA PRODUCING ----------");
+											System.out.println("-------- KAFKA PRODUCING ----------");
 											name=reg_name;
 											final_name=final_name+""+"\""+name+"\",";
 											value1=""+hexVal;
