@@ -40,7 +40,7 @@ import jakarta.annotation.security.RolesAllowed;
 @PageTitle("RTU Config  |  AMS")
 @SuppressWarnings("removal")
 @Route(value = "/rtuconfig", layout = MainLayout.class)
-//@RolesAllowed("ADMIN")
+@RolesAllowed("ADMIN")
 public class RTUConfig extends VerticalLayout implements HasUrlParameter<String> {
 	public static final String ROUTE_NAME = "rtuconfig";
 	@Autowired
@@ -314,6 +314,7 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 	            // Save the source
 	            configRepository.save(st);
 	            Notification.show("Configurations has been saved successfully");
+	            System.out.println("-------- Adding Configurations -------");
 	            savebtn.setEnabled(false);
 	            update();
 	        } else {
@@ -338,6 +339,7 @@ public class RTUConfig extends VerticalLayout implements HasUrlParameter<String>
 	        // Save the updated source
 	        configRepository.save(st);
 	        Notification.show("Configurations has been updated successfully");
+	        System.out.println("-------- Updating Configurations -------");
 	        update();
 	    }
 	}

@@ -38,7 +38,7 @@ import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 
 @PageTitle("Add User  |  AMS")
-//@RolesAllowed("ADMIN")
+@RolesAllowed("ADMIN")
 @Route(value = "/Adduser", layout = MainLayout.class)
 public class Adduser extends VerticalLayout implements HasUrlParameter<String> {
 	
@@ -67,7 +67,7 @@ public class Adduser extends VerticalLayout implements HasUrlParameter<String> {
 	public void init(String param) {
 //		Userdetails userdetails = new Userdetails();
 		
-//		main_id = Long.parseLong(param);
+		main_id = Long.parseLong(param);
 
 		HorizontalLayout navbar = new HorizontalLayout();
 		navbar.setWidthFull();
@@ -211,10 +211,8 @@ public class Adduser extends VerticalLayout implements HasUrlParameter<String> {
 				System.out.println("-------- Adding User -------");
 //				add.setEnabled(false);
 				
-			} else {
-				Notification.show("User Name or Email Already Exists");
-			}
-		} else {
+			} 
+		 else if (userRepository.check_source(username.getValue())){
 			// Update the existing source
 			Userdetails st = new Userdetails();
 			st.setId(Long.parseLong(id.getValue()));
@@ -232,7 +230,12 @@ public class Adduser extends VerticalLayout implements HasUrlParameter<String> {
 			System.out.println("-------- Updating User -------");
 			update();
 		}
+			
+		 else {
+				Notification.show("User Name or Email Already Exists");
+			}
 	}
+}
 
 	public void update() {
 		List<Userdetails> list = userRepository.findAll();

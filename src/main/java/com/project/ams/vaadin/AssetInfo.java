@@ -206,6 +206,7 @@ public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>
 	            // Save the source
 	            assetRepository.save(st);
 	            Notification.show("Source has been saved successfully");
+	            System.out.println("-------- Adding Source -------");
 	            saveButton.setEnabled(false);
 	        } else {
 	            Notification.show("Source Name Already Exists");
@@ -227,6 +228,7 @@ public class AssetInfo extends VerticalLayout implements HasUrlParameter<String>
 	        // Save the updated source
 	        assetRepository.save(st);
 	        Notification.show("Source has been updated successfully");
+	        System.out.println("-------- Updating Source -------");
 	    }
 
 	}

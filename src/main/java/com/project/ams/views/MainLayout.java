@@ -1,10 +1,12 @@
 package com.project.ams.views;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.project.ams.Security.SecurityService;
 import com.project.ams.vaadin.Adduser;
 import com.project.ams.vaadin.Index;
 import com.project.ams.vaadin.RTUConfig;
 import com.project.ams.vaadin.TagMapping;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
@@ -16,12 +18,14 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.Lumo;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 
 public class MainLayout extends AppLayout {
 	
-	 public MainLayout() {
+	 public MainLayout(@Autowired SecurityService securityService) {
 		 DrawerToggle toggle = new DrawerToggle();
 
 		H1 title = new H1("AMS");
@@ -37,10 +41,8 @@ public class MainLayout extends AppLayout {
 		HorizontalLayout header;
         
 		
-//		if (securityService.getAuthenticatedUser() != null) {
-			 Button logout = new Button("Logout", click -> {
-				 UI.getCurrent().navigate(LoginView.class);
-			 });
+		if (securityService.getAuthenticatedUser() != null) {
+			 Button logout = new Button("Logout", click -> securityService.logout());
 	            logout.addThemeVariants(ButtonVariant.LUMO_CONTRAST, ButtonVariant.LUMO_TERTIARY_INLINE);
 
 	            HorizontalLayout logoutLayout = new HorizontalLayout(logout);
@@ -53,9 +55,9 @@ public class MainLayout extends AppLayout {
 	            header.setWidth("100%");
 	            header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
 
-//        } else {
-//            header = new HorizontalLayout(toggle,title);
-//        }
+        } else {
+            header = new HorizontalLayout(toggle,title);
+        }
 
 		addToDrawer(scroller);
 		addToNavbar(header);

@@ -39,7 +39,7 @@ import net.wimpi.modbus.net.SerialConnection;
 
 @PageTitle("Tag Mapping  |  AMS")
 @Route(value = "/tagMapping", layout = MainLayout.class)
-//@RolesAllowed("ADMIN")
+@RolesAllowed("ADMIN")
 public class TagMapping extends VerticalLayout implements HasUrlParameter<String> {
 
 	public static final String ROUTE_NAME = "tagMapping";
@@ -359,6 +359,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 				// Save the source
 				mapRepository.save(st);
 				Notification.show("Tags have been saved successfully");
+				System.out.println("-------- Adding Tags -------");
 //				submitbtn.setEnabled(false);
 				update();
 			} else {
@@ -381,6 +382,7 @@ public class TagMapping extends VerticalLayout implements HasUrlParameter<String
 			// Save the updated source
 			mapRepository.save(st);
 			Notification.show("Source has been updated successfully");
+			System.out.println("-------- Updating Tags -------");
 			update();
 		}
 
